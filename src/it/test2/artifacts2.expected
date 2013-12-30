@@ -1,0 +1,15 @@
+maven-project-2.2.1.jar=org.apache.maven:maven-project:2.2.1:jar::compile
+maven-settings-2.2.1.jar=org.apache.maven:maven-settings:2.2.1:jar::compile
+maven-model-2.2.1.jar=org.apache.maven:maven-model:2.2.1:jar::compile
+plexus-utils-2.1.jar=org.codehaus.plexus:plexus-utils:2.1:jar::compile
+plexus-interpolation-1.11.jar=org.codehaus.plexus:plexus-interpolation:1.11:jar::compile
+plexus-container-default-1.0-alpha-9-stable-1.jar=org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
+junit-3.8.1.jar=junit:junit:3.8.1:jar::compile
+classworlds-1.1.jar=classworlds:classworlds:1.1:jar::compile
+maven-profile-2.2.1.jar=org.apache.maven:maven-profile:2.2.1:jar::compile
+maven-artifact-manager-2.2.1.jar=org.apache.maven:maven-artifact-manager:2.2.1:jar::compile
+maven-repository-metadata-2.2.1.jar=org.apache.maven:maven-repository-metadata:2.2.1:jar::compile
+maven-artifact-2.2.1.jar=org.apache.maven:maven-artifact:2.2.1:jar::compile
+wagon-provider-api-1.0-beta-6.jar=org.apache.maven.wagon:wagon-provider-api:1.0-beta-6:jar::compile
+backport-util-concurrent-3.1.jar=backport-util-concurrent:backport-util-concurrent:3.1:jar::compile
+maven-plugin-registry-2.2.1.jar=org.apache.maven:maven-plugin-registry:2.2.1:jar::compile

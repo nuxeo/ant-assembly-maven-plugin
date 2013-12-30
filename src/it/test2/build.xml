@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<project name="test2"
+         default="all-tests"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <target name="all-tests" depends="test2-1,test2-2" />
+
+  <target name="test2-1" description="Test artifact:expand">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <artifact:expand depth="all" />
+    <mkdir dir="${outdir}" />
+    <artifact:print output="${outdir}/artifacts1.properties" mode="sdk" />
+    <artifact:print output="${outdir}/dependency-tree1.log" />
+    <fail message="Dependency tree error">
+      <condition>
+        <not>
+          <and>
+            <available file="${outdir}/artifacts1.properties" />
+            <available file="${outdir}/dependency-tree1.log" />
+            <filesmatch file1="${outdir}/artifacts1.properties"
+                        file2="artifacts1.expected" />
+            <filesmatch file1="${outdir}/dependency-tree1.log"
+                        file2="dependency-tree1.expected" />
+          </and>
+        </not>
+      </condition>
+    </fail>
+  </target>
+
+  <target name="test2-2" description="Test artifact:nuxeo-expand">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <artifact:nuxeo-expand groupPrefixes="org" />
+    <mkdir dir="${outdir}" />
+    <artifact:print output="${outdir}/artifacts2.properties" mode="sdk" />
+    <artifact:print output="${outdir}/dependency-tree2.log" />
+    <fail message="Dependency tree error">
+      <condition>
+        <not>
+          <and>
+            <available file="${outdir}/artifacts2.properties" />
+            <available file="${outdir}/dependency-tree2.log" />
+            <filesmatch file1="${outdir}/artifacts2.properties"
+                        file2="artifacts2.expected" />
+            <filesmatch file1="${outdir}/dependency-tree2.log"
+                        file2="dependency-tree2.expected" />
+          </and>
+        </not>
+      </condition>
+    </fail>
+  </target>
+
+</project>

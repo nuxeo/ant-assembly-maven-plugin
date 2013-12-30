@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<project name="test1"
+         default="test"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <target name="test">
+    <fail message="Unexpected property 'test2.property'" if="test2.property" />
+    <for list="test1.property,basedir,maven.basedir,maven.project.name,
+maven.project.groupId,maven.project.artifactId,maven.project.version,
+maven.project.packaging,maven.project.id,maven.project.build.directory,
+maven.project.build.outputDirectory,maven.project.build.finalName,maven.offline"
+         trim="true"
+         parallel="true"
+         param="property">
+      <sequential>
+        <fail message="Missing property '@{property}'" unless="@{property}" />
+        <echo message="Checked property '@{property}': ${@{property}}" />
+      </sequential>
+    </for>
+
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <mkdir dir="${outdir}/test1" />
+    <fail message="target/test1 not created">
+      <condition>
+        <not>
+          <and>
+            <equals arg1="${basedir}/target/test1" arg2="${outdir}/test1" />
+            <available file="${outdir}/test1" />
+          </and>
+        </not>
+      </condition>
+    </fail>
+  </target>
+</project>
