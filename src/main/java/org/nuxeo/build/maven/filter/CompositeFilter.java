@@ -28,9 +28,9 @@ import org.nuxeo.build.maven.ArtifactDescriptor;
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public abstract class CompositeFilter implements Filter {
+public abstract class CompositeFilter extends AbstractFilter {
 
-    protected List<Filter> filters = new ArrayList<Filter>();
+    protected List<Filter> filters = new ArrayList<>();
 
     public CompositeFilter() {
     }

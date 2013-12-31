@@ -29,22 +29,22 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Dependency;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Node;
+import org.sonatype.aether.graph.DependencyNode;
 
 /**
  * @author jcarsique
  *
  */
-public class ManifestBundleCategoryFilter implements Filter {
+public class ManifestBundleCategoryFilter extends AbstractFilter {
 
     public static final String MANIFEST_BUNDLE_CATEGORY = "Bundle-Category";
 
     public static final String MANIFEST_BUNDLE_CATEGORY_TOKEN = ",";
 
-    protected List<char[]> patterns = new ArrayList<char[]>();
+    protected List<char[]> patterns = new ArrayList<>();
 
     protected boolean isDependOnCategory;
 
@@ -62,7 +62,7 @@ public class ManifestBundleCategoryFilter implements Filter {
     }
 
     protected List<String> getValuesToMatch(Artifact artifact) {
-        List<String> valuesToMatch = new ArrayList<String>();
+        List<String> valuesToMatch = new ArrayList<>();
         File file = artifact.getFile();
         if (file == null) {
             if (artifact.isResolved()) {
@@ -117,6 +117,7 @@ public class ManifestBundleCategoryFilter implements Filter {
         return valuesToMatch;
     }
 
+    @Override
     public boolean accept(Node node) {
         return accept(node, true, true);
     }
@@ -199,10 +200,7 @@ public class ManifestBundleCategoryFilter implements Filter {
         return accept;
     }
 
-    public boolean accept(Edge edge, Dependency dep) {
-        throw new UnsupportedOperationException("Not supported");
-    }
-
+    @Override
     public boolean accept(Edge edge) {
         throw new UnsupportedOperationException("Not supported");
     }
@@ -211,6 +209,8 @@ public class ManifestBundleCategoryFilter implements Filter {
      * @deprecated prefer use of {@link #accept(Node)} as it remembers already
      *             parsed artifacts
      */
+    @Deprecated
+    @Override
     public boolean accept(Artifact artifact) {
         boolean accept = matchPattern(getValuesToMatch(artifact));
         if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
@@ -284,6 +284,11 @@ public class ManifestBundleCategoryFilter implements Filter {
 
     public void setDependsOnCategory(boolean isDependsOnCategory) {
         this.isDependOnCategory = isDependsOnCategory;
+    }
+
+    @Override
+    public boolean accept(DependencyNode node, List<DependencyNode> parents) {
+        throw new UnsupportedOperationException("Not supported");
     }
 
 }

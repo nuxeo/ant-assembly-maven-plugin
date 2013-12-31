@@ -19,6 +19,7 @@ package org.nuxeo.build.maven;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +42,7 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.MavenProjectHelper;
+import org.apache.maven.project.ProjectBuilder;
 import org.apache.maven.settings.Settings;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -52,6 +54,9 @@ import org.nuxeo.build.ant.profile.AntProfileManager;
 import org.nuxeo.build.maven.filter.TrueFilter;
 import org.nuxeo.build.maven.graph.Graph;
 import org.nuxeo.build.maven.graph.Node;
+import org.sonatype.aether.RepositorySystem;
+import org.sonatype.aether.RepositorySystemSession;
+import org.sonatype.aether.repository.RemoteRepository;
 
 /**
  *
@@ -100,6 +105,21 @@ public class AntBuildMojo extends AbstractMojo {
     protected int expand;
 
     @Component
+    protected RepositorySystem system;
+
+    public RepositorySystem getSystem() {
+        return system;
+    }
+
+    // @Parameter( defaultValue="${repositorySystemSession}" )
+    @Parameter(property = "repositorySystemSession")
+    protected RepositorySystemSession repositorySystemSession;
+
+    public RepositorySystemSession getRepositorySystemSession() {
+        return repositorySystemSession;
+    }
+
+    @Component
     protected MavenProject project;
 
     @Component
@@ -135,13 +155,25 @@ public class AntBuildMojo extends AbstractMojo {
     /**
      * List of Remote Repositories used by the resolver
      */
-    @Parameter(property = "remoteArtifactRepositories", readonly = true)
-    protected List<ArtifactRepository> remoteRepositories;
+    @Parameter(property = "remoteArtifactRepositories")
+    protected List<ArtifactRepository> remoteArtifactRepositories;
+
+    public List<ArtifactRepository> getRemoteArtifactRepositories() {
+        return remoteArtifactRepositories;
+    }
+
+    @Parameter(property = "remoteProjectRepositories")
+    protected List<RemoteRepository> remoteRepositories;
+
+    public List<RemoteRepository> getRemoteRepositories() {
+        return remoteRepositories;
+    }
 
     /**
      * Used to look up Artifacts in the remote repository.
      */
     @Component
+    @Deprecated
     protected ArtifactFactory factory;
 
     /**
@@ -155,11 +187,17 @@ public class AntBuildMojo extends AbstractMojo {
     }
 
     @Component
-    protected MavenProjectBuilder projectBuilder;
+    protected ProjectBuilder projectBuilder;
 
     @Component
+    @Deprecated
+    protected MavenProjectBuilder mavenProjectBuilder;
+
+    @Component
+    @Deprecated
     protected ArtifactMetadataSource metadataSource;
 
+    @Deprecated
     public ArtifactMetadataSource getMetadataSource() {
         return metadataSource;
     }
@@ -174,6 +212,7 @@ public class AntBuildMojo extends AbstractMojo {
      * @since 1.12
      */
     @Component
+    @Deprecated
     protected WagonManager wagonManager;
 
     @Parameter(property = "settings")
@@ -269,8 +308,10 @@ public class AntBuildMojo extends AbstractMojo {
         graph = new Graph();
         graph.addRootNode(project);
         if (expand > 0) {
-            for (Node rootNode : graph.getRoots()) {
-                graph.resolveDependencyTree(rootNode, new TrueFilter(), expand);
+            Collection<Node> nodes;
+            nodes = graph.getRoots();
+            for (Node node : nodes) {
+                graph.resolveDependencies(node, new TrueFilter(), expand);
             }
         }
         return graph;
@@ -401,6 +442,7 @@ public class AntBuildMojo extends AbstractMojo {
         return project;
     }
 
+    @Deprecated
     public ArtifactFactory getArtifactFactory() {
         return factory;
     }
@@ -413,16 +455,17 @@ public class AntBuildMojo extends AbstractMojo {
         return localRepository;
     }
 
-    public MavenProjectBuilder getProjectBuilder() {
+    public ProjectBuilder getProjectBuilder() {
         return projectBuilder;
+    }
+
+    @Deprecated
+    public MavenProjectBuilder getMavenProjectBuilder() {
+        return mavenProjectBuilder;
     }
 
     public MavenProjectHelper getProjectHelper() {
         return projectHelper;
-    }
-
-    public List<ArtifactRepository> getRemoteRepositories() {
-        return remoteRepositories;
     }
 
     public Graph getGraph() {

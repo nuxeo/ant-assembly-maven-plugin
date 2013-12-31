@@ -18,11 +18,12 @@ package org.nuxeo.build.maven.filter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public abstract class SegmentMatch {
 
     public static final SegmentMatch ANY = new SegmentMatch() {
+        @Override
         public boolean match(String arg0) {
             return true;
         }

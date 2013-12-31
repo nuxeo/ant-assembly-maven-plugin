@@ -28,6 +28,7 @@ public class ExactMatch extends SegmentMatch {
         this.segment = segment;
     }
 
+    @Override
     public boolean match(String segmentToMatch) {
         return this.segment.equals(segmentToMatch);
     }

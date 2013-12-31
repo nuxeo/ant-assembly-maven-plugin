@@ -47,6 +47,14 @@ import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.filter.Filter;
 import org.nuxeo.build.maven.filter.VersionManagement;
+import org.sonatype.aether.collection.CollectRequest;
+import org.sonatype.aether.collection.DependencyCollectionException;
+import org.sonatype.aether.graph.Dependency;
+import org.sonatype.aether.graph.DependencyNode;
+import org.sonatype.aether.resolution.DependencyRequest;
+import org.sonatype.aether.resolution.DependencyResolutionException;
+import org.sonatype.aether.util.artifact.DefaultArtifact;
+import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -57,8 +65,6 @@ public class Graph {
     public final TreeMap<String, Node> nodes = new TreeMap<>();
 
     public final LinkedList<Node> roots = new LinkedList<>();
-
-    protected Resolver resolver = new Resolver(this);
 
     protected Map<String, Artifact> file2artifacts = new HashMap<>();
 
@@ -143,31 +149,31 @@ public class Graph {
     }
 
     /**
-     * Add a root node given an artifact pom. This can be used by the embedder
-     * maven mojo to initialize the graph with the current pom.
+     * Add a root node given an artifact POM. This can be used to initialize the
+     * graph with the current POM.
      */
     public Node addRootNode(MavenProject pom) {
-        return getRootNode(pom, pom.getArtifact());
+        return addRootNode(pom, pom.getArtifact());
     }
 
-    public Node addRootNode(String key) {
+    private Node addRootNode(String key) {
         ArtifactDescriptor ad = new ArtifactDescriptor(key);
         Artifact artifact = ad.getBuildArtifact();
-        return getRootNode(artifact);
+        return addRootNode(artifact);
     }
 
-    public Node getRootNode(Artifact artifact) {
-        MavenProject pom = resolver.load(artifact);
-        return getRootNode(pom, artifact);
+    private Node addRootNode(Artifact artifact) {
+        MavenProject pom = load(artifact);
+        return addRootNode(pom, artifact);
     }
 
     /**
      * @since 1.10.2
      */
-    public Node getRootNode(MavenProject pom, Artifact artifact) {
-        Node node = nodes.get(Node.createNodeId(artifact));
+    public Node addRootNode(MavenProject pom, Artifact artifact) {
+        Node node = nodes.get(Node.genNodeId(artifact));
         if (node == null) {
-            node = new Node(Graph.this, artifact, pom);
+            node = new Node(this, artifact, pom);
             nodes.put(node.getId(), node);
             nodesByArtifact.put(artifact, node);
             roots.add(node);
@@ -175,16 +181,32 @@ public class Graph {
         return node;
     }
 
-    public Resolver getResolver() {
-        return resolver;
+    private DependencyNode collectDependencies(MavenProject pom)
+            throws DependencyCollectionException {
+        // Convert org.apache.maven.artifact.Artifact to
+        // org.sonatype.aether.artifact.Artifact
+        Artifact artifact = pom.getArtifact();
+        org.sonatype.aether.artifact.Artifact aetherArtifact = new DefaultArtifact(
+                artifact.getGroupId(), artifact.getArtifactId(),
+                // artifact.getClassifier(), "pom",
+                artifact.getClassifier(), artifact.getType(),
+                artifact.getVersion());
+        CollectRequest collectRequest = new CollectRequest();
+        // collectRequest.setRoot(new Dependency(aetherArtifact, "compile"));
+        collectRequest.setRoot(new Dependency(aetherArtifact,
+                artifact.getScope()));
+        collectRequest.setRepositories(mojo.getRemoteRepositories());
+        DependencyNode root = mojo.getSystem().collectDependencies(
+                mojo.getRepositorySystemSession(), collectRequest).getRoot();
+        return root;
     }
 
-    public Node lookup(String id) {
+    private Node lookup(String id) {
         return nodes.get(id);
     }
 
-    public Node lookup(Artifact artifact) {
-        return lookup(Node.createNodeId(artifact));
+    private Node lookup(Artifact artifact) {
+        return lookup(Node.genNodeId(artifact));
     }
 
     public Node findNode(ArtifactDescriptor ad) {
@@ -226,17 +248,19 @@ public class Graph {
         return returnNode;
     }
 
+    @Deprecated
     public MavenProject loadPom(Artifact artifact) {
         if ("system".equals(artifact.getScope()))
             return null;
         try {
-            return mojo.getProjectBuilder().buildFromRepository(
+            return mojo.getMavenProjectBuilder().buildFromRepository(
                     // this create another Artifact instance whose type is 'pom'
                     mojo.getArtifactFactory().createProjectArtifact(
                             artifact.getGroupId(), artifact.getArtifactId(),
                             artifact.getVersion()),
-                    mojo.getRemoteRepositories(), mojo.getLocalRepository());
-        } catch (Exception e) {
+                    mojo.getRemoteArtifactRepositories(),
+                    mojo.getLocalRepository());
+        } catch (ProjectBuildingException e) {
             mojo.getLog().error(e.getMessage(), e);
             return null;
         }
@@ -247,9 +271,9 @@ public class Graph {
     protected class NodesInjector implements
             org.apache.maven.artifact.resolver.ResolutionListener {
 
-        protected final HashSet<Node> filteredNodes = new HashSet<Node>();
+        protected final HashSet<Node> filteredNodes = new HashSet<>();
 
-        protected final Stack<Node> parentNodes = new Stack<Node>();
+        protected final Stack<Node> parentNodes = new Stack<>();
 
         protected final Node rootNode;
 
@@ -459,7 +483,7 @@ public class Graph {
                 warn("removing not indexed "
                         + System.identityHashCode(artifact) + " : artifact="
                         + artifact);
-                node = nodes.get(Node.createNodeId(artifact));
+                node = nodes.get(Node.genNodeId(artifact));
             }
             nodes.remove(node.id);
             if (filteredNodes.remove(node)) {
@@ -482,7 +506,7 @@ public class Graph {
         }
 
         protected Node createNode(Artifact artifact) {
-            MavenProject pom = resolver.load(artifact);
+            MavenProject pom = load(artifact);
             Node node = new Node(Graph.this, artifact, pom);
             addEdges(node);
             return node;
@@ -578,6 +602,23 @@ public class Graph {
         }
     }
 
+    public void resolveDependencies(Node node, Filter filter, int depth) {
+        DependencyRequest dependencyRequest = new DependencyRequest(node,
+                filter);
+        try {
+            mojo.getSystem().resolveDependencies(
+                    mojo.getRepositorySystemSession(), dependencyRequest);
+        } catch (DependencyResolutionException e) {
+            throw new BuildException("Cannot resolve dependency tree for "
+                    + node, e);
+        }
+        node.accept(new PreorderNodeListGenerator());
+    }
+
+    /**
+     * TODO NXBT-258 (2)
+     */
+    @Deprecated
     public void resolveDependencyTree(Node node, Filter filter, int depth) {
         mojo.getLog().info("Resolving dependencies for " + node);
         final NodesInjector injector = new NodesInjector(node, filter, depth);
@@ -589,23 +630,44 @@ public class Graph {
                     return false;
                 }
             }, injector);
-        } catch (Exception cause) {
-            throw new Error("Cannot resolve dependency tree for " + node, cause);
+        } catch (ProjectBuildingException cause) {
+            throw new BuildException("Cannot resolve dependency tree for "
+                    + node, cause);
         }
         validateDependencyTree(node.graph);
-
         // remove filtered artifacts
         mojo.getLog().info("Filtering dependency tree");
         injector.removeFiltered();
-
         validateDependencyTree(node.graph);
     }
 
+    /**
+     * TODO NXBT-258 (3)
+     */
+    @Deprecated
+    public void resolveDependencyTree(Artifact artifact, ArtifactFilter filter,
+            ResolutionListener listener) throws ProjectBuildingException {
+        MavenProject mavenProject = mojo.getMavenProjectBuilder().buildFromRepository(
+                artifact, mojo.getRemoteArtifactRepositories(),
+                mojo.getLocalRepository());
+        ArtifactCollector collector = new DefaultArtifactCollector();
+        collector.collect(mavenProject.getDependencyArtifacts(),
+                mavenProject.getArtifact(),
+                mavenProject.getManagedVersionMap(), mojo.getLocalRepository(),
+                mavenProject.getRemoteArtifactRepositories(),
+                mojo.getMetadataSource(), filter,
+                Collections.singletonList(listener));
+    }
+
+    @Deprecated
     public void resolve(Artifact artifact,
-            List<ArtifactRepository> otherRemoteRepositories)
+            List<ArtifactRepository> remoteRepositories)
             throws ArtifactNotFoundException {
+        if (artifact.isResolved()) {
+            return;
+        }
         try {
-            mojo.getResolver().resolve(artifact, otherRemoteRepositories,
+            mojo.getResolver().resolve(artifact, remoteRepositories,
                     mojo.getLocalRepository());
         } catch (ArtifactResolutionException e) {
             throw new RuntimeException(e);
@@ -615,13 +677,28 @@ public class Graph {
     }
 
     public void resolve(Artifact artifact) throws ArtifactNotFoundException {
+        resolve(artifact, mojo.getRemoteArtifactRepositories());
+    }
+
+    /**
+     * TODO NXBT-258 (1)
+     */
+    @Deprecated
+    public MavenProject load(Artifact artifact) {
+        if ("system".equals(artifact.getScope())) {
+            return null;
+        }
         try {
-            mojo.getResolver().resolve(artifact, mojo.getRemoteRepositories(),
+            return mojo.getMavenProjectBuilder().buildFromRepository(
+                    // this create another Artifact instance whose type is 'pom'
+                    mojo.getArtifactFactory().createProjectArtifact(
+                            artifact.getGroupId(), artifact.getArtifactId(),
+                            artifact.getVersion()),
+                    mojo.getRemoteArtifactRepositories(),
                     mojo.getLocalRepository());
-        } catch (ArtifactResolutionException e) {
-            throw new RuntimeException(e);
-        } catch (ArtifactNotFoundException e) {
-            tryResolutionOnLocalBaseVersion(artifact, e);
+        } catch (ProjectBuildingException e) {
+            mojo.getLog().error("Error loading POM of " + artifact, e);
+            return null;
         }
     }
 
@@ -650,23 +727,9 @@ public class Graph {
         } else {
             // No success, set back the previous version and raise an error
             artifact.updateVersion(resolvedVersion, mojo.getLocalRepository());
+            mojo.getLog().warn("Cannot resolve " + artifact, e);
             throw e;
         }
-    }
-
-    public void resolveDependencyTree(Artifact artifact, ArtifactFilter filter,
-            ResolutionListener listener) throws ArtifactResolutionException,
-            ProjectBuildingException {
-        MavenProject mavenProject = mojo.getProjectBuilder().buildFromRepository(
-                artifact, mojo.getRemoteRepositories(),
-                mojo.getLocalRepository());
-        ArtifactCollector collector = new DefaultArtifactCollector();
-        collector.collect(mavenProject.getDependencyArtifacts(),
-                mavenProject.getArtifact(),
-                mavenProject.getManagedVersionMap(), mojo.getLocalRepository(),
-                mavenProject.getRemoteArtifactRepositories(),
-                mojo.getMetadataSource(), filter,
-                Collections.singletonList(listener));
     }
 
 }

@@ -16,16 +16,18 @@
  */
 package org.nuxeo.build.maven.filter;
 
+import java.util.List;
+
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Dependency;
 import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Node;
+import org.sonatype.aether.graph.DependencyNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class TypeFilter implements Filter {
+public class TypeFilter extends AbstractFilter {
 
     @Override
     public String toString() {
@@ -42,24 +44,30 @@ public class TypeFilter implements Filter {
         this.matcher = matcher;
     }
 
-    public boolean match(String segment) {
-        return matcher.match(segment);
-    }
-
-    public boolean accept(Edge edge, Dependency dep) {
-        return matcher.match(dep.getType());
-    }
-
+    @Override
     public boolean accept(Edge edge) {
-        return matcher.match(edge.out.getArtifact().getType());
+        return result(matcher.match(edge.out.getArtifact().getType()),
+                edge.toString());
     }
 
+    @Override
     public boolean accept(Artifact artifact) {
-        return matcher.match(artifact.getType());
+        return result(matcher.match(artifact.getType()), artifact.toString());
     }
 
+    @Override
     public boolean accept(Node node) {
         return accept(node.getArtifact());
+    }
+
+    @Override
+    public boolean accept(DependencyNode node, List<DependencyNode> parents) {
+        org.sonatype.aether.graph.Dependency dependency = node.getDependency();
+        if (dependency == null) {
+            return result(matcher == SegmentMatch.ANY, node.toString());
+        }
+        return result(matcher.match(dependency.getArtifact().getExtension()),
+                node.toString());
     }
 
 }

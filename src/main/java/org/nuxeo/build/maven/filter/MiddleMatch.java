@@ -18,12 +18,14 @@ package org.nuxeo.build.maven.filter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class MiddleMatch extends SegmentMatch {
 
     public String suffix;
+
     public String prefix;
+
     private int len;
 
     public MiddleMatch(String suffix, String prefix) {
@@ -32,13 +34,15 @@ public class MiddleMatch extends SegmentMatch {
         this.len = suffix.length() + prefix.length();
     }
 
+    @Override
     public boolean match(String segment) {
-        return len <=  segment.length() && segment.startsWith(prefix) && segment.endsWith(suffix);
+        return len <= segment.length() && segment.startsWith(prefix)
+                && segment.endsWith(suffix);
     }
 
     @Override
     public String toString() {
-        return ""+getClass()+" ("+prefix+","+suffix+")";
+        return "" + getClass() + " (" + prefix + "," + suffix + ")";
     }
 
 }

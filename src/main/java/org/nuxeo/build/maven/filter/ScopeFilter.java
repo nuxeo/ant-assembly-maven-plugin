@@ -16,16 +16,19 @@
  */
 package org.nuxeo.build.maven.filter;
 
+import java.util.List;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Node;
+import org.sonatype.aether.graph.DependencyNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ScopeFilter implements Filter {
+public class ScopeFilter extends AbstractFilter {
 
     @Override
     public String toString() {
@@ -42,34 +45,45 @@ public class ScopeFilter implements Filter {
         this.matcher = matcher;
     }
 
-    public boolean match(String segment) {
-        return matcher.match(segment);
-    }
-
     public boolean accept(Edge edge, Dependency dep) {
         String scope = dep.getScope();
         if (scope == null) {
-            return matcher == SegmentMatch.ANY;
+            return result(matcher == SegmentMatch.ANY, dep.toString());
         }
-        return matcher.match(dep.getScope());
+        return result(matcher.match(dep.getScope()), dep.toString());
     }
 
+    @Override
     public boolean accept(Edge edge) {
         if (edge.scope == null) {
-            return matcher == SegmentMatch.ANY;
+            return result(matcher == SegmentMatch.ANY, edge.toString());
         }
-        return matcher.match(edge.scope);
+        return result(matcher.match(edge.scope), edge.toString());
     }
 
+    @Override
     public boolean accept(Artifact artifact) {
-        String scope = artifact.getScope();
+        return result(match(artifact.getScope()), artifact.toString());
+    }
+
+    @Override
+    public boolean accept(Node node) {
+        return accept(node.getArtifact());
+    }
+
+    @Override
+    public boolean accept(DependencyNode node, List<DependencyNode> parents) {
+        org.sonatype.aether.graph.Dependency dependency = node.getDependency();
+        if (dependency == null) {
+            return result(matcher == SegmentMatch.ANY, node.toString());
+        }
+        return result(match(dependency.getScope()), node.toString());
+    }
+
+    private boolean match(String scope) {
         if (scope == null) {
             return matcher == SegmentMatch.ANY;
         }
         return matcher.match(scope);
-    }
-
-    public boolean accept(Node node) {
-        return accept(node.getArtifact());
     }
 }

@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,19 +20,28 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.project.MavenProject;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.filter.Filter;
+import org.sonatype.aether.graph.Dependency;
+import org.sonatype.aether.graph.DependencyNode;
+import org.sonatype.aether.graph.DependencyVisitor;
+import org.sonatype.aether.repository.RemoteRepository;
+import org.sonatype.aether.util.artifact.DefaultArtifact;
+import org.sonatype.aether.util.graph.DefaultDependencyNode;
+import org.sonatype.aether.version.Version;
+import org.sonatype.aether.version.VersionConstraint;
 
 /**
  *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class Node {
+public class Node implements DependencyNode {
 
     protected final Graph graph;
 
@@ -40,31 +49,28 @@ public class Node {
 
     protected final Artifact artifact;
 
-    protected final List<Edge> edgesIn = new ArrayList<Edge>();
+    protected final List<Edge> edgesIn = new ArrayList<>();
 
-    protected final List<Edge> edgesOut = new ArrayList<Edge>();
+    protected final List<Edge> edgesOut = new ArrayList<>();
 
-    /**
-     * Point to an artifact pom. When embedded in maven and using the current
-     * project pom as the root this will be set by the maven loader Mojo to
-     * point to the current pom
-     */
     protected final MavenProject pom;
 
     private List<char[]> acceptedCategories;
 
     public List<char[]> getAcceptedCategories() {
         if (acceptedCategories == null) {
-            acceptedCategories = new ArrayList<char[]>();
+            acceptedCategories = new ArrayList<>();
         }
         return acceptedCategories;
     }
 
-    public static String createNodeId(Artifact artifact) {
-        StringBuilder sb = new StringBuilder().append(artifact.getGroupId()).append(
-                ':').append(artifact.getArtifactId()).append(':').append(
-                artifact.getVersion()).append(':').append(artifact.getType()).append(
-                ':');
+    public static String genNodeId(Artifact artifact) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(artifact.getGroupId());
+        sb.append(':').append(artifact.getArtifactId());
+        sb.append(':').append(artifact.getVersion());
+        sb.append(':').append(artifact.getType());
+        sb.append(':');
         if (artifact.getClassifier() != null) {
             sb.append(artifact.getClassifier());
         }
@@ -79,13 +85,26 @@ public class Node {
         this.edgesIn.addAll(node.edgesIn);
         this.edgesOut.addAll(node.edgesOut);
         this.pom = node.pom;
+        this.dependencyNode = node.dependencyNode;
     }
 
     protected Node(Graph graph, Artifact artifact, MavenProject pom) {
-        this.id = createNodeId(artifact);
+        this.id = genNodeId(artifact);
         this.graph = graph;
         this.artifact = artifact;
         this.pom = pom;
+        // TODO NXBT-258 empty dependencyNode ok?
+        this.dependencyNode = new DefaultDependencyNode(new Dependency(
+                new DefaultArtifact(artifact.getGroupId(),
+                        artifact.getArtifactId(),
+                        // artifact.getClassifier(), "pom",
+                        artifact.getClassifier(), artifact.getType(),
+                        artifact.getVersion()), artifact.getScope()));
+        // try {
+        // this.dependencyNode = graph.collectDependencies(pom);
+        // } catch (DependencyCollectionException e) {
+        // throw new BuildException(e);
+        // }
     }
 
     protected static final int UNKNOWN = 0;
@@ -118,10 +137,16 @@ public class Node {
 
     public File getFile() {
         if (!artifact.isResolved()) {
-            graph.getResolver().resolve(artifact);
+            try {
+                graph.resolve(artifact);
+            } catch (ArtifactNotFoundException e) {
+                AntBuildMojo.getInstance().getLog().error(e);
+                return null;
+            }
         }
         File file = artifact.getFile();
         if (file != null) {
+            // TODO NXBT-258: getName or getAbsolutePath?!
             graph.file2artifacts.put(file.getName(), artifact);
         }
         return file;
@@ -135,11 +160,12 @@ public class Node {
             graph.resolve(ca);
             File file = ca.getFile();
             if (file != null) {
+                // TODO NXBT-258: getName or getAbsolutePath?!
                 graph.file2artifacts.put(file.getAbsolutePath(), ca);
             }
             return file;
-        } catch (Throwable t) {
-            t.printStackTrace();
+        } catch (ArtifactNotFoundException e) {
+            AntBuildMojo.getInstance().getLog().error(e);
             return null;
         }
     }
@@ -178,7 +204,7 @@ public class Node {
 
     public List<Node> getTrail() {
         if (edgesIn.isEmpty()) {
-            ArrayList<Node> result = new ArrayList<Node>();
+            ArrayList<Node> result = new ArrayList<>();
             result.add(this);
             return result;
         }
@@ -243,8 +269,8 @@ public class Node {
         return false;
     }
 
-    public void expand(Filter filter, int depth) {
-        graph.resolveDependencyTree(this, filter, depth);
+    private void expand(Filter filter, int depth) {
+        graph.resolveDependencies(this, filter, depth);
     }
 
     /**
@@ -275,5 +301,89 @@ public class Node {
         default:
             return "Unknown format: " + format + "!";
         }
+    }
+
+    // TODO NXBT-258
+
+    protected DependencyNode dependencyNode;
+
+    @Override
+    public List<DependencyNode> getChildren() {
+        return dependencyNode.getChildren();
+    }
+
+    @Override
+    public Dependency getDependency() {
+        return dependencyNode.getDependency();
+    }
+
+    @Override
+    public void setArtifact(org.sonatype.aether.artifact.Artifact artifact) {
+        dependencyNode.setArtifact(artifact);
+    }
+
+    @Override
+    public List<org.sonatype.aether.artifact.Artifact> getRelocations() {
+        return dependencyNode.getRelocations();
+    }
+
+    @Override
+    public Collection<org.sonatype.aether.artifact.Artifact> getAliases() {
+        return dependencyNode.getAliases();
+    }
+
+    @Override
+    public VersionConstraint getVersionConstraint() {
+        return dependencyNode.getVersionConstraint();
+    }
+
+    @Override
+    public Version getVersion() {
+        return dependencyNode.getVersion();
+    }
+
+    @Override
+    public void setScope(String scope) {
+        dependencyNode.setScope(scope);
+    }
+
+    @Override
+    public String getPremanagedVersion() {
+        return dependencyNode.getPremanagedVersion();
+    }
+
+    @Override
+    public String getPremanagedScope() {
+        return dependencyNode.getPremanagedScope();
+    }
+
+    @Override
+    public List<RemoteRepository> getRepositories() {
+        return dependencyNode.getRepositories();
+    }
+
+    @Override
+    public String getRequestContext() {
+        return dependencyNode.getRequestContext();
+    }
+
+    @Override
+    public void setRequestContext(String context) {
+        dependencyNode.setRequestContext(context);
+    }
+
+    @Override
+    public Map<Object, Object> getData() {
+        return dependencyNode.getData();
+    }
+
+    @Override
+    public void setData(Object key, Object value) {
+        dependencyNode.setData(key, value);
+    }
+
+    @Override
+    public boolean accept(DependencyVisitor visitor) {
+        return dependencyNode.accept(visitor);
     }
 }

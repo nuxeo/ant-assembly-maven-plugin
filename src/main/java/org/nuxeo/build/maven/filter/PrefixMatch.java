@@ -18,7 +18,7 @@ package org.nuxeo.build.maven.filter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class PrefixMatch extends SegmentMatch {
 
@@ -28,13 +28,14 @@ public class PrefixMatch extends SegmentMatch {
         this.prefix = prefix;
     }
 
+    @Override
     public boolean match(String segment) {
         return segment.startsWith(prefix);
     }
 
     @Override
     public String toString() {
-        return ""+getClass()+" ("+prefix+")";
+        return "" + getClass() + " (" + prefix + ")";
     }
 
 }

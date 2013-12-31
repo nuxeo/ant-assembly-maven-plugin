@@ -18,7 +18,7 @@ package org.nuxeo.build.maven.filter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
 public class SuffixMatch extends SegmentMatch {
 
@@ -28,13 +28,14 @@ public class SuffixMatch extends SegmentMatch {
         this.suffix = suffix;
     }
 
+    @Override
     public boolean match(String segment) {
         return segment.endsWith(suffix);
     }
 
     @Override
     public String toString() {
-        return ""+getClass()+" ("+suffix+")";
+        return "" + getClass() + " (" + suffix + ")";
     }
 
 }

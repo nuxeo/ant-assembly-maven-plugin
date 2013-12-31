@@ -16,17 +16,21 @@
  */
 package org.nuxeo.build.maven.filter;
 
+import java.util.List;
+
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Node;
+import org.sonatype.aether.graph.DependencyNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class AnyFilter implements Filter {
+public class AnyFilter extends AbstractFilter {
 
+    @Override
     public boolean accept(Artifact artifact) {
         return true;
     }
@@ -35,11 +39,18 @@ public class AnyFilter implements Filter {
         return true;
     }
 
+    @Override
     public boolean accept(Edge edge) {
         return true;
     }
 
+    @Override
     public boolean accept(Node node) {
+        return true;
+    }
+
+    @Override
+    public boolean accept(DependencyNode node, List<DependencyNode> parents) {
         return true;
     }
 }

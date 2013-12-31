@@ -16,16 +16,19 @@
  */
 package org.nuxeo.build.maven.filter;
 
+import java.util.List;
+
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Dependency;
 import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Node;
+import org.sonatype.aether.graph.Dependency;
+import org.sonatype.aether.graph.DependencyNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class ClassifierFilter implements Filter {
+public class ClassifierFilter extends AbstractFilter {
 
     @Override
     public String toString() {
@@ -42,31 +45,35 @@ public class ClassifierFilter implements Filter {
         this.matcher = matcher;
     }
 
-    public boolean match(String segment) {
-        return matcher.match(segment);
-    }
-
-    public boolean accept(Edge edge, Dependency dep) {
-        String classifier = dep.getClassifier();
-        if (classifier == null) {
-            return matcher == SegmentMatch.ANY;
-        }
-        return matcher.match(dep.getClassifier());
-    }
-
+    @Override
     public boolean accept(Edge edge) {
         return accept(edge.out.getArtifact());
     }
 
+    @Override
     public boolean accept(Artifact artifact) {
-        String classifier = artifact.getClassifier();
+        return result(match(artifact.getClassifier()), artifact.toString());
+    }
+
+    @Override
+    public boolean accept(Node node) {
+        return accept(node.getArtifact());
+    }
+
+    @Override
+    public boolean accept(DependencyNode node, List<DependencyNode> parents) {
+        Dependency dependency = node.getDependency();
+        if (dependency == null) {
+            return result(matcher == SegmentMatch.ANY, node.toString());
+        }
+        return result(match(dependency.getArtifact().getClassifier()),
+                node.toString());
+    }
+
+    private boolean match(String classifier) {
         if (classifier == null) {
             return matcher == SegmentMatch.ANY;
         }
         return matcher.match(classifier);
-    }
-
-    public boolean accept(Node node) {
-        return accept(node.getArtifact());
     }
 }

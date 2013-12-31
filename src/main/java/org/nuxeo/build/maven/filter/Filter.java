@@ -16,11 +16,14 @@
  */
 package org.nuxeo.build.maven.filter;
 
+import org.sonatype.aether.graph.DependencyFilter;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * 
  */
-public interface Filter extends ArtifactFilter, EdgeFilter, NodeFilter {
+public interface Filter extends ArtifactFilter, EdgeFilter, NodeFilter,
+        DependencyFilter {
 
     final static AnyFilter ANY = new AnyFilter();
 

@@ -19,9 +19,9 @@ package org.nuxeo.build.maven.filter;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
-import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Node;
+import org.sonatype.aether.graph.DependencyNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -36,44 +36,34 @@ public class AndFilter extends CompositeFilter {
         super(filters);
     }
 
+    @Override
     public boolean accept(Edge edge) {
         for (Filter filter : filters) {
             if (!filter.accept(edge)) {
-                if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                    AntBuildMojo.getInstance().getLog().debug(
-                            "Filtering - " + filter + " refused " + edge);
-                }
-                return false;
+                return result(false, edge.toString());
             }
         }
-        return true;
+        return result(true, edge.toString());
     }
 
+    @Override
     public boolean accept(Artifact artifact) {
         for (Filter filter : filters) {
             if (!filter.accept(artifact)) {
-                if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                    AntBuildMojo.getInstance().getLog().debug(
-                            "Filtering - " + filter + " refused " + artifact);
-                }
-                return false;
+                return result(false, artifact.toString());
             }
         }
-        return true;
+        return result(true, artifact.toString());
     }
 
+    @Override
     public boolean accept(Node node) {
         for (Filter filter : filters) {
-            final boolean accept = filter.accept(node);
-            if (!accept) {
-                if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                    AntBuildMojo.getInstance().getLog().debug(
-                            "Filtering - " + filter + " refused " + node);
-                }
-                return false;
+            if (!filter.accept(node)) {
+                return result(false, node.toString());
             }
         }
-        return true;
+        return result(true, node.toString());
     }
 
     @Override
@@ -84,6 +74,16 @@ public class AndFilter extends CompositeFilter {
             sb.append(System.getProperty("line.separator") + filter);
         }
         return sb.toString();
+    }
+
+    @Override
+    public boolean accept(DependencyNode node, List<DependencyNode> parents) {
+        for (Filter filter : filters) {
+            if (!filter.accept(node, parents)) {
+                return result(false, node.toString());
+            }
+        }
+        return result(true, node.toString());
     }
 
 }

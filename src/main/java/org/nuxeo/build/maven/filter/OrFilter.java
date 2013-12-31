@@ -19,9 +19,9 @@ package org.nuxeo.build.maven.filter;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
-import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Node;
+import org.sonatype.aether.graph.DependencyNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -47,43 +47,44 @@ public class OrFilter extends CompositeFilter {
         super(filters);
     }
 
+    @Override
     public boolean accept(Edge edge) {
         for (Filter filter : filters) {
             if (filter.accept(edge)) {
-                if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                    AntBuildMojo.getInstance().getLog().debug(
-                            "Filtering - " + filter + " accepted " + edge);
-                }
-                return true;
+                return result(true, edge.toString());
             }
         }
-        return false;
+        return result(false, edge.toString());
     }
 
+    @Override
     public boolean accept(Artifact artifact) {
         for (Filter filter : filters) {
             if (filter.accept(artifact)) {
-                if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                    AntBuildMojo.getInstance().getLog().debug(
-                            "Filtering - " + filter + " accepted " + artifact);
-                }
-                return true;
+                return result(true, artifact.toString());
             }
         }
-        return false;
+        return result(false, artifact.toString());
     }
 
+    @Override
     public boolean accept(Node node) {
         for (Filter filter : filters) {
             if (filter.accept(node)) {
-                if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                    AntBuildMojo.getInstance().getLog().debug(
-                            "Filtering - " + filter + " accepted " + node);
-                }
-                return true;
+                return result(true, node.toString());
             }
         }
-        return false;
+        return result(false, node.toString());
+    }
+
+    @Override
+    public boolean accept(DependencyNode node, List<DependencyNode> parents) {
+        for (Filter filter : filters) {
+            if (filter.accept(node, parents)) {
+                return result(true, node.toString());
+            }
+        }
+        return result(false, node.toString());
     }
 
 }

@@ -80,11 +80,12 @@ public class ExpandTask extends Task {
                 continue;
             }
             // NXBT-320 managed version don't resolve
+            // TODO NXBT-258 still needed?
             Artifact artifact = node.getArtifact();
             if (artifact.isSnapshot()) {
                 artifact.setVersion(artifact.getBaseVersion());
             }
-            graph.resolveDependencyTree(node, CompositeFilter.compact(filter),
+            graph.resolveDependencies(node, CompositeFilter.compact(filter),
                     depth);
         }
     }

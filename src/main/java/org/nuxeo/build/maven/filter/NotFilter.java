@@ -16,15 +16,18 @@
  */
 package org.nuxeo.build.maven.filter;
 
+import java.util.List;
+
 import org.apache.maven.artifact.Artifact;
 import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Node;
+import org.sonatype.aether.graph.DependencyNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class NotFilter implements Filter {
+public class NotFilter extends AbstractFilter {
 
     protected Filter filter;
 
@@ -32,19 +35,27 @@ public class NotFilter implements Filter {
         this.filter = filter;
     }
 
+    @Override
     public boolean accept(Edge edge) {
-        return !filter.accept(edge);
+        return result(!filter.accept(edge), edge.toString());
     }
 
+    @Override
     public boolean accept(Artifact artifact) {
-        return !filter.accept(artifact);
+        return result(!filter.accept(artifact), artifact.toString());
     }
 
+    @Override
     public boolean accept(Node node) {
-        return !filter.accept(node);
+        return result(!filter.accept(node), node.toString());
     }
 
     public Filter getFilter() {
         return filter;
+    }
+
+    @Override
+    public boolean accept(DependencyNode node, List<DependencyNode> parents) {
+        return result(!filter.accept(node, parents), node.toString());
     }
 }

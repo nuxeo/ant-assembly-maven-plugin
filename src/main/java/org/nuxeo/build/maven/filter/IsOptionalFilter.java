@@ -16,16 +16,18 @@
  */
 package org.nuxeo.build.maven.filter;
 
+import java.util.List;
+
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Dependency;
 import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Node;
+import org.sonatype.aether.graph.DependencyNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
-public class IsOptionalFilter implements Filter {
+public class IsOptionalFilter extends AbstractFilter {
 
     protected boolean isOptional;
 
@@ -33,19 +35,25 @@ public class IsOptionalFilter implements Filter {
         this.isOptional = isOptional;
     }
 
-    public boolean accept(Edge parent, Dependency dep) {
-        return isOptional == dep.isOptional();
-    }
-
+    @Override
     public boolean accept(Edge edge) {
-        return isOptional == edge.isOptional;
+        return result(isOptional == edge.isOptional, edge.toString());
     }
 
+    @Override
     public boolean accept(Artifact artifact) {
-        return isOptional == artifact.isOptional();
+        return result(isOptional == artifact.isOptional(), artifact.toString());
     }
 
+    @Override
     public boolean accept(Node node) {
         return accept(node.getArtifact());
+    }
+
+    @Override
+    public boolean accept(DependencyNode node, List<DependencyNode> parents) {
+        org.sonatype.aether.graph.Dependency dependency = node.getDependency();
+        return result(dependency != null && dependency.isOptional(),
+                node.toString());
     }
 }
