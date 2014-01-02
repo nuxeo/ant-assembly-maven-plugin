@@ -29,7 +29,7 @@ public abstract class AbstractGraphVisitor implements GraphVisitor {
     protected Set<Node> visitedNodes;
 
     public AbstractGraphVisitor() {
-        visitedNodes = new HashSet<Node>();
+        visitedNodes = new HashSet<>();
     }
 
     public void process(Graph graph) {
@@ -61,8 +61,10 @@ public abstract class AbstractGraphVisitor implements GraphVisitor {
         }
     }
 
+    @Override
     public abstract boolean visitNode(Node node);
 
+    @Override
     public abstract boolean visitEdge(Edge edge);
 
 }

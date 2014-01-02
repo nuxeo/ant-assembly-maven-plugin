@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.project.MavenProject;
 import org.nuxeo.build.maven.AntBuildMojo;
@@ -31,8 +32,6 @@ import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.graph.DependencyVisitor;
 import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.sonatype.aether.util.graph.DefaultDependencyNode;
 import org.sonatype.aether.version.Version;
 import org.sonatype.aether.version.VersionConstraint;
 
@@ -47,15 +46,20 @@ public class Node implements DependencyNode {
 
     protected final String id;
 
+    @Deprecated
     protected final Artifact artifact;
 
+    @Deprecated
     protected final List<Edge> edgesIn = new ArrayList<>();
 
+    @Deprecated
     protected final List<Edge> edgesOut = new ArrayList<>();
 
     protected final MavenProject pom;
 
     private List<char[]> acceptedCategories;
+
+    private DependencyNode dependencyNode;
 
     public List<char[]> getAcceptedCategories() {
         if (acceptedCategories == null) {
@@ -79,32 +83,22 @@ public class Node implements DependencyNode {
     }
 
     public Node(Node node) {
+        this.dependencyNode = node.dependencyNode;
         this.id = node.id;
         this.graph = node.graph;
         this.artifact = node.artifact;
         this.edgesIn.addAll(node.edgesIn);
         this.edgesOut.addAll(node.edgesOut);
         this.pom = node.pom;
-        this.dependencyNode = node.dependencyNode;
     }
 
-    protected Node(Graph graph, Artifact artifact, MavenProject pom) {
+    protected Node(Graph graph, Artifact artifact, MavenProject pom,
+            DependencyNode dependencyNode) {
+        this.dependencyNode = dependencyNode;
         this.id = genNodeId(artifact);
         this.graph = graph;
         this.artifact = artifact;
         this.pom = pom;
-        // TODO NXBT-258 empty dependencyNode ok?
-        this.dependencyNode = new DefaultDependencyNode(new Dependency(
-                new DefaultArtifact(artifact.getGroupId(),
-                        artifact.getArtifactId(),
-                        // artifact.getClassifier(), "pom",
-                        artifact.getClassifier(), artifact.getType(),
-                        artifact.getVersion()), artifact.getScope()));
-        // try {
-        // this.dependencyNode = graph.collectDependencies(pom);
-        // } catch (DependencyCollectionException e) {
-        // throw new BuildException(e);
-        // }
     }
 
     protected static final int UNKNOWN = 0;
@@ -117,42 +111,25 @@ public class Node implements DependencyNode {
 
     protected int state = UNKNOWN;
 
-    /**
-     * Default format with GAV: group:artifact:version:type:classifier
-     *
-     * @since 1.10.2
-     */
-    public static final int FORMAT_GAV = 0;
-
-    /**
-     * Key-value format: FILENAME=GAV
-     *
-     * @since 1.10.2
-     */
-    public static final int FORMAT_KV_F_GAV = 1;
-
     public Artifact getArtifact() {
-        return artifact;
+        return aetherToMavenArtifact(
+                getDependency().getArtifact(),
+                getDependency().getScope(),
+                AntBuildMojo.getInstance().getArtifactHandlerManager().getArtifactHandler(
+                        getDependency().getArtifact().getExtension()));
     }
 
     public File getFile() {
-        if (!artifact.isResolved()) {
-            try {
-                graph.resolve(artifact);
-            } catch (ArtifactNotFoundException e) {
-                AntBuildMojo.getInstance().getLog().error(e);
-                return null;
-            }
-        }
-        File file = artifact.getFile();
+        File file = getDependency().getArtifact().getFile();
         if (file != null) {
             // TODO NXBT-258: getName or getAbsolutePath?!
-            graph.file2artifacts.put(file.getName(), artifact);
+            graph.file2artifacts.put(file.getName(), getArtifact());
         }
         return file;
     }
 
     public File getFile(String classifier) {
+        Artifact artifact = getArtifact();
         Artifact ca = AntBuildMojo.getInstance().getArtifactFactory().createArtifactWithClassifier(
                 artifact.getGroupId(), artifact.getArtifactId(),
                 artifact.getVersion(), artifact.getType(), classifier);
@@ -170,6 +147,7 @@ public class Node implements DependencyNode {
         }
     }
 
+    @Deprecated
     public boolean isRoot() {
         return edgesIn.isEmpty();
     }
@@ -178,18 +156,22 @@ public class Node implements DependencyNode {
         return id;
     }
 
+    @Deprecated
     public Collection<Edge> getEdgesOut() {
         return edgesOut;
     }
 
+    @Deprecated
     public Collection<Edge> getEdgesIn() {
         return edgesIn;
     }
 
+    @Deprecated
     protected void addEdgeIn(Edge edge) {
         edgesIn.add(edge);
     }
 
+    @Deprecated
     protected void addEdgeOut(Edge edge) {
         edgesOut.add(edge);
     }
@@ -202,6 +184,7 @@ public class Node implements DependencyNode {
         return pom;
     }
 
+    @Deprecated
     public List<Node> getTrail() {
         if (edgesIn.isEmpty()) {
             ArrayList<Node> result = new ArrayList<>();
@@ -214,6 +197,7 @@ public class Node implements DependencyNode {
         return path;
     }
 
+    @Deprecated
     public void collectNodes(Collection<Node> nodes, Filter filter) {
         for (Edge edge : edgesOut) {
             if (filter.accept(edge)) {
@@ -222,6 +206,7 @@ public class Node implements DependencyNode {
         }
     }
 
+    @Deprecated
     public void collectNodes(Collection<Node> nodes) {
         for (Edge edge : edgesOut) {
             nodes.add(edge.out);
@@ -246,7 +231,7 @@ public class Node implements DependencyNode {
 
     @Override
     public String toString() {
-        return artifact.toString();
+        return getArtifact().toString();
     }
 
     /**
@@ -269,43 +254,27 @@ public class Node implements DependencyNode {
         return false;
     }
 
+    /**
+     * @deprecated
+     */
+    @Deprecated
     private void expand(Filter filter, int depth) {
         graph.resolveDependencies(this, filter, depth);
     }
 
-    /**
-     * @param format output format
-     * @return String representation depending on format
-     * @see #FORMAT_GAV
-     * @see #FORMAT_KV_F_GAV
-     * @since 1.10.2
-     */
-    public String toString(int format) {
-        switch (format) {
-        case FORMAT_GAV:
-            return toString();
-
-        case FORMAT_KV_F_GAV:
-            String toString;
-            try {
-                if (artifact.getFile() == null) {
-                    graph.resolve(artifact);
-                }
-                toString = artifact.getFile().getName();
-            } catch (ArtifactNotFoundException e) {
-                toString = "ArtifactNotFound";
-            }
-            toString += "=" + id;
-            return toString;
-
-        default:
-            return "Unknown format: " + format + "!";
-        }
+    public static Artifact aetherToMavenArtifact(
+            org.sonatype.aether.artifact.Artifact aetherArtifact, String scope,
+            ArtifactHandler artifactHandler) {
+        org.apache.maven.artifact.DefaultArtifact mavenArtifact = new org.apache.maven.artifact.DefaultArtifact(
+                aetherArtifact.getGroupId(), aetherArtifact.getArtifactId(),
+                aetherArtifact.getVersion(), scope,
+                aetherArtifact.getExtension(), aetherArtifact.getClassifier(),
+                artifactHandler);
+        mavenArtifact.setFile(aetherArtifact.getFile());
+        // TODO NXBT-258 is already resolved?
+        mavenArtifact.setResolved(true);
+        return mavenArtifact;
     }
-
-    // TODO NXBT-258
-
-    protected DependencyNode dependencyNode;
 
     @Override
     public List<DependencyNode> getChildren() {
@@ -320,6 +289,7 @@ public class Node implements DependencyNode {
     @Override
     public void setArtifact(org.sonatype.aether.artifact.Artifact artifact) {
         dependencyNode.setArtifact(artifact);
+
     }
 
     @Override

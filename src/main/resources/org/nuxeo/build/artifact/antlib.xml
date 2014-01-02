@@ -10,6 +10,6 @@
 <!--   <typedef name="foreach" classname="org.nuxeo.build.ant.artifact.ArtifactForeach" /> -->
 <!--   <typedef name="resolveFile" classname="org.nuxeo.build.ant.artifact.ResolveFile" /> -->
 <!--   <typedef name="dependencies" classname="org.nuxeo.build.ant.artifact.ArtifactDependencies" /> -->
-<!--   <typedef name="print" classname="org.nuxeo.build.ant.artifact.PrintGraphTask" /> -->
+  <typedef name="print" classname="org.nuxeo.build.ant.artifact.PrintGraphTask" />
 <!--   <typedef name="resolveFiles" classname="org.nuxeo.build.ant.artifact.ResolveFiles" /> -->
 </antlib>

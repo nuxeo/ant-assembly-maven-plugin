@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.factory.ArtifactFactory;
+import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -50,6 +51,7 @@ import org.apache.tools.ant.types.Path;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.StringUtils;
 import org.nuxeo.build.ant.AntClient;
+import org.nuxeo.build.ant.artifact.Expand;
 import org.nuxeo.build.ant.profile.AntProfileManager;
 import org.nuxeo.build.maven.filter.TrueFilter;
 import org.nuxeo.build.maven.graph.Graph;
@@ -102,7 +104,7 @@ public class AntBuildMojo extends AbstractMojo {
      * How many levels the graph must be expanded before running Ant.
      */
     @Parameter(defaultValue = "0")
-    protected int expand;
+    protected String expand;
 
     @Component
     protected RepositorySystem system;
@@ -124,6 +126,13 @@ public class AntBuildMojo extends AbstractMojo {
 
     @Component
     protected MavenProjectHelper projectHelper;
+
+    @Component
+    protected ArtifactHandlerManager artifactHandlerManager;
+
+    public ArtifactHandlerManager getArtifactHandlerManager() {
+        return artifactHandlerManager;
+    }
 
     /**
      * Prefix for property names.
@@ -271,13 +280,7 @@ public class AntBuildMojo extends AbstractMojo {
             targets = new String[] { target };
         }
         for (File file : buildFiles) {
-            // newGraph();
-            // if (expand > 0) {
-            // for (Node rootNode : graph.getRoots()) {
-            // graph.resolveDependencyTree(rootNode, new TrueFilter(),
-            // expand);
-            // }
-            // }
+            newGraph();
             try {
                 if (targets != null && targets.length > 0) {
                     ant.run(file, Arrays.asList(targets));
@@ -302,18 +305,43 @@ public class AntBuildMojo extends AbstractMojo {
     }
 
     /**
+     * @param project2
      * @since 1.10.2
      */
     public Graph newGraph() {
+        return newGraph(project);
+    }
+
+    /**
+     * @since 2.0
+     */
+    public Graph newGraph(MavenProject pom) {
         graph = new Graph();
-        graph.addRootNode(project);
-        if (expand > 0) {
-            Collection<Node> nodes;
-            nodes = graph.getRoots();
+        graph.addRootNode(pom);
+        expandGraph();
+        return graph;
+    }
+
+    protected void expandGraph() {
+        int depth = Expand.readExpand(expand);
+        if (depth > 0) {
+            Collection<Node> nodes = graph.getRoots();
             for (Node node : nodes) {
-                graph.resolveDependencies(node, new TrueFilter(), expand);
+                graph.resolveDependencies(node, new TrueFilter(), depth);
             }
         }
+    }
+
+    /**
+     * @param key artifact GAV
+     * @return a {@link Graph} which root is artifact resolved from {@code key}
+     *
+     * @since 2.0
+     */
+    public Graph newGraph(String key) {
+        graph = new Graph();
+        graph.addRootNode(key);
+        expandGraph();
         return graph;
     }
 

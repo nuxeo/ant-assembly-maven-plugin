@@ -126,7 +126,9 @@ public class ArtifactDescriptor {
     /**
      * @return ArtifactFactory().createDependencyArtifact()
      * @since 1.10.2
+     * @Deprecated
      */
+    @Deprecated
     public Artifact getArtifact() {
         // Resolve version if not provided
         if (version == null) {
@@ -149,7 +151,9 @@ public class ArtifactDescriptor {
      *
      * @return ArtifactFactory().createBuildArtifact()
      * @since 1.10.2
+     * @Deprecated
      */
+    @Deprecated
     public Artifact getBuildArtifact() {
         return AntBuildMojo.getInstance().getArtifactFactory().createBuildArtifact(
                 groupId, artifactId, version, type);

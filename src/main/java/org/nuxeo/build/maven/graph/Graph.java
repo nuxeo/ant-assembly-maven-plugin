@@ -20,14 +20,11 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
-import java.util.Stack;
 import java.util.TreeMap;
 
 import org.apache.maven.artifact.Artifact;
@@ -39,7 +36,6 @@ import org.apache.maven.artifact.resolver.DefaultArtifactCollector;
 import org.apache.maven.artifact.resolver.ResolutionListener;
 import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.versioning.OverConstrainedVersionException;
-import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.tools.ant.BuildException;
@@ -48,13 +44,18 @@ import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.filter.Filter;
 import org.nuxeo.build.maven.filter.VersionManagement;
 import org.sonatype.aether.collection.CollectRequest;
+import org.sonatype.aether.collection.CollectResult;
 import org.sonatype.aether.collection.DependencyCollectionException;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.resolution.DependencyRequest;
 import org.sonatype.aether.resolution.DependencyResolutionException;
+import org.sonatype.aether.resolution.DependencyResult;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
+import org.sonatype.aether.util.graph.DefaultDependencyNode;
 import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -156,13 +157,13 @@ public class Graph {
         return addRootNode(pom, pom.getArtifact());
     }
 
-    private Node addRootNode(String key) {
+    public Node addRootNode(String key) {
         ArtifactDescriptor ad = new ArtifactDescriptor(key);
-        Artifact artifact = ad.getBuildArtifact();
+        Artifact artifact = ad.getArtifact();
         return addRootNode(artifact);
     }
 
-    private Node addRootNode(Artifact artifact) {
+    public Node addRootNode(Artifact artifact) {
         MavenProject pom = load(artifact);
         return addRootNode(pom, artifact);
     }
@@ -173,32 +174,22 @@ public class Graph {
     public Node addRootNode(MavenProject pom, Artifact artifact) {
         Node node = nodes.get(Node.genNodeId(artifact));
         if (node == null) {
-            node = new Node(this, artifact, pom);
+            String scope = artifact.getScope() != null ? artifact.getScope()
+                    : "compile";
+            DefaultDependencyNode newNode = new DefaultDependencyNode(
+                    new Dependency(new DefaultArtifact(artifact.getGroupId(),
+                            artifact.getArtifactId(), artifact.getClassifier(),
+                            artifact.getType(), artifact.getVersion()), scope));
+            CollectResult collectResult = collectDependencies(newNode);
+            DependencyNode root = collectResult.getRoot();
+            node = new Node(this, artifact, pom, root);
             nodes.put(node.getId(), node);
             nodesByArtifact.put(artifact, node);
             roots.add(node);
+            AntBuildMojo.getInstance().getLog().debug(
+                    "Added root node: " + node);
         }
         return node;
-    }
-
-    private DependencyNode collectDependencies(MavenProject pom)
-            throws DependencyCollectionException {
-        // Convert org.apache.maven.artifact.Artifact to
-        // org.sonatype.aether.artifact.Artifact
-        Artifact artifact = pom.getArtifact();
-        org.sonatype.aether.artifact.Artifact aetherArtifact = new DefaultArtifact(
-                artifact.getGroupId(), artifact.getArtifactId(),
-                // artifact.getClassifier(), "pom",
-                artifact.getClassifier(), artifact.getType(),
-                artifact.getVersion());
-        CollectRequest collectRequest = new CollectRequest();
-        // collectRequest.setRoot(new Dependency(aetherArtifact, "compile"));
-        collectRequest.setRoot(new Dependency(aetherArtifact,
-                artifact.getScope()));
-        collectRequest.setRepositories(mojo.getRemoteRepositories());
-        DependencyNode root = mojo.getSystem().collectDependencies(
-                mojo.getRepositorySystemSession(), collectRequest).getRoot();
-        return root;
     }
 
     private Node lookup(String id) {
@@ -268,377 +259,109 @@ public class Graph {
 
     public final IdentityHashMap<Artifact, Node> nodesByArtifact = new IdentityHashMap<>();
 
-    protected class NodesInjector implements
-            org.apache.maven.artifact.resolver.ResolutionListener {
-
-        protected final HashSet<Node> filteredNodes = new HashSet<>();
-
-        protected final Stack<Node> parentNodes = new Stack<>();
-
-        protected final Node rootNode;
-
-        protected final Filter filter;
-
-        protected final int maxDepth;
-
-        protected Node currentNode;
-
-        protected NodesInjector(Node node, Filter filter, int maxDepth) {
-            this.currentNode = node;
-            this.rootNode = node;
-            this.filter = filter;
-            this.maxDepth = maxDepth;
-            this.rootNode.state = Node.INCLUDED;
+    // TODO NXBT-258
+    public void test(DependencyNode node) {
+        // Convert org.apache.maven.artifact.Artifact to
+        // org.sonatype.aether.artifact.Artifact
+        // Artifact artifact = pom.getArtifact();
+        // org.sonatype.aether.artifact.Artifact aetherArtifact = new
+        // DefaultArtifact(
+        // artifact.getGroupId(), artifact.getArtifactId(),
+        // artifact.getClassifier(), artifact.getType(),
+        // artifact.getVersion());
+        // CollectRequest collectRequest = new CollectRequest();
+        // collectRequest.setRoot(new Dependency(aetherArtifact,
+        // artifact.getScope()));
+        CollectRequest collectRequest = new CollectRequest(
+                node.getDependency(), mojo.getRemoteRepositories());
+        DependencyNode root;
+        try {
+            CollectResult collectResult = mojo.getSystem().collectDependencies(
+                    mojo.getRepositorySystemSession(), collectRequest);
+            AntBuildMojo.getInstance().getLog().debug(
+                    "collectResult: " + collectResult);
+            root = collectResult.getRoot();
+            AntBuildMojo.getInstance().getLog().debug("Root: " + root);
+            AntBuildMojo.getInstance().getLog().debug(
+                    "root.getChildren(): "
+                            + Arrays.toString(root.getChildren().toArray()));
+            PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
+            node.accept(nlg);
+            AntBuildMojo.getInstance().getLog().debug(
+                    "nlg.getDependencies(true): "
+                            + Arrays.toString(nlg.getDependencies(true).toArray()));
+            AntBuildMojo.getInstance().getLog().debug(
+                    "node.getChildren(): "
+                            + Arrays.toString(node.getChildren().toArray()));
+            DependencyRequest dependencyRequest = new DependencyRequest(root,
+                    null);
+            DependencyResult dependencyResult = mojo.getSystem().resolveDependencies(
+                    mojo.getRepositorySystemSession(), dependencyRequest);
+            AntBuildMojo.getInstance().getLog().debug(
+                    "dependencyResult: " + dependencyResult);
+        } catch (DependencyCollectionException | DependencyResolutionException e) {
+            throw new BuildException(e);
         }
+        PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
+        root.accept(nlg);
+        AntBuildMojo.getInstance().getLog().debug(
+                "nlg.getDependencies(true): "
+                        + Arrays.toString(nlg.getDependencies(true).toArray()));
+        AntBuildMojo.getInstance().getLog().debug(
+                "root.getChildren(): "
+                        + Arrays.toString(root.getChildren().toArray()));
+    }
 
-        @Override
-        public void testArtifact(Artifact node) {
-            debug("testArtifact: artifact=" + node);
-        }
-
-        @Override
-        public void startProcessChildren(Artifact artifact) {
-            debug("startProcessChildren: artifact=" + artifact);
-
-            if (!currentNode.getArtifact().equals(artifact)) {
-                throw new IllegalStateException("Artifact was expected to be "
-                        + currentNode.getArtifact() + " but was " + artifact);
-            }
-
-            parentNodes.push(currentNode);
-        }
-
-        @Override
-        public void endProcessChildren(Artifact artifact) {
-            Node node = parentNodes.pop();
-
-            debug("endProcessChildren: artifact=" + artifact);
-
-            if (node == null) {
-                throw new IllegalStateException(
-                        "Parent dependency node was null");
-            }
-
-            if (!node.getArtifact().equals(artifact)) {
-                throw new IllegalStateException(
-                        "Parent dependency node artifact was expected to be "
-                                + node.getArtifact() + " but was " + artifact);
-            }
-        }
-
-        @Override
-        public void includeArtifact(Artifact artifact) {
-            debug("includeArtifact: artifact=" + artifact);
-
-            Node node = nodesByArtifact.get(artifact);
-
-            if (node != null) {
-                debug("already included, returning : artifact=" + artifact);
-                return;
-            }
-
-            if (!isCurrentNodeIncluded()) {
-                debug("not included, returning : artifact=" + currentNode);
-                return;
-            }
-
-            addNode(artifact);
-
-        }
-
-        @Override
-        public void omitForNearer(Artifact omitted, Artifact kept) {
-            debug("omitForNearer: omitted=" + omitted + "( "
-                    + System.identityHashCode(omitted) + ") kept=" + kept + "("
-                    + System.identityHashCode(kept) + ")");
-
-            if (!omitted.getDependencyConflictId().equals(
-                    kept.getDependencyConflictId())) {
-                throw new IllegalArgumentException(
-                        "Omitted artifact dependency conflict id "
-                                + omitted.getDependencyConflictId()
-                                + " differs from kept artifact dependency conflict id "
-                                + kept.getDependencyConflictId());
-            }
-
-            if (!isCurrentNodeIncluded()) {
-                debug("not included, returning : artifact=" + currentNode);
-                return;
-            }
-
-            // Node omittedNode = nodesByArtifact.get(omitted);
-            //
-            // if (omittedNode != null) {
-            // removeNode(omitted);
-            // validateDependencyTree();
-            // omittedNode.state = Node.OMITTED;
-            // }
-
-            Node keptNode = nodesByArtifact.get(kept);
-
-            if (keptNode == null) {
-                keptNode = addNode(kept);
-            } else {
-                addEdges(keptNode);
-                currentNode = keptNode;
-            }
-
-        }
-
-        @Override
-        public void updateScope(Artifact artifact, String scope) {
-            debug("updateScope: artifact=" + artifact + ", scope=" + scope);
-        }
-
-        @Deprecated
-        @Override
-        public void manageArtifact(Artifact artifact, Artifact replacement) {
-            debug("manageArtifact: artifact=" + artifact + ", replacement="
-                    + replacement);
-        }
-
-        @Override
-        public void omitForCycle(Artifact artifact) {
-            warn("omitForCycle: artifact=" + artifact);
-        }
-
-        @Override
-        public void updateScopeCurrentPom(Artifact artifact, String ignoredScope) {
-            debug("updateScopeCurrentPom: artifact=" + artifact
-                    + ", scopeIgnored=" + ignoredScope);
-        }
-
-        @Override
-        public void selectVersionFromRange(Artifact artifact) {
-            warn("selectVersionFromRange: artifact=" + artifact);
-        }
-
-        @Override
-        public void restrictRange(Artifact artifact, Artifact replacement,
-                VersionRange newRange) {
-            warn("restrictRange: artifact=" + artifact + ", replacement="
-                    + replacement + ", versionRange=" + newRange);
-        }
-
-        /**
-         * Writes the specified message to the log at debug level with
-         * indentation for the current node's depth.
-         *
-         * @param message the message to write to the log
-         */
-        protected void debug(String message) {
-            if (!mojo.getLog().isDebugEnabled()) {
-                return;
-            }
-
-            int depth = parentNodes.size();
-            StringBuffer buffer = new StringBuffer();
-            for (int i = 0; i < depth; i++) {
-                buffer.append("  ");
-            }
-            buffer.append(message);
-            mojo.getLog().debug(buffer.toString());
-        }
-
-        protected void warn(String message) {
-            int depth = parentNodes.size();
-            StringBuffer buffer = new StringBuffer();
-            for (int i = 0; i < depth; i++) {
-                buffer.append("  ");
-            }
-            buffer.append(message);
-            mojo.getLog().warn(buffer.toString());
-        }
-
-        protected boolean isCurrentNodeIncluded() {
-            for (Iterator<Node> iterator = parentNodes.iterator(); iterator.hasNext();) {
-                Node node = iterator.next();
-                if (node.state != Node.INCLUDED && node.state != Node.FILTERED) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        protected Node addNode(Artifact artifact) {
-            Node node = createNode(artifact);
-            Node previousNode = nodesByArtifact.put(artifact, node);
-            nodes.put(node.id, node);
-
-            if (previousNode != null) {
-                throw new IllegalStateException(
-                        "Duplicate node registered for artifact: "
-                                + node.getArtifact());
-            }
-            currentNode = node;
-
-            debug("indexed artifact=" + artifact + ",identity="
-                    + System.identityHashCode(artifact));
-            return node;
-        }
-
-        protected void removeNode(Artifact artifact) {
-            Node node = nodesByArtifact.remove(artifact);
-            if (node == null) {
-                warn("removing not indexed "
-                        + System.identityHashCode(artifact) + " : artifact="
-                        + artifact);
-                node = nodes.get(Node.genNodeId(artifact));
-            }
-            nodes.remove(node.id);
-            if (filteredNodes.remove(node)) {
-                debug("Reset filtering : " + node);
-            }
-            for (Edge e : node.edgesOut) {
-                e.out.edgesIn.remove(e);
-            }
-            for (Edge e : node.edgesIn) {
-                e.in.edgesOut.remove(e);
-            }
-            if (!artifact.equals(node.getArtifact())) {
-                throw new IllegalStateException(
-                        "Removed dependency node artifact was expected to be "
-                                + artifact + " but was " + node.getArtifact());
-            }
-
-            debug("unindexed artifact=" + artifact + ",identity= "
-                    + System.identityHashCode(artifact));
-        }
-
-        protected Node createNode(Artifact artifact) {
-            MavenProject pom = load(artifact);
-            Node node = new Node(Graph.this, artifact, pom);
-            addEdges(node);
-            return node;
-        }
-
-        protected void addEdges(Node out) {
-            if (parentNodes.isEmpty()) {
-                out.state = Node.INCLUDED;
-                return;
-            }
-
-            Node in = parentNodes.peek();
-            Edge edge = new Edge(in, out);
-            switch (out.state) {
-            case Node.UNKNOWN: // node injection
-                if (!accept(edge)) {
-                    filteredNodes.add(out);
-                    out.state = Node.FILTERED;
-                    return;
-                }
-                out.state = Node.INCLUDED;
-                break;
-            case Node.FILTERED:
-                if (accept(edge)) {
-                    filteredNodes.remove(out);
-                    warn("unfiltering : artifact=" + out.artifact);
-                    out.state = Node.INCLUDED;
-                }
-                break;
-            case Node.INCLUDED: // edges injection
-                break;
-            default:
-                throw new IllegalStateException("Cannot add edge : artifact="
-                        + out.artifact);
-            }
-            out.edgesIn.add(edge);
-            in.edgesOut.add(edge);
-        }
-
-        protected boolean accept(Edge edge) {
-            if (edge.in.state == Node.FILTERED) {
-                debug("filtering edge (inherited from parent) : artifact="
-                        + edge.out);
-                return false;
-            }
-            if (parentNodes.size() > maxDepth) {
-                debug("filtering edge (max depth) : artifact=" + edge.out);
-                return false;
-            }
-            if (!filter.accept(edge)) {
-                debug("filtering edge (filter) : artifact=" + edge.out.artifact);
-                return false;
-            }
-            return true;
-        }
-
-        protected void removeFiltered() {
-            Iterator<Node> it = filteredNodes.iterator();
-            while (it.hasNext()) {
-                Node n = it.next();
-                it.remove();
-                removeNode(n.artifact);
-            }
+    public CollectResult collectDependencies(DependencyNode node) {
+        AntBuildMojo.getInstance().getLog().debug(
+                String.format("Collecting " + node));
+        CollectRequest collectRequest = new CollectRequest(
+                node.getDependency(), mojo.getRemoteRepositories());
+        try {
+            CollectResult result = mojo.getSystem().collectDependencies(
+                    mojo.getRepositorySystemSession(), collectRequest);
+            node = result.getRoot();
+            AntBuildMojo.getInstance().getLog().debug(
+                    "Collect result: " + result);
+            AntBuildMojo.getInstance().getLog().debug(
+                    "Collect exceptions: " + result.getExceptions());
+            AntBuildMojo.getInstance().getLog().debug(
+                    "Direct dependencies: "
+                            + String.valueOf(node.getChildren()));
+            return result;
+        } catch (DependencyCollectionException e) {
+            throw new BuildException("Cannot collect dependency tree for "
+                    + node, e);
         }
     }
 
-    protected class UnreferencedNodesValidator extends AbstractGraphVisitor {
-
-        protected HashSet<Node> unreferencedNodes = new HashSet<>();
-
-        @Override
-        public boolean visitNode(Node node) {
-            if (nodes.get(node.id) == null && !roots.contains(node)) {
-                unreferencedNodes.add(node);
-                // re-inject unreferenced node
-                nodes.put(node.id, node);
-            }
-            return true;
-        }
-
-        @Override
-        public boolean visitEdge(Edge edge) {
-            return true;
-        }
-    }
-
-    protected void validateDependencyTree(Graph graph) {
-        UnreferencedNodesValidator validator = new UnreferencedNodesValidator();
-        validator.process(graph);
-        if (validator.unreferencedNodes.size() > 0) {
-            mojo.getLog().warn(
-                    "Fixed unreferenced nodes : " + validator.unreferencedNodes);
-        }
-    }
-
-    public void resolveDependencies(Node node, Filter filter, int depth) {
+    public DependencyResult resolveDependencies(DependencyNode node,
+            Filter filter, int depth) {
+        AntBuildMojo.getInstance().getLog().debug(
+                String.format("Resolving %s with filter %s and depth %d", node,
+                        filter, depth));
         DependencyRequest dependencyRequest = new DependencyRequest(node,
                 filter);
         try {
-            mojo.getSystem().resolveDependencies(
+            DependencyResult result = mojo.getSystem().resolveDependencies(
                     mojo.getRepositorySystemSession(), dependencyRequest);
+            AntBuildMojo.getInstance().getLog().debug(
+                    "Dependency result: " + result);
+            AntBuildMojo.getInstance().getLog().debug(
+                    "Dependency exceptions: " + result.getCollectExceptions());
+            // PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
+            // node.accept(nlg);
+            // AntBuildMojo.getInstance().getLog().debug(
+            // "All dependencies: "
+            // + Arrays.toString(nlg.getDependencies(true).toArray()));
+            // AntBuildMojo.getInstance().getLog().debug(
+            // "Direct dependencies: "
+            // + String.valueOf(node.getChildren()));
+            return result;
         } catch (DependencyResolutionException e) {
             throw new BuildException("Cannot resolve dependency tree for "
                     + node, e);
         }
-        node.accept(new PreorderNodeListGenerator());
-    }
-
-    /**
-     * TODO NXBT-258 (2)
-     */
-    @Deprecated
-    public void resolveDependencyTree(Node node, Filter filter, int depth) {
-        mojo.getLog().info("Resolving dependencies for " + node);
-        final NodesInjector injector = new NodesInjector(node, filter, depth);
-        try {
-            resolveDependencyTree(node.artifact, new ArtifactFilter() {
-
-                @Override
-                public boolean include(Artifact artifact) {
-                    return false;
-                }
-            }, injector);
-        } catch (ProjectBuildingException cause) {
-            throw new BuildException("Cannot resolve dependency tree for "
-                    + node, cause);
-        }
-        validateDependencyTree(node.graph);
-        // remove filtered artifacts
-        mojo.getLog().info("Filtering dependency tree");
-        injector.removeFiltered();
-        validateDependencyTree(node.graph);
     }
 
     /**
@@ -689,14 +412,12 @@ public class Graph {
             return null;
         }
         try {
-            return mojo.getMavenProjectBuilder().buildFromRepository(
-                    // this create another Artifact instance whose type is 'pom'
-                    mojo.getArtifactFactory().createProjectArtifact(
-                            artifact.getGroupId(), artifact.getArtifactId(),
-                            artifact.getVersion()),
+            resolve(artifact);
+            // TODO NXBT-258 use {@link ProjectBuilder} instead
+            return mojo.getMavenProjectBuilder().buildFromRepository(artifact,
                     mojo.getRemoteArtifactRepositories(),
                     mojo.getLocalRepository());
-        } catch (ProjectBuildingException e) {
+        } catch (ProjectBuildingException | ArtifactNotFoundException e) {
             mojo.getLog().error("Error loading POM of " + artifact, e);
             return null;
         }

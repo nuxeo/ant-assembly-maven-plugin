@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<project name="test2"
+         default="all-tests"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <target name="all-tests" description="Test expand from Mojo">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <mkdir dir="${outdir}" />
+    <artifact:print output="${outdir}/dependency-tree.log" />
+    <artifact:print output="${outdir}/artifacts.properties" mode="sdk" />
+    <fail message="Dependency tree error">
+      <condition>
+        <not>
+          <and>
+            <available file="${outdir}/artifacts.properties" />
+            <available file="${outdir}/dependency-tree.log" />
+            <filesmatch file1="${outdir}/artifacts.properties"
+                        file2="artifacts.expected" />
+            <filesmatch file1="${outdir}/dependency-tree.log"
+                        file2="dependency-tree.expected" />
+          </and>
+        </not>
+      </condition>
+    </fail>
+  </target>
+
+</project>

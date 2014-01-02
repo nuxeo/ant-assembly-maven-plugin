@@ -61,7 +61,7 @@ public class ExpandTask extends Task {
 
     @Override
     public void execute() throws BuildException {
-        AntBuildMojo.getInstance().newGraph();
+        // execute(AntBuildMojo.getInstance().newGraph());
         execute(AntBuildMojo.getInstance().getGraph());
     }
 
