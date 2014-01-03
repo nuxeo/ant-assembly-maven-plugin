@@ -4,7 +4,7 @@
 <!--   <typedef name="file" classname="org.nuxeo.build.ant.artifact.ArtifactFile" /> -->
 <!--   <taskdef name="graph" classname="org.nuxeo.build.ant.artifact.GraphTask" /> -->
   <taskdef name="expand" classname="org.nuxeo.build.ant.artifact.ExpandTask" />
-<!--   <taskdef name="nuxeo-expand" classname="org.nuxeo.build.ant.artifact.NuxeoExpandTask" /> -->
+  <taskdef name="nuxeo-expand" classname="org.nuxeo.build.ant.artifact.NuxeoExpandTask" />
 <!--   <taskdef name="export" classname="org.nuxeo.build.ant.artifact.GraphExportTask" /> -->
 <!--   <typedef name="attach" classname="org.nuxeo.build.ant.artifact.AttachArtifactTask" /> -->
 <!--   <typedef name="foreach" classname="org.nuxeo.build.ant.artifact.ArtifactForeach" /> -->
