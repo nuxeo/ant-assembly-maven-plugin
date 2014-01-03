@@ -26,6 +26,7 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.graph.Node;
@@ -80,6 +81,7 @@ public class PrintGraphTask extends Task {
             for (Node node : roots) {
                 // node.accept(nlg);
                 AntBuildMojo.getInstance().getLog().debug("Visiting " + node);
+                log("Visiting " + node, Project.MSG_DEBUG);
                 node.accept(pdv);
             }
             AntBuildMojo.getInstance().getLog().debug(

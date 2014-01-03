@@ -135,10 +135,9 @@ public class Graph {
         }
         if (stopIfNotUnique && size > 1) {
             throw new BuildException(
-                    "Pattern '"
-                            + pattern
-                            + "' cannot be resolved to a unique node. Matching nodes are: "
-                            + map.values());
+                    String.format(
+                            "Pattern '%s' cannot be resolved to a unique node. Matching nodes are: %s",
+                            pattern, map.values()));
         }
         return map.get(map.firstKey());
     }

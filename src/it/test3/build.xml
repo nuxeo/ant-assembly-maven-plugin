@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<project name="test3"
+         default="all-tests"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <target name="all-tests" description="Test assembly">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <artifact:expand depth="all" />
+    <mkdir dir="${outdir}" />
+    <artifact:print output="${outdir}/dependency-tree.log" />
+    <copy todir="${outdir}/bundles" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="org.nuxeo*" scope="!test" type="!pom" />
+        </includes>
+      </artifact:set>
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-test" />
+    </copy>
+    <copy todir="${outdir}/lib" overwrite="true">
+      <artifact:set>
+        <includes>
+          <artifact groupId="!org.nuxeo*" scope="!test" />
+        </includes>
+      </artifact:set>
+      <artifact:resolveFile key="log4j:log4j:1.2.16" />
+    </copy>
+    <!-- BROKEN artifact:dependencies-->
+    <!-- <copy todir="${outdir}/test" overwrite="true"> -->
+    <!--   <artifact:dependencies artifactId="nuxeo-platform-test"> -->
+    <!--     <includes> -->
+    <!--       <artifact scope="test" /> -->
+    <!--     </includes> -->
+    <!--   </artifact:dependencies> -->
+    <!-- </copy> -->
+
+    <nx:zipdiff file1="${outdir}/lib/log4j-1.2.17.jar"
+                file2="${outdir}/lib/log4j-1.2.16.jar"
+                includesfile="${outdir}/includes"
+                excludesfile="${outdir}/excludesfile"
+                ignoreContent="true" />
+    <nx:rmdups dir="${outdir}/lib" />
+
+    <unzip dest="${outdir}/bin">
+      <artifact:resolveFile key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip"
+                            classifier="bin" />
+    </unzip>
+
+    <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+         basedir="${outdir}"
+         includes="**/*.log" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
+                     target="${maven.project.groupId}:${maven.project.artifactId}"
+                     type="zip" />
+
+    <!-- Checks -->
+    <resourcecount property="count.bundles">
+      <fileset dir="${outdir}/bundles">
+        <include name="*.jar" />
+      </fileset>
+    </resourcecount>
+    <resourcecount property="count.libs">
+      <fileset dir="${outdir}/lib">
+        <include name="*.jar" />
+      </fileset>
+    </resourcecount>
+    <fail>
+      <condition>
+        <not>
+          <and>
+            <available file="${outdir}/bundles/nuxeo-common-5.9.1.jar" />
+            <available file="${outdir}/bundles/nuxeo-platform-filemanager-core-5.9.1.jar" />
+            <available file="${outdir}/bundles/nuxeo-platform-test-5.9.1.jar" />
+            <available file="${outdir}/lib/chemistry-opencmis-commons-impl-0.10.0.jar" />
+            <available file="${outdir}/lib/log4j-1.2.17.jar" />
+            <not>
+              <or>
+                <available file="${outdir}/bundles/nuxeo-runtime-test-5.9.1.jar" />
+                <available file="${outdir}/lib/javax.inject-1.jar" />
+                <available file="${outdir}/lib/log4j-1.2.16.jar" />
+                <available file="${outdir}/lib/junit-4.8.1.jar" />
+                <available file="${outdir}/lib/relaxngDatatype-1.0.jar" />
+              </or>
+            </not>
+            <equals arg1="${count.bundles}" arg2="88" />
+            <equals arg1="${count.libs}" arg2="156" />
+            <available file="${outdir}/bin/nuxeoctl" />
+            <available file="${outdir}/includes" />
+            <filesmatch file1="${outdir}/includes" file2="includes.expected" />
+            <!-- BROKEN artifact:dependencies-->
+            <!-- <available file="${outdir}/test/hsqldb-1.8.0.1.jar" /> -->
+            <!-- <available file="${outdir}/test/nuxeo-runtime-scripting-5.9.1.jar" /> -->
+            <!-- <available file="${outdir}/test/nuxeo-runtime-remoting-5.9.1.jar" /> -->
+            <!-- <available file="${outdir}/test/backport-util-concurrent-3.1.jar" /> -->
+            <!-- <equals arg1="${count.test}" arg2="95" /> -->
+          </and>
+        </not>
+      </condition>
+    </fail>
+  </target>
+
+</project>

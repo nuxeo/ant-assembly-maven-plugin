@@ -1,0 +1,7 @@
+org/apache/log4j/helpers/UtilLoggingLevel.class
+org/apache/log4j/rewrite/
+org/apache/log4j/rewrite/MapRewritePolicy.class
+org/apache/log4j/rewrite/PropertyRewritePolicy.class
+org/apache/log4j/rewrite/ReflectionRewritePolicy.class
+org/apache/log4j/rewrite/RewriteAppender.class
+org/apache/log4j/rewrite/RewritePolicy.class

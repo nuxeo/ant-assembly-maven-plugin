@@ -16,14 +16,14 @@
     <mkdir dir="${outdir}" />
     <artifact:print output="${outdir}/artifacts1.properties" mode="sdk" />
     <artifact:print output="${outdir}/dependency-tree1.log" />
-    <fail message="Dependency tree error">
+    <fail>
       <condition>
         <not>
           <and>
             <available file="${outdir}/artifacts1.properties" />
-            <available file="${outdir}/dependency-tree1.log" />
             <filesmatch file1="${outdir}/artifacts1.properties"
                         file2="artifacts1.expected" />
+            <available file="${outdir}/dependency-tree1.log" />
             <filesmatch file1="${outdir}/dependency-tree1.log"
                         file2="dependency-tree1.expected" />
           </and>
@@ -34,20 +34,26 @@
 
   <target name="test2-2" description="Test artifact:nuxeo-expand">
     <property name="outdir" value="${maven.project.build.directory}" />
-    <artifact:nuxeo-expand groupPrefixes="org" />
+    <artifact:nuxeo-expand groupPrefixes="org,junit" includetestscope="true" />
     <mkdir dir="${outdir}" />
     <artifact:print output="${outdir}/artifacts2.properties" mode="sdk" />
+    <artifact:print output="${outdir}/test-artifacts2.properties"
+                    mode="sdk"
+                    scopes="test" />
     <artifact:print output="${outdir}/dependency-tree2.log" />
-    <fail message="Dependency tree error">
+    <fail>
       <condition>
         <not>
           <and>
             <available file="${outdir}/artifacts2.properties" />
-            <available file="${outdir}/dependency-tree2.log" />
             <filesmatch file1="${outdir}/artifacts2.properties"
                         file2="artifacts2.expected" />
+            <available file="${outdir}/dependency-tree2.log" />
             <filesmatch file1="${outdir}/dependency-tree2.log"
                         file2="dependency-tree2.expected" />
+            <available file="${outdir}/test-artifacts2.properties" />
+            <filesmatch file1="${outdir}/test-artifacts2.properties"
+                        file2="test-artifacts2.expected" />
           </and>
         </not>
       </condition>

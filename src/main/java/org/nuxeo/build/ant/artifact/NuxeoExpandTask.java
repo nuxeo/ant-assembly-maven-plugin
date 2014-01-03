@@ -23,7 +23,7 @@ import java.util.StringTokenizer;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.tools.ant.BuildException;
-import org.nuxeo.build.maven.AntBuildMojo;
+import org.apache.tools.ant.Project;
 import org.nuxeo.build.maven.filter.Filter;
 import org.nuxeo.build.maven.filter.GroupIdFilter;
 import org.nuxeo.build.maven.filter.NotFilter;
@@ -91,8 +91,8 @@ public class NuxeoExpandTask extends ExpandTask {
                     return false;
                 }
                 if (edge.scope == null) {
-                    AntBuildMojo.getInstance().getLog().warn(
-                            "Missing scope, set to compile : " + edge);
+                    log("Missing scope, set to compile : " + edge,
+                            Project.MSG_WARN);
                     edge.scope = "compile";
                 }
                 return getIncludedScopes().get(edge.scope);
@@ -110,8 +110,8 @@ public class NuxeoExpandTask extends ExpandTask {
                     return false;
                 }
                 if (node.getDependency().getScope() == null) {
-                    AntBuildMojo.getInstance().getLog().warn(
-                            "Missing scope, set to compile : " + node);
+                    log("Missing scope, set to compile : " + node,
+                            Project.MSG_WARN);
                     node.getDependency().setScope("compile");
                 }
                 return getIncludedScopes().get(node.getDependency().getScope());
