@@ -18,6 +18,8 @@
 
 package org.nuxeo.build.maven.filter;
 
+import org.apache.tools.ant.Project;
+import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 
 /**
@@ -33,9 +35,10 @@ public abstract class AbstractFilter implements Filter {
      */
     protected boolean result(boolean condition, String id) {
         if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-            AntBuildMojo.getInstance().getLog().debug(
+            AntClient.getInstance().log(
                     "Filtering - " + toString()
-                            + (condition ? " accepted " : " refused ") + id);
+                            + (condition ? " accepted " : " refused ") + id,
+                    Project.MSG_DEBUG);
         }
         return condition;
     }

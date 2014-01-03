@@ -28,13 +28,13 @@ import org.apache.commons.io.FileCleaningTracker;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildLogger;
-import org.apache.tools.ant.DefaultLogger;
 import org.apache.tools.ant.DemuxInputStream;
 import org.apache.tools.ant.DemuxOutputStream;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.input.DefaultInputHandler;
 import org.apache.tools.ant.input.InputHandler;
+import org.apache.tools.ant.listener.BigProjectLogger;
 import org.apache.tools.ant.taskdefs.Typedef;
 import org.codehaus.plexus.util.IOUtil;
 
@@ -43,6 +43,8 @@ import org.codehaus.plexus.util.IOUtil;
  *
  */
 public class AntClient {
+
+    private static final ThreadLocal<Project> instance = new ThreadLocal<>();
 
     public final static String MAVEN_CLIENT_REF = "maven.client.ref";
 
@@ -83,6 +85,14 @@ public class AntClient {
         project.addBuildListener(createLogger());
         project.init();
         initTasks();
+        instance.set(project);
+    }
+
+    /**
+     * @since 2.0
+     */
+    public static Project getInstance() {
+        return instance.get();
     }
 
     // xmlns:nx="urn:nuxeo-build"
@@ -94,7 +104,7 @@ public class AntClient {
      * @since 2.0
      */
     protected void initTasks() {
-        mavenLog.debug("Initialize Ant Tasks");
+        project.log("Initialize Ant Tasks", Project.MSG_DEBUG);
         Typedef typedef = new Typedef();
         typedef.setProject(project);
         typedef.setResource("org/nuxeo/build/antlib.xml");
@@ -168,10 +178,37 @@ public class AntClient {
     }
 
     protected BuildLogger createLogger() {
-        BuildLogger logger = new DefaultLogger();
+        BuildLogger logger = new BigProjectLogger() {
+
+            @Override
+            protected void printMessage(String message, PrintStream stream,
+                    int priority) {
+                String prefix;
+                switch (priority) {
+                case Project.MSG_ERR:
+                    prefix = "[ERROR] ";
+                    break;
+                case Project.MSG_WARN:
+                    prefix = "[WARNING] ";
+                    break;
+                case Project.MSG_INFO:
+                    prefix = "[INFO] ";
+                    break;
+                case Project.MSG_VERBOSE:
+                    prefix = "[VERBOSE] ";
+                    break;
+                case Project.MSG_DEBUG:
+                    // Fall through
+                default:
+                    prefix = "[DEBUG] ";
+                    break;
+                }
+                super.printMessage(prefix + message, stream, priority);
+            }
+
+        };
         logger.setOutputPrintStream(System.out);
         logger.setErrorPrintStream(System.err);
-        // logger.setEmacsMode(false);
         if (mavenLog == null) {
             logger.setMessageOutputLevel(Project.MSG_INFO);
         } else if (mavenLog.isDebugEnabled()) {
@@ -204,9 +241,5 @@ public class AntClient {
             IOUtil.close(in);
             IOUtil.close(out);
         }
-    }
-
-    protected void setLog(Log log) {
-        this.mavenLog = log;
     }
 }

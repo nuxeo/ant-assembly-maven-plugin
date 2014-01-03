@@ -39,6 +39,8 @@ import org.apache.maven.artifact.versioning.OverConstrainedVersionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.filter.Filter;
@@ -185,8 +187,8 @@ public class Graph {
             nodes.put(node.getId(), node);
             nodesByArtifact.put(artifact, node);
             roots.add(node);
-            AntBuildMojo.getInstance().getLog().debug(
-                    "Added root node: " + node);
+            AntClient.getInstance().log("Added root node: " + node,
+                    Project.MSG_DEBUG);
         }
         return node;
     }
@@ -277,56 +279,63 @@ public class Graph {
         try {
             CollectResult collectResult = mojo.getSystem().collectDependencies(
                     mojo.getRepositorySystemSession(), collectRequest);
-            AntBuildMojo.getInstance().getLog().debug(
-                    "collectResult: " + collectResult);
+            AntClient.getInstance().log("collectResult: " + collectResult,
+                    Project.MSG_DEBUG);
             root = collectResult.getRoot();
-            AntBuildMojo.getInstance().getLog().debug("Root: " + root);
-            AntBuildMojo.getInstance().getLog().debug(
+            AntClient.getInstance().log("Root: " + root, Project.MSG_DEBUG);
+            AntClient.getInstance().log(
                     "root.getChildren(): "
-                            + Arrays.toString(root.getChildren().toArray()));
+                            + Arrays.toString(root.getChildren().toArray()),
+                    Project.MSG_DEBUG);
             PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
             node.accept(nlg);
-            AntBuildMojo.getInstance().getLog().debug(
+            AntClient.getInstance().log(
                     "nlg.getDependencies(true): "
-                            + Arrays.toString(nlg.getDependencies(true).toArray()));
-            AntBuildMojo.getInstance().getLog().debug(
+                            + Arrays.toString(nlg.getDependencies(true).toArray()),
+                    Project.MSG_DEBUG);
+            AntClient.getInstance().log(
                     "node.getChildren(): "
-                            + Arrays.toString(node.getChildren().toArray()));
+                            + Arrays.toString(node.getChildren().toArray()),
+                    Project.MSG_DEBUG);
             DependencyRequest dependencyRequest = new DependencyRequest(root,
                     null);
             DependencyResult dependencyResult = mojo.getSystem().resolveDependencies(
                     mojo.getRepositorySystemSession(), dependencyRequest);
-            AntBuildMojo.getInstance().getLog().debug(
-                    "dependencyResult: " + dependencyResult);
+            AntClient.getInstance().log(
+                    "dependencyResult: " + dependencyResult, Project.MSG_DEBUG);
         } catch (DependencyCollectionException | DependencyResolutionException e) {
             throw new BuildException(e);
         }
         PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
         root.accept(nlg);
-        AntBuildMojo.getInstance().getLog().debug(
+        AntClient.getInstance().log(
                 "nlg.getDependencies(true): "
-                        + Arrays.toString(nlg.getDependencies(true).toArray()));
-        AntBuildMojo.getInstance().getLog().debug(
+                        + Arrays.toString(nlg.getDependencies(true).toArray()),
+                Project.MSG_DEBUG);
+        AntClient.getInstance().log(
                 "root.getChildren(): "
-                        + Arrays.toString(root.getChildren().toArray()));
+                        + Arrays.toString(root.getChildren().toArray()),
+                Project.MSG_DEBUG);
     }
 
     public CollectResult collectDependencies(DependencyNode node) {
-        AntBuildMojo.getInstance().getLog().debug(
-                String.format("Collecting " + node));
+        AntClient.getInstance().log(String.format("Collecting " + node),
+                Project.MSG_DEBUG);
         CollectRequest collectRequest = new CollectRequest(
                 node.getDependency(), mojo.getRemoteRepositories());
         try {
             CollectResult result = mojo.getSystem().collectDependencies(
                     mojo.getRepositorySystemSession(), collectRequest);
             node = result.getRoot();
-            AntBuildMojo.getInstance().getLog().debug(
-                    "Collect result: " + result);
-            AntBuildMojo.getInstance().getLog().debug(
-                    "Collect exceptions: " + result.getExceptions());
-            AntBuildMojo.getInstance().getLog().debug(
+            AntClient.getInstance().log("Collect result: " + result,
+                    Project.MSG_DEBUG);
+            AntClient.getInstance().log(
+                    "Collect exceptions: " + result.getExceptions(),
+                    Project.MSG_DEBUG);
+            AntClient.getInstance().log(
                     "Direct dependencies: "
-                            + String.valueOf(node.getChildren()));
+                            + String.valueOf(node.getChildren()),
+                    Project.MSG_DEBUG);
             return result;
         } catch (DependencyCollectionException e) {
             throw new BuildException("Cannot collect dependency tree for "
@@ -336,24 +345,25 @@ public class Graph {
 
     public DependencyResult resolveDependencies(DependencyNode node,
             Filter filter, int depth) {
-        AntBuildMojo.getInstance().getLog().debug(
+        AntClient.getInstance().log(
                 String.format("Resolving %s with filter %s and depth %d", node,
-                        filter, depth));
+                        filter, depth), Project.MSG_DEBUG);
         DependencyRequest dependencyRequest = new DependencyRequest(node,
                 filter);
         try {
             DependencyResult result = mojo.getSystem().resolveDependencies(
                     mojo.getRepositorySystemSession(), dependencyRequest);
-            AntBuildMojo.getInstance().getLog().debug(
-                    "Dependency result: " + result);
-            AntBuildMojo.getInstance().getLog().debug(
-                    "Dependency exceptions: " + result.getCollectExceptions());
+            AntClient.getInstance().log("Dependency result: " + result,
+                    Project.MSG_DEBUG);
+            AntClient.getInstance().log(
+                    "Dependency exceptions: " + result.getCollectExceptions(),
+                    Project.MSG_DEBUG);
             // PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
             // node.accept(nlg);
-            // AntBuildMojo.getInstance().getLog().debug(
+            // AntClient.getInstance().log(.debug(
             // "All dependencies: "
             // + Arrays.toString(nlg.getDependencies(true).toArray()));
-            // AntBuildMojo.getInstance().getLog().debug(
+            // AntClient.getInstance().log(.debug(
             // "Direct dependencies: "
             // + String.valueOf(node.getChildren()));
             return result;

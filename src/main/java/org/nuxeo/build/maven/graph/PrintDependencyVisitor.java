@@ -23,6 +23,8 @@ import java.io.OutputStream;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
+import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.graph.Dependency;
@@ -102,7 +104,7 @@ public class PrintDependencyVisitor extends AbstractDepthFirstNodeListGenerator 
 
     @Override
     public boolean visitEnter(DependencyNode node) {
-        AntBuildMojo.getInstance().getLog().debug("enter: " + node);
+        AntClient.getInstance().log("enter: " + node, Project.MSG_DEBUG);
         boolean visit = doVisit(node);
         if (modeTree) {
             tabs += TAB_STR;
@@ -116,12 +118,12 @@ public class PrintDependencyVisitor extends AbstractDepthFirstNodeListGenerator 
         }
         Dependency dependency = node.getDependency();
         if (dependency == null) {
-            AntBuildMojo.getInstance().getLog().info(
+            AntClient.getInstance().log(
                     "Ignored node with null dependency: " + node);
             return false;
         }
         if (scopes != null && !scopes.contains(dependency.getScope())) {
-            AntBuildMojo.getInstance().getLog().info(
+            AntClient.getInstance().log(
                     String.format("Ignored node %s which scope is %s", node,
                             dependency.getScope()));
             return false;
@@ -131,8 +133,7 @@ public class PrintDependencyVisitor extends AbstractDepthFirstNodeListGenerator 
             if (ignores == null || !ignores.contains(node)) {
                 print(dependency);
             } else {
-                AntBuildMojo.getInstance().getLog().info(
-                        "Unprinted node: " + node);
+                AntClient.getInstance().log("Unprinted node: " + node);
             }
         } catch (IOException e) {
             throw new BuildException(e);
@@ -142,7 +143,7 @@ public class PrintDependencyVisitor extends AbstractDepthFirstNodeListGenerator 
 
     @Override
     public boolean visitLeave(DependencyNode node) {
-        AntBuildMojo.getInstance().getLog().debug("leave: " + node);
+        AntClient.getInstance().log("leave: " + node, Project.MSG_DEBUG);
         if (modeTree) {
             tabs = tabs.substring(0, tabs.length() - TAB_STR.length());
         }

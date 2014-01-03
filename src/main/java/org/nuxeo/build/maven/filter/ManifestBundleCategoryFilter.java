@@ -29,6 +29,8 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.tools.ant.Project;
+import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Node;
@@ -66,13 +68,15 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
         File file = artifact.getFile();
         if (file == null) {
             if (artifact.isResolved()) {
-                AntBuildMojo.getInstance().getLog().warn(
-                        "Artifact " + artifact + " doesn't contain a file");
+                AntClient.getInstance().log(
+                        "Artifact " + artifact + " doesn't contain a file",
+                        Project.MSG_WARN);
             } else if (!Artifact.SCOPE_PROVIDED.equals(artifact.getScope())
                     && !"pom".equalsIgnoreCase(artifact.getType())) {
                 // ignore provided artifacts; raise a warning for non provided
-                AntBuildMojo.getInstance().getLog().warn(
-                        "Artifact " + artifact + " unresolved");
+                AntClient.getInstance().log(
+                        "Artifact " + artifact + " unresolved",
+                        Project.MSG_WARN);
             }
             return valuesToMatch;
         }
@@ -98,19 +102,21 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
                     }
                 }
             } else {
-                AntBuildMojo.getInstance().getLog().warn(
-                        "Artifact " + artifact + " doesn't contain a manifest");
+                AntClient.getInstance().log(
+                        "Artifact " + artifact + " doesn't contain a manifest",
+                        Project.MSG_WARN);
             }
         } catch (IOException e) {
-            AntBuildMojo.getInstance().getLog().error(
+            AntClient.getInstance().log(
                     "error while inspecting this jar manifest: "
-                            + artifact.getFile(), e);
+                            + artifact.getFile(), e, Project.MSG_ERR);
         } finally {
             if (jarFile != null) {
                 try {
                     jarFile.close();
                 } catch (IOException e) {
-                    AntBuildMojo.getInstance().getLog().error(e.getMessage(), e);
+                    AntClient.getInstance().log(e.getMessage(), e,
+                            Project.MSG_ERR);
                 }
             }
         }
@@ -129,9 +135,9 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
             return false;
         }
         if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-            AntBuildMojo.getInstance().getLog().debug(
+            AntClient.getInstance().log(
                     "Filtering - " + getClass() + " looking at "
-                            + node.getArtifact());
+                            + node.getArtifact(), Project.MSG_DEBUG);
         }
         // quick check of already accepted nodes
         boolean accept = node.isAcceptedCategory(patterns);
@@ -144,8 +150,9 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
         if (!accept && isDependOnCategory && browseChildren) {
             // check if there's an acceptable/accepted child
             if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                AntBuildMojo.getInstance().getLog().debug(
-                        "Filtering - check children of " + node);
+                AntClient.getInstance().log(
+                        "Filtering - check children of " + node,
+                        Project.MSG_DEBUG);
             }
             Collection<Edge> children = node.getEdgesOut();
             // if (children!=null) {
@@ -160,8 +167,9 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
         if (!accept && browseParents) {
             // check if there's an acceptable/accepted parent
             if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                AntBuildMojo.getInstance().getLog().debug(
-                        "Filtering - check parents of " + node);
+                AntClient.getInstance().log(
+                        "Filtering - check parents of " + node,
+                        Project.MSG_DEBUG);
             }
             Collection<Edge> parents = node.getEdgesIn();
             // if (parents!=null) {
@@ -174,9 +182,9 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
             // }
         }
         if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-            AntBuildMojo.getInstance().getLog().debug(
+            AntClient.getInstance().log(
                     "Filtering - result for " + node.getArtifact() + " : "
-                            + accept);
+                            + accept, Project.MSG_DEBUG);
         }
         return accept;
     }
@@ -187,9 +195,10 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
             for (char[] pattern : patterns) {
                 if (matchPattern(valueToMatch, pattern)) {
                     if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                        AntBuildMojo.getInstance().getLog().debug(
+                        AntClient.getInstance().log(
                                 "Filtering - match on "
-                                        + String.valueOf(pattern));
+                                        + String.valueOf(pattern),
+                                Project.MSG_DEBUG);
                     }
                     accept = true;
                     node.setAcceptedCategory(pattern);
@@ -214,8 +223,9 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
     public boolean accept(Artifact artifact) {
         boolean accept = matchPattern(getValuesToMatch(artifact));
         if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-            AntBuildMojo.getInstance().getLog().debug(
-                    (accept ? "Accepts " : "Rejects ") + artifact);
+            AntClient.getInstance().log(
+                    (accept ? "Accepts " : "Rejects ") + artifact,
+                    Project.MSG_DEBUG);
         }
         return accept;
     }
@@ -225,9 +235,10 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
             for (char[] pattern : patterns) {
                 if (matchPattern(valueToMatch, pattern)) {
                     if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                        AntBuildMojo.getInstance().getLog().debug(
+                        AntClient.getInstance().log(
                                 "Filtering - match on "
-                                        + String.valueOf(pattern));
+                                        + String.valueOf(pattern),
+                                Project.MSG_DEBUG);
                     }
                     return true;
                 }

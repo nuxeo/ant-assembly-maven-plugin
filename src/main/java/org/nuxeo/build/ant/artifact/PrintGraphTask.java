@@ -80,13 +80,12 @@ public class PrintGraphTask extends Task {
             // PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
             for (Node node : roots) {
                 // node.accept(nlg);
-                AntBuildMojo.getInstance().getLog().debug("Visiting " + node);
                 log("Visiting " + node, Project.MSG_DEBUG);
                 node.accept(pdv);
             }
-            AntBuildMojo.getInstance().getLog().debug(
-                    "All dependencies: "
-                            + Arrays.toString(pdv.getDependencies(true).toArray()));
+            log("All dependencies: "
+                    + String.valueOf(pdv.getDependencies(true)),
+                    Project.MSG_DEBUG);
         } catch (FileNotFoundException e) {
             throw new BuildException(e);
         } finally {

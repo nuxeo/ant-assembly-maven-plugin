@@ -26,6 +26,8 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.project.MavenProject;
+import org.apache.tools.ant.Project;
+import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.filter.Filter;
 import org.sonatype.aether.graph.Dependency;
@@ -142,7 +144,7 @@ public class Node implements DependencyNode {
             }
             return file;
         } catch (ArtifactNotFoundException e) {
-            AntBuildMojo.getInstance().getLog().error(e);
+            AntClient.getInstance().log(e.getMessage(), e, Project.MSG_ERR);
             return null;
         }
     }

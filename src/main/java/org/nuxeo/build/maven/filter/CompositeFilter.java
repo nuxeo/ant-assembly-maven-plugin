@@ -21,7 +21,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.nuxeo.build.maven.AntBuildMojo;
+import org.apache.tools.ant.Project;
+import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 
 /**
@@ -122,23 +123,29 @@ public abstract class CompositeFilter extends AbstractFilter {
                 addFilter(filterConstructor.newInstance(pattern));
             }
         } catch (SecurityException e) {
-            AntBuildMojo.getInstance().getLog().error(
-                    "Couldn't get constructor for " + filterClass, e);
+            AntClient.getInstance().log(
+                    "Couldn't get constructor for " + filterClass, e,
+                    Project.MSG_ERR);
         } catch (NoSuchMethodException e) {
-            AntBuildMojo.getInstance().getLog().error(
-                    "Couldn't get constructor for " + filterClass, e);
+            AntClient.getInstance().log(
+                    "Couldn't get constructor for " + filterClass, e,
+                    Project.MSG_ERR);
         } catch (IllegalArgumentException e) {
-            AntBuildMojo.getInstance().getLog().error(
-                    "Couldn't call constructor for " + filterClass, e);
+            AntClient.getInstance().log(
+                    "Couldn't call constructor for " + filterClass, e,
+                    Project.MSG_ERR);
         } catch (InstantiationException e) {
-            AntBuildMojo.getInstance().getLog().error(
-                    "Couldn't call constructor for " + filterClass, e);
+            AntClient.getInstance().log(
+                    "Couldn't call constructor for " + filterClass, e,
+                    Project.MSG_ERR);
         } catch (IllegalAccessException e) {
-            AntBuildMojo.getInstance().getLog().error(
-                    "Couldn't call constructor for " + filterClass, e);
+            AntClient.getInstance().log(
+                    "Couldn't call constructor for " + filterClass, e,
+                    Project.MSG_ERR);
         } catch (InvocationTargetException e) {
-            AntBuildMojo.getInstance().getLog().error(
-                    "Couldn't call constructor for " + filterClass, e);
+            AntClient.getInstance().log(
+                    "Couldn't call constructor for " + filterClass, e,
+                    Project.MSG_ERR);
         }
 
     }
