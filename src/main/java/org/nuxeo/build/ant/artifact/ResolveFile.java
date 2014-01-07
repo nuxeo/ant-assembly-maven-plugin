@@ -18,12 +18,17 @@ package org.nuxeo.build.ant.artifact;
 
 import java.io.File;
 
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.resources.FileResource;
+import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
-import org.nuxeo.build.maven.MavenClientFactory;
+import org.sonatype.aether.artifact.Artifact;
+import org.sonatype.aether.resolution.ArtifactDescriptorException;
+import org.sonatype.aether.resolution.ArtifactDescriptorRequest;
+import org.sonatype.aether.resolution.ArtifactDescriptorResult;
+import org.sonatype.aether.resolution.ArtifactRequest;
+import org.sonatype.aether.resolution.ArtifactResolutionException;
+import org.sonatype.aether.resolution.ArtifactResult;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -34,8 +39,6 @@ public class ResolveFile extends FileResource {
     public String key;
 
     public String classifier;
-
-    private Artifact artifact;
 
     public void setKey(String pattern) {
         int p = pattern.lastIndexOf(';');
@@ -52,24 +55,45 @@ public class ResolveFile extends FileResource {
      *             ("groupId:artifactId:version:type:classifier:scope")
      * @param classifier
      */
+    @Deprecated
     public void setClassifier(String classifier) {
         this.classifier = classifier;
     }
 
-    protected File resolveFile() throws ArtifactNotFoundException {
-        if (artifact == null) {
-            ArtifactDescriptor ad = new ArtifactDescriptor(key);
-            // Sync classifier set from key or from setClassifier()
-            if (ad.classifier != null) {
-                classifier = ad.classifier;
-            } else if (classifier != null) {
-                ad.classifier = classifier;
-            }
-            artifact = ad.getArtifact();
-            if (!artifact.isResolved()) {
-                MavenClientFactory.getLog().info(
-                        "Resolving " + artifact.toString() + " ...");
-                MavenClientFactory.getInstance().resolve(artifact);
+    protected File resolveFile() {
+        AntBuildMojo mojo = AntBuildMojo.getInstance();
+        ArtifactDescriptor ad = new ArtifactDescriptor(key);
+        // Sync classifier set from key or from setClassifier()
+        if (ad.classifier != null) {
+            classifier = ad.classifier;
+        } else if (classifier != null) {
+            ad.classifier = classifier;
+        }
+        Artifact artifact = ad.getAetherArtifact();
+        ArtifactDescriptorRequest adRequest = new ArtifactDescriptorRequest(
+                artifact, mojo.getRemoteRepositories(), null);
+        try {
+            ArtifactDescriptorResult adResult = mojo.getSystem().readArtifactDescriptor(
+                    mojo.getRepositorySystemSession(), adRequest);
+            // The artifact after following any relocations
+            artifact = adResult.getArtifact();
+        } catch (ArtifactDescriptorException e) {
+            throw new BuildException(String.format(
+                    "Cannot resolve file with key '%s', failed request: %s",
+                    ad, adRequest), e);
+        }
+        if (artifact.getFile() == null) {
+            ArtifactRequest artifactRequest = new ArtifactRequest(artifact,
+                    mojo.getRemoteRepositories(), null);
+            try {
+                ArtifactResult artifactResult = mojo.getSystem().resolveArtifact(
+                        mojo.getRepositorySystemSession(), artifactRequest);
+                artifact = artifactResult.getArtifact();
+            } catch (ArtifactResolutionException e) {
+                throw new BuildException(
+                        String.format(
+                                "Cannot resolve file with key '%s', failed request: %s",
+                                ad, artifactRequest), e);
             }
         }
         return artifact.getFile();
@@ -80,12 +104,7 @@ public class ResolveFile extends FileResource {
         if (isReference()) {
             return ((FileResource) getCheckedRef()).getFile();
         }
-        try {
-            return resolveFile();
-        } catch (ArtifactNotFoundException e) {
-            throw new BuildException("Failed to resolve file: " + key
-                    + "; classifier: " + classifier, e);
-        }
+        return resolveFile();
     }
 
     @Override

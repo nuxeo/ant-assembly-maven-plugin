@@ -22,18 +22,19 @@ import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.DataType;
+import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
-import org.apache.tools.ant.types.resources.FileResource;
+import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
-import org.nuxeo.build.maven.MavenClientFactory;
 import org.nuxeo.build.maven.filter.AndFilter;
 import org.nuxeo.build.maven.filter.CompositeFilter;
 import org.nuxeo.build.maven.filter.Filter;
-import org.nuxeo.build.maven.filter.TrueFilter;
 import org.nuxeo.build.maven.graph.AttachmentNode;
-import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Graph;
 import org.nuxeo.build.maven.graph.Node;
+import org.sonatype.aether.artifact.Artifact;
+import org.sonatype.aether.resolution.ArtifactResult;
+import org.sonatype.aether.resolution.DependencyResult;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -42,11 +43,11 @@ import org.nuxeo.build.maven.graph.Node;
 public class ArtifactDependencies extends DataType implements
         ResourceCollection {
 
-    protected Graph graph = MavenClientFactory.getInstance().getGraph();
+    protected Graph graph = AntBuildMojo.getInstance().getGraph();
 
     protected Node node;
 
-    protected List<Node> nodes;
+    protected List<Artifact> nodes;
 
     public String key;
 
@@ -125,7 +126,7 @@ public class ArtifactDependencies extends DataType implements
         return node;
     }
 
-    public List<Node> getNodes() {
+    public List<Artifact> getArtifacts() {
         if (nodes == null) {
             Filter filter = null;
             if (includes != null || excludes != null) {
@@ -140,32 +141,28 @@ public class ArtifactDependencies extends DataType implements
             }
             // make sure node is expanded
             // if not already expanded, this expand may not be done correctly
-            graph.resolveDependencyTree(getNode(), new TrueFilter(),
-                    Integer.MAX_VALUE);
-            nodes = new ArrayList<Node>();
-            if (filter != null) {
-                for (Edge edge : node.getEdgesOut()) {
-                    if (filter.accept(edge.out.getArtifact())) {
-                        nodes.add(edge.out);
-                    }
-                }
-            } else {
-                for (Edge edge : node.getEdgesOut()) {
-                    nodes.add(edge.out);
-                }
+            DependencyResult result = graph.resolveDependencies(getNode(),
+                    filter, Integer.MAX_VALUE);
+            List<ArtifactResult> results = result.getArtifactResults();
+            nodes = new ArrayList<>();
+            for (ArtifactResult artifactResult : results) {
+                nodes.add(artifactResult.getArtifact());
             }
         }
         return nodes;
     }
 
-    public Iterator<FileResource> iterator() {
-        return ArtifactSet.createIterator(getNodes());
+    @Override
+    public Iterator<Resource> iterator() {
+        return ArtifactSet.createIterator(getArtifacts());
     }
 
+    @Override
     public int size() {
-        return getNodes().size();
+        return getArtifacts().size();
     }
 
+    @Override
     public boolean isFilesystemOnly() {
         return true;
     }

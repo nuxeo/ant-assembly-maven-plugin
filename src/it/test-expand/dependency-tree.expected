@@ -49,6 +49,8 @@ org.nuxeo.build:test-expand:2.0-SNAPSHOT:pom::compile
  |--  |--  |--  |-- org.apache.commons:commons-lang3:3.1:jar::compile
  |--  |--  |-- org.apache.maven.surefire:surefire-api:2.16:jar::compile
  |--  |--  |-- org.apache.maven.plugin-tools:maven-plugin-annotations:3.2:jar::compile
+ |--  |-- org.nuxeo.connect:nuxeo-connect-client:1.4.7:jar::compile
+ |--  |--  |-- org.freemarker:freemarker:2.3.16:jar::compile
  |-- org.apache.maven:maven-project:2.2.1:jar::compile
  |--  |-- org.apache.maven:maven-settings:2.2.1:jar::compile
  |--  |-- org.apache.maven:maven-profile:2.2.1:jar::compile

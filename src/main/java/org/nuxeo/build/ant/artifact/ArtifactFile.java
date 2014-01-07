@@ -20,8 +20,8 @@ import java.io.File;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.resources.FileResource;
+import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
-import org.nuxeo.build.maven.MavenClientFactory;
 import org.nuxeo.build.maven.graph.AttachmentNode;
 import org.nuxeo.build.maven.graph.Node;
 
@@ -70,10 +70,9 @@ public class ArtifactFile extends FileResource {
     public Node getNode() {
         if (node == null) {
             if (key != null) {
-                node = MavenClientFactory.getInstance().getGraph().findFirst(
-                        key);
+                node = AntBuildMojo.getInstance().getGraph().findFirst(key);
             } else {
-                node = MavenClientFactory.getInstance().getGraph().findNode(ad);
+                node = AntBuildMojo.getInstance().getGraph().findNode(ad);
             }
             if (node == null) {
                 throw new BuildException("Artifact with pattern "

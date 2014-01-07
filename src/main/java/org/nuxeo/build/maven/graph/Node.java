@@ -23,12 +23,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.project.MavenProject;
 import org.apache.tools.ant.Project;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
+import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.filter.Filter;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyNode;
@@ -114,7 +114,7 @@ public class Node implements DependencyNode {
     protected int state = UNKNOWN;
 
     public Artifact getArtifact() {
-        return aetherToMavenArtifact(
+        return ArtifactDescriptor.aetherToMavenArtifact(
                 getDependency().getArtifact(),
                 getDependency().getScope(),
                 AntBuildMojo.getInstance().getArtifactHandlerManager().getArtifactHandler(
@@ -262,20 +262,6 @@ public class Node implements DependencyNode {
     @Deprecated
     private void expand(Filter filter, int depth) {
         graph.resolveDependencies(this, filter, depth);
-    }
-
-    public static Artifact aetherToMavenArtifact(
-            org.sonatype.aether.artifact.Artifact aetherArtifact, String scope,
-            ArtifactHandler artifactHandler) {
-        org.apache.maven.artifact.DefaultArtifact mavenArtifact = new org.apache.maven.artifact.DefaultArtifact(
-                aetherArtifact.getGroupId(), aetherArtifact.getArtifactId(),
-                aetherArtifact.getVersion(), scope,
-                aetherArtifact.getExtension(), aetherArtifact.getClassifier(),
-                artifactHandler);
-        mavenArtifact.setFile(aetherArtifact.getFile());
-        // TODO NXBT-258 is already resolved?
-        mavenArtifact.setResolved(true);
-        return mavenArtifact;
     }
 
     @Override

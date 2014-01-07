@@ -27,7 +27,6 @@ import org.apache.tools.ant.Project;
 import org.nuxeo.build.maven.filter.Filter;
 import org.nuxeo.build.maven.filter.GroupIdFilter;
 import org.nuxeo.build.maven.filter.NotFilter;
-import org.nuxeo.build.maven.filter.VersionFilter;
 import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Node;
 import org.sonatype.aether.graph.DependencyNode;
@@ -109,15 +108,16 @@ public class NuxeoExpandTask extends ExpandTask {
                 if (node.getDependency().isOptional()) {
                     return false;
                 }
-                if (node.getDependency().getScope() == null) {
-                    log("Missing scope, set to compile : " + node,
+                if ("".equals(node.getDependency().getScope())) {
+                    log("Missing scope, node accepted: " + node,
                             Project.MSG_WARN);
-                    node.getDependency().setScope("compile");
+                    return true;
                 }
                 return getIncludedScopes().get(node.getDependency().getScope());
             }
         });
-        filter.addFilter(new NotFilter(new VersionFilter("[*)")));
+        // NXBT-258: range versions should not be an issue anymore
+        // filter.addFilter(new NotFilter(new VersionFilter("[*)")));
         filter.addFilter(new NotFilter(new GroupIdFilter("org.nuxeo.build")));
         super.execute();
     }

@@ -177,6 +177,8 @@ public class Graph {
         if (node == null) {
             String scope = artifact.getScope() != null ? artifact.getScope()
                     : "compile";
+            AntClient.getInstance().log("artifact.getScope(): " + artifact.getScope(),
+                    Project.MSG_DEBUG);
             DefaultDependencyNode newNode = new DefaultDependencyNode(
                     new Dependency(new DefaultArtifact(artifact.getGroupId(),
                             artifact.getArtifactId(), artifact.getClassifier(),

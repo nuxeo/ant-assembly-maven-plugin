@@ -27,9 +27,10 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.DataType;
 import org.apache.tools.ant.types.Reference;
+import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
-import org.nuxeo.build.maven.MavenClientFactory;
+import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.filter.AncestorFilter;
 import org.nuxeo.build.maven.filter.AndFilter;
 import org.nuxeo.build.maven.filter.ArtifactIdFilter;
@@ -44,6 +45,7 @@ import org.nuxeo.build.maven.filter.VersionFilter;
 import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Graph;
 import org.nuxeo.build.maven.graph.Node;
+import org.sonatype.aether.artifact.Artifact;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -59,7 +61,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
 
     public Expand expand;
 
-    public List<ArtifactFile> artifacts;
+    public List<ArtifactFile> artifactFiles;
 
     public List<ArtifactSet> artifactSets;
 
@@ -154,10 +156,10 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         if (isReference()) {
             throw noChildrenAllowed();
         }
-        if (artifacts == null) {
-            artifacts = new ArrayList<ArtifactFile>();
+        if (artifactFiles == null) {
+            artifactFiles = new ArrayList<>();
         }
-        artifacts.add(artifact);
+        artifactFiles.add(artifact);
     }
 
     public void addArtifactSet(ArtifactSet set) {
@@ -165,7 +167,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
             throw noChildrenAllowed();
         }
         if (artifactSets == null) {
-            artifactSets = new ArrayList<ArtifactSet>();
+            artifactSets = new ArrayList<>();
         }
         artifactSets.add(set);
     }
@@ -203,7 +205,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
 
     protected List<Node> createInputNodeList() {
         if (includes == null && excludes == null) {
-            return new ArrayList<Node>();
+            return new ArrayList<>();
         }
         final AndFilter ieFilter = new AndFilter();
         if (includes != null) {
@@ -252,14 +254,14 @@ public class ArtifactSet extends DataType implements ResourceCollection {
     }
 
     protected Collection<Node> computeNodes() {
-        Graph graph = MavenClientFactory.getInstance().getGraph();
+        Graph graph = AntBuildMojo.getInstance().getGraph();
         Filter finalFilter = buildFilter();
-        Collection<Node> roots = new ArrayList<Node>();
+        Collection<Node> roots = new ArrayList<>();
         if (src != null) {
             collectImportedNodes(roots);
         }
-        if (artifacts != null) {
-            for (ArtifactFile arti : artifacts) {
+        if (artifactFiles != null) {
+            for (ArtifactFile arti : artifactFiles) {
                 roots.add(arti.getNode());
             }
         }
@@ -273,29 +275,26 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         }
 
         if (finalFilter != Filter.ANY) {
-            ArrayList<Node> resultNodes = new ArrayList<Node>();
+            List<Node> resultNodes = new ArrayList<>();
             for (Node node : roots) {
-                if (MavenClientFactory.getLog().isDebugEnabled()) {
-                    MavenClientFactory.getLog().debug(
-                            "Filtering - " + node + " ...");
+                if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
+                    log("Filtering - " + node + " ...", Project.MSG_DEBUG);
                 }
                 if (finalFilter.accept(node)) {
                     resultNodes.add(node);
-                    if (MavenClientFactory.getLog().isDebugEnabled()) {
-                        MavenClientFactory.getLog().debug(
-                                "Filtering - accepted " + node);
+                    if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
+                        log("Filtering - accepted " + node, Project.MSG_DEBUG);
                     }
                 } else {
-                    if (MavenClientFactory.getLog().isDebugEnabled()) {
-                        MavenClientFactory.getLog().debug(
-                                "Filtering - refused " + node);
+                    if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
+                        log("Filtering - refused " + node, Project.MSG_DEBUG);
                     }
                 }
             }
             roots = resultNodes;
         }
         if (expand != null) {
-            ArrayList<Node> resultNodes = new ArrayList<Node>();
+            List<Node> resultNodes = new ArrayList<>();
             if (expand.filter != null) {
                 Filter expandFilter = CompositeFilter.compact(expand.filter);
                 for (Node root : roots) {
@@ -326,18 +325,19 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         return nodes;
     }
 
-    public Iterator<FileResource> iterator() {
+    @Override
+    public Iterator<Resource> iterator() {
         return createIterator(getNodes());
     }
 
-    public static Iterator<FileResource> createIterator(Collection<Node> nodes) {
-        ArrayList<FileResource> files = new ArrayList<FileResource>();
-        Graph graph = MavenClientFactory.getInstance().getGraph();
-        List<Node> roots = graph.getRoots();
+    public static Iterator<Resource> createIterator(Collection<Node> nodes) {
+        List<Resource> files = new ArrayList<>();
+        // Graph graph = AntBuildMojo.getInstance().getGraph();
+        // List<Node> roots = graph.getRoots();
         for (Node node : nodes) {
-            if (roots.contains(node)) {
-                continue;
-            }
+            // if (roots.contains(node)) {
+            // continue;
+            // }
             File file = node.getFile();
             if (file != null) {
                 FileResource fr = new FileResource(file);
@@ -348,10 +348,28 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         return files.iterator();
     }
 
+    /**
+     * @since 2.0
+     */
+    public static Iterator<Resource> createIterator(List<Artifact> artifacts) {
+        List<Resource> files = new ArrayList<>();
+        for (Artifact artifact : artifacts) {
+            File file = artifact.getFile();
+            if (file != null) {
+                FileResource fr = new FileResource(file);
+                fr.setBaseDir(file.getParentFile());
+                files.add(fr);
+            }
+        }
+        return files.iterator();
+    }
+
+    @Override
     public int size() {
         return getNodes().size();
     }
 
+    @Override
     public boolean isFilesystemOnly() {
         return true;
     }
@@ -366,6 +384,10 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         }
     }
 
+    /**
+     * @deprecated since 2.0
+     */
+    @Deprecated
     public static void collectNodes(Collection<Node> nodes, Node node,
             Filter filter, int depth) {
         nodes.add(node);
@@ -379,6 +401,10 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         }
     }
 
+    /**
+     * @deprecated since 2.0
+     */
+    @Deprecated
     public static void collectNodes(Collection<Node> nodes, Node node, int depth) {
         nodes.add(node);
         if (depth > 0) {

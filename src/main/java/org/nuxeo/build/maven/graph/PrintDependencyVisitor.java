@@ -122,7 +122,10 @@ public class PrintDependencyVisitor extends AbstractDepthFirstNodeListGenerator 
                     "Ignored node with null dependency: " + node);
             return false;
         }
-        if (scopes != null && !scopes.contains(dependency.getScope())) {
+        if (dependency.getScope() == null || "".equals(dependency.getScope())) {
+            AntClient.getInstance().log(
+                    String.format("Found node %s with null scope!", node));
+        } else if (scopes != null && !scopes.contains(dependency.getScope())) {
             AntClient.getInstance().log(
                     String.format("Ignored node %s which scope is %s", node,
                             dependency.getScope()));

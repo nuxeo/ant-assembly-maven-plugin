@@ -17,9 +17,8 @@
 package org.nuxeo.build.maven;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.versioning.VersionRange;
-import org.apache.tools.ant.BuildException;
-import org.nuxeo.build.maven.filter.VersionManagement;
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -46,7 +45,7 @@ public class ArtifactDescriptor {
         return ad;
     }
 
-    public ArtifactDescriptor() {
+    private ArtifactDescriptor() {
     }
 
     public ArtifactDescriptor(String groupId, String artifactId,
@@ -84,11 +83,19 @@ public class ArtifactDescriptor {
         }
     }
 
+    /**
+     * @deprecated since 2.0
+     */
+    @Deprecated
     public Artifact toBuildArtifact() {
         return AntBuildMojo.getInstance().getArtifactFactory().createBuildArtifact(
                 groupId, artifactId, version, type);
     }
 
+    /**
+     * @deprecated since 2.0
+     */
+    @Deprecated
     public Artifact toArtifactWithClassifier() {
         return AntBuildMojo.getInstance().getArtifactFactory().createArtifactWithClassifier(
                 groupId, artifactId, version, type, classifier);
@@ -118,32 +125,25 @@ public class ArtifactDescriptor {
         buf.append(groupId).append(':').append(artifactId);
         buf.append(':').append(version);
         buf.append(':').append(type);
-        buf.append(':').append(classifier);
+        buf.append(':');
+        if (classifier != null) {
+            buf.append(classifier);
+        }
         buf.append(':').append(scope);
         return buf.toString();
     }
 
     /**
-     * @return ArtifactFactory().createDependencyArtifact()
+     * @return a "Maven" artifact (versus AetherArtifact)
      * @since 1.10.2
-     * @Deprecated
      */
-    @Deprecated
     public Artifact getArtifact() {
-        // Resolve version if not provided
-        if (version == null) {
-            VersionManagement versionManagement = AntBuildMojo.getInstance().getGraph().getVersionManagement();
-            version = versionManagement.getVersion(this);
-            if (version == null) {
-                throw new BuildException(
-                        "Version is required since not found in dependency management: "
-                                + this);
-            }
-        }
-        Artifact artifact = AntBuildMojo.getInstance().getArtifactFactory().createDependencyArtifact(
-                groupId, artifactId, VersionRange.createFromVersion(version),
-                type, classifier, scope);
-        return artifact;
+        org.sonatype.aether.artifact.Artifact aetherArtifact = getAetherArtifact();
+        return aetherToMavenArtifact(
+                aetherArtifact,
+                scope,
+                AntBuildMojo.getInstance().getArtifactHandlerManager().getArtifactHandler(
+                        aetherArtifact.getExtension()));
     }
 
     /**
@@ -157,6 +157,28 @@ public class ArtifactDescriptor {
     public Artifact getBuildArtifact() {
         return AntBuildMojo.getInstance().getArtifactFactory().createBuildArtifact(
                 groupId, artifactId, version, type);
+    }
+
+    /**
+     * @since 2.0
+     */
+    public org.sonatype.aether.artifact.Artifact getAetherArtifact() {
+        return new DefaultArtifact(groupId, artifactId, classifier, type,
+                version);
+    }
+
+    public static Artifact aetherToMavenArtifact(
+            org.sonatype.aether.artifact.Artifact aetherArtifact, String scope,
+            ArtifactHandler artifactHandler) {
+        org.apache.maven.artifact.DefaultArtifact mavenArtifact = new org.apache.maven.artifact.DefaultArtifact(
+                aetherArtifact.getGroupId(), aetherArtifact.getArtifactId(),
+                aetherArtifact.getVersion(), scope,
+                aetherArtifact.getExtension(), aetherArtifact.getClassifier(),
+                artifactHandler);
+        mavenArtifact.setFile(aetherArtifact.getFile());
+        // TODO NXBT-258 is already resolved?
+        mavenArtifact.setResolved(true);
+        return mavenArtifact;
     }
 
 }
