@@ -21,7 +21,6 @@ import java.util.List;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.nuxeo.build.maven.graph.Edge;
-import org.nuxeo.build.maven.graph.Node;
 import org.sonatype.aether.graph.DependencyNode;
 
 /**
@@ -36,16 +35,6 @@ public class AnyFilter extends AbstractFilter {
     }
 
     public boolean accept(Edge edge, Dependency dep) {
-        return true;
-    }
-
-    @Override
-    public boolean accept(Edge edge) {
-        return true;
-    }
-
-    @Override
-    public boolean accept(Node node) {
         return true;
     }
 

@@ -22,8 +22,6 @@ import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.nuxeo.build.maven.ArtifactDescriptor;
-import org.nuxeo.build.maven.graph.Edge;
-import org.nuxeo.build.maven.graph.Node;
 import org.sonatype.aether.graph.DependencyNode;
 
 /**
@@ -61,26 +59,6 @@ public class AncestorFilter extends AbstractFilter {
 
     protected void addFilter(Filter filter) {
         filters.add(filter);
-    }
-
-    @Override
-    public boolean accept(Node node) {
-        for (Edge edge : node.getEdgesIn()) {
-            if (accept(edge)) {
-                return true;
-            }
-        }
-        return result(false, node.toString());
-    }
-
-    @Override
-    public boolean accept(Edge edge) {
-        for (Filter filter : filters) {
-            if (!filter.accept(edge)) {
-                return result(false, edge.toString());
-            }
-        }
-        return true;
     }
 
     @Override

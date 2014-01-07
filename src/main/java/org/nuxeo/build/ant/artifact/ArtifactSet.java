@@ -42,7 +42,6 @@ import org.nuxeo.build.maven.filter.IsOptionalFilter;
 import org.nuxeo.build.maven.filter.ScopeFilter;
 import org.nuxeo.build.maven.filter.TypeFilter;
 import org.nuxeo.build.maven.filter.VersionFilter;
-import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Graph;
 import org.nuxeo.build.maven.graph.Node;
 import org.sonatype.aether.artifact.Artifact;
@@ -280,7 +279,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
                 if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
                     log("Filtering - " + node + " ...", Project.MSG_DEBUG);
                 }
-                if (finalFilter.accept(node)) {
+                if (finalFilter.accept(node, node.getParents())) {
                     resultNodes.add(node);
                     if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
                         log("Filtering - accepted " + node, Project.MSG_DEBUG);
@@ -298,10 +297,12 @@ public class ArtifactSet extends DataType implements ResourceCollection {
             if (expand.filter != null) {
                 Filter expandFilter = CompositeFilter.compact(expand.filter);
                 for (Node root : roots) {
+                    // TODO NXBT-258
                     collectNodes(resultNodes, root, expandFilter, expand.depth);
                 }
             } else {
                 for (Node root : roots) {
+                    // TODO NXBT-258
                     collectNodes(resultNodes, root, expand.depth);
                 }
             }
@@ -393,11 +394,11 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         nodes.add(node);
         if (depth > 0) {
             depth--;
-            for (Edge edge : node.getEdgesOut()) {
-                if (filter.accept(edge)) {
-                    collectNodes(nodes, edge.out, filter, depth);
-                }
-            }
+            // for (Edge edge : node.getEdgesOut()) {
+            // if (filter.accept(edge)) {
+            // collectNodes(nodes, edge.out, filter, depth);
+            // }
+            // }
         }
     }
 
@@ -409,9 +410,9 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         nodes.add(node);
         if (depth > 0) {
             depth--;
-            for (Edge edge : node.getEdgesOut()) {
-                collectNodes(nodes, edge.out, depth);
-            }
+            // for (Edge edge : node.getEdgesOut()) {
+            // collectNodes(nodes, edge.out, depth);
+            // }
         }
     }
 

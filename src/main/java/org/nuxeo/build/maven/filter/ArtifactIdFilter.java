@@ -19,8 +19,6 @@ package org.nuxeo.build.maven.filter;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
-import org.nuxeo.build.maven.graph.Edge;
-import org.nuxeo.build.maven.graph.Node;
 import org.sonatype.aether.graph.DependencyNode;
 
 /**
@@ -40,20 +38,9 @@ public class ArtifactIdFilter extends AbstractFilter {
     }
 
     @Override
-    public boolean accept(Edge edge) {
-        return result(matcher.match(edge.out.getArtifact().getArtifactId()),
-                edge.toString());
-    }
-
-    @Override
     public boolean accept(Artifact artifact) {
         return result(matcher.match(artifact.getArtifactId()),
                 artifact.toString());
-    }
-
-    @Override
-    public boolean accept(Node node) {
-        return accept(node.getArtifact());
     }
 
     @Override

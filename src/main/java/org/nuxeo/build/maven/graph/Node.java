@@ -116,6 +116,8 @@ public class Node implements DependencyNode {
 
     protected int state = UNKNOWN;
 
+    private List<DependencyNode> parents = new ArrayList<>();
+
     public Artifact getArtifact() {
         return DependencyUtils.getMavenArtifact(getDependency());
     }
@@ -288,5 +290,16 @@ public class Node implements DependencyNode {
     @Override
     public boolean accept(DependencyVisitor visitor) {
         return dependencyNode.accept(visitor);
+    }
+
+    public List<DependencyNode> getParents() {
+        return this.parents;
+    }
+
+    /**
+     * @since 2.0
+     */
+    public void addParent(Node node) {
+        parents.add(node);
     }
 }

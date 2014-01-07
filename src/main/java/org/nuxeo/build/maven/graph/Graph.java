@@ -107,18 +107,6 @@ public class Graph {
         mojo = AntBuildMojo.getInstance();
     }
 
-    public void collectNodes(Collection<Node> nodesToCollect) {
-        for (Node node : roots) {
-            node.collectNodes(nodesToCollect);
-        }
-    }
-
-    public void collectNodes(Collection<Node> nodesToCollect, Filter filter) {
-        for (Node node : roots) {
-            node.collectNodes(nodesToCollect, filter);
-        }
-    }
-
     public Node[] getNodesArray() {
         return nodes.values().toArray(new Node[nodes.size()]);
     }
@@ -201,7 +189,9 @@ public class Graph {
         nodes.put(node.getId(), node);
         AntClient.getInstance().log("Added node: " + node, Project.MSG_DEBUG);
         for (DependencyNode child : node.getChildren()) {
-            addNode(new Node(this, child));
+            Node childNode = new Node(this, child);
+            childNode.addParent(node);
+            addNode(childNode);
         }
     }
 

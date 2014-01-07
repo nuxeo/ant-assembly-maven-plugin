@@ -19,8 +19,6 @@ package org.nuxeo.build.maven.filter;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
-import org.nuxeo.build.maven.graph.Edge;
-import org.nuxeo.build.maven.graph.Node;
 import org.sonatype.aether.graph.DependencyNode;
 
 /**
@@ -37,16 +35,6 @@ public class AndFilter extends CompositeFilter {
     }
 
     @Override
-    public boolean accept(Edge edge) {
-        for (Filter filter : filters) {
-            if (!filter.accept(edge)) {
-                return result(false, edge.toString());
-            }
-        }
-        return result(true, edge.toString());
-    }
-
-    @Override
     public boolean accept(Artifact artifact) {
         for (Filter filter : filters) {
             if (!filter.accept(artifact)) {
@@ -54,16 +42,6 @@ public class AndFilter extends CompositeFilter {
             }
         }
         return result(true, artifact.toString());
-    }
-
-    @Override
-    public boolean accept(Node node) {
-        for (Filter filter : filters) {
-            if (!filter.accept(node)) {
-                return result(false, node.toString());
-            }
-        }
-        return result(true, node.toString());
     }
 
     @Override

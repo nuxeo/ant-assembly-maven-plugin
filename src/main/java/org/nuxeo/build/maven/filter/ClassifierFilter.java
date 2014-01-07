@@ -19,8 +19,6 @@ package org.nuxeo.build.maven.filter;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
-import org.nuxeo.build.maven.graph.Edge;
-import org.nuxeo.build.maven.graph.Node;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyNode;
 
@@ -46,18 +44,8 @@ public class ClassifierFilter extends AbstractFilter {
     }
 
     @Override
-    public boolean accept(Edge edge) {
-        return accept(edge.out.getArtifact());
-    }
-
-    @Override
     public boolean accept(Artifact artifact) {
         return result(match(artifact.getClassifier()), artifact.toString());
-    }
-
-    @Override
-    public boolean accept(Node node) {
-        return accept(node.getArtifact());
     }
 
     @Override

@@ -27,7 +27,6 @@ import org.apache.tools.ant.Project;
 import org.nuxeo.build.maven.filter.Filter;
 import org.nuxeo.build.maven.filter.GroupIdFilter;
 import org.nuxeo.build.maven.filter.NotFilter;
-import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Node;
 import org.sonatype.aether.graph.DependencyNode;
 
@@ -81,24 +80,6 @@ public class NuxeoExpandTask extends ExpandTask {
 
             @Override
             public boolean accept(Artifact artifact) {
-                return true;
-            }
-
-            @Override
-            public boolean accept(Edge edge) {
-                if (edge.isOptional) {
-                    return false;
-                }
-                if (edge.scope == null) {
-                    log("Missing scope, set to compile : " + edge,
-                            Project.MSG_WARN);
-                    edge.scope = "compile";
-                }
-                return getIncludedScopes().get(edge.scope);
-            }
-
-            @Override
-            public boolean accept(Node node) {
                 return true;
             }
 

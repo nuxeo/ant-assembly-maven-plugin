@@ -32,7 +32,6 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.tools.ant.Project;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
-import org.nuxeo.build.maven.graph.Edge;
 import org.nuxeo.build.maven.graph.Node;
 import org.sonatype.aether.graph.DependencyNode;
 
@@ -123,12 +122,11 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
         return valuesToMatch;
     }
 
-    @Override
-    public boolean accept(Node node) {
-        return accept(node, true, true);
-    }
-
-    private boolean accept(Node node, boolean browseChildren,
+    /**
+     * @deprecated 2.0
+     */
+    @Deprecated
+    protected boolean accept(Node node, boolean browseChildren,
             boolean browseParents) {
         // Exclude non Nuxeo artifacts
         if (!node.getArtifact().getGroupId().startsWith("org.nuxeo")) {
@@ -154,10 +152,10 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
                         "Filtering - check children of " + node,
                         Project.MSG_DEBUG);
             }
-            Collection<Edge> children = node.getEdgesOut();
+            Collection<DependencyNode> children = node.getChildren();
             // if (children!=null) {
-            for (Edge edge : children) {
-                if (accept(edge.out, true, false)) {
+            for (DependencyNode child : children) {
+                if (accept((Node) child, true, false)) {
                     accept = true;
                     break;
                 }
@@ -171,10 +169,10 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
                         "Filtering - check parents of " + node,
                         Project.MSG_DEBUG);
             }
-            Collection<Edge> parents = node.getEdgesIn();
+            Collection<DependencyNode> parents = node.getParents();
             // if (parents!=null) {
-            for (Edge edge : parents) {
-                if (accept(edge.in, false, true)) {
+            for (DependencyNode parent : parents) {
+                if (accept((Node) parent, false, true)) {
                     accept = true;
                     break;
                 }
@@ -207,11 +205,6 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
             }
         }
         return accept;
-    }
-
-    @Override
-    public boolean accept(Edge edge) {
-        throw new UnsupportedOperationException("Not supported");
     }
 
     /**
