@@ -50,12 +50,6 @@ public class Node implements DependencyNode {
     @Deprecated
     protected final Artifact artifact;
 
-    @Deprecated
-    protected final List<Edge> edgesIn = new ArrayList<>();
-
-    @Deprecated
-    protected final List<Edge> edgesOut = new ArrayList<>();
-
     protected final MavenProject pom;
 
     private List<char[]> acceptedCategories;
@@ -88,8 +82,6 @@ public class Node implements DependencyNode {
         this.id = node.id;
         this.graph = node.graph;
         this.artifact = node.artifact;
-        this.edgesIn.addAll(node.edgesIn);
-        this.edgesOut.addAll(node.edgesOut);
         this.pom = node.pom;
     }
 
@@ -156,33 +148,8 @@ public class Node implements DependencyNode {
         }
     }
 
-    @Deprecated
-    public boolean isRoot() {
-        return edgesIn.isEmpty();
-    }
-
     public String getId() {
         return id;
-    }
-
-    @Deprecated
-    public Collection<Edge> getEdgesOut() {
-        return edgesOut;
-    }
-
-    @Deprecated
-    public Collection<Edge> getEdgesIn() {
-        return edgesIn;
-    }
-
-    @Deprecated
-    protected void addEdgeIn(Edge edge) {
-        edgesIn.add(edge);
-    }
-
-    @Deprecated
-    protected void addEdgeOut(Edge edge) {
-        edgesOut.add(edge);
     }
 
     public MavenProject getPom() {
@@ -191,35 +158,6 @@ public class Node implements DependencyNode {
 
     public MavenProject getPomIfAlreadyLoaded() {
         return pom;
-    }
-
-    @Deprecated
-    public List<Node> getTrail() {
-        if (edgesIn.isEmpty()) {
-            ArrayList<Node> result = new ArrayList<>();
-            result.add(this);
-            return result;
-        }
-        Edge edge = edgesIn.get(0);
-        List<Node> path = edge.in.getTrail();
-        path.add(this);
-        return path;
-    }
-
-    @Deprecated
-    public void collectNodes(Collection<Node> nodes, Filter filter) {
-        for (Edge edge : edgesOut) {
-            if (filter.accept(edge)) {
-                nodes.add(edge.out);
-            }
-        }
-    }
-
-    @Deprecated
-    public void collectNodes(Collection<Node> nodes) {
-        for (Edge edge : edgesOut) {
-            nodes.add(edge.out);
-        }
     }
 
     @Override

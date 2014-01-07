@@ -20,10 +20,9 @@ import org.sonatype.aether.graph.DependencyFilter;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ *
  */
-public interface Filter extends ArtifactFilter, EdgeFilter, NodeFilter,
-        DependencyFilter {
+public interface Filter extends ArtifactFilter, NodeFilter, DependencyFilter {
 
     final static AnyFilter ANY = new AnyFilter();
 
