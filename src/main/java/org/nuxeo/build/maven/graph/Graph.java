@@ -20,7 +20,6 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -177,7 +176,8 @@ public class Graph {
         if (node == null) {
             String scope = artifact.getScope() != null ? artifact.getScope()
                     : "compile";
-            AntClient.getInstance().log("artifact.getScope(): " + artifact.getScope(),
+            AntClient.getInstance().log(
+                    "artifact.getScope(): " + artifact.getScope(),
                     Project.MSG_DEBUG);
             DefaultDependencyNode newNode = new DefaultDependencyNode(
                     new Dependency(new DefaultArtifact(artifact.getGroupId(),
@@ -186,13 +186,23 @@ public class Graph {
             CollectResult collectResult = collectDependencies(newNode);
             DependencyNode root = collectResult.getRoot();
             node = new Node(this, artifact, pom, root);
-            nodes.put(node.getId(), node);
-            nodesByArtifact.put(artifact, node);
+            addNode(node);
             roots.add(node);
             AntClient.getInstance().log("Added root node: " + node,
                     Project.MSG_DEBUG);
         }
         return node;
+    }
+
+    /**
+     * @since 2.0
+     */
+    private void addNode(Node node) {
+        nodes.put(node.getId(), node);
+        AntClient.getInstance().log("Added node: " + node, Project.MSG_DEBUG);
+        for (DependencyNode child : node.getChildren()) {
+            addNode(new Node(this, child));
+        }
     }
 
     private Node lookup(String id) {
@@ -259,8 +269,6 @@ public class Graph {
             return null;
         }
     }
-
-    public final IdentityHashMap<Artifact, Node> nodesByArtifact = new IdentityHashMap<>();
 
     // TODO NXBT-258
     public void test(DependencyNode node) {

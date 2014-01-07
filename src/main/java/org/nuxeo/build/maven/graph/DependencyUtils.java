@@ -18,16 +18,10 @@
 
 package org.nuxeo.build.maven.graph;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.maven.project.MavenProject;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.collection.CollectRequest;
+import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.nuxeo.build.maven.AntBuildMojo;
 import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.graph.DependencyNode;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 /**
  * Utility class for managing Maven dependencies.
@@ -39,33 +33,35 @@ public class DependencyUtils {
     private DependencyUtils() {
     }
 
-    public static List<Artifact> collectAllDependencies(
-            List<Dependency> dependencies) {
-        List<Artifact> result = new ArrayList<Artifact>(dependencies.size());
-        for (Dependency dependency : dependencies) {
-            result.add(dependency.getArtifact());
-        }
-        return result;
+    public static org.apache.maven.artifact.Artifact aetherToMavenArtifact(
+            org.sonatype.aether.artifact.Artifact aetherArtifact, String scope,
+            ArtifactHandler artifactHandler) {
+        org.apache.maven.artifact.Artifact mavenArtifact = new org.apache.maven.artifact.DefaultArtifact(
+                aetherArtifact.getGroupId(), aetherArtifact.getArtifactId(),
+                aetherArtifact.getVersion(), scope,
+                aetherArtifact.getExtension(), aetherArtifact.getClassifier(),
+                artifactHandler);
+        mavenArtifact.setFile(aetherArtifact.getFile());
+        mavenArtifact.setResolved(aetherArtifact.getFile() != null);
+        return mavenArtifact;
     }
 
-    public static List<Artifact> collectDirectDependencies(
-            List<DependencyNode> dependencies) {
-        List<Artifact> result = new ArrayList<Artifact>(dependencies.size());
-        for (DependencyNode dependencyNode : dependencies) {
-            result.add(dependencyNode.getDependency().getArtifact());
-        }
-        return result;
+    public static org.apache.maven.artifact.Artifact getMavenArtifact(
+            Dependency dependency) {
+        return aetherToMavenArtifact(
+                dependency.getArtifact(),
+                dependency.getScope(),
+                AntBuildMojo.getInstance().getArtifactHandlerManager().getArtifactHandler(
+                        dependency.getArtifact().getExtension()));
     }
 
-    public CollectRequest getCollectRequest(MavenProject project,
-            List<RemoteRepository> repos) {
-        Artifact a = new DefaultArtifact(project.getArtifact().toString());
-        DefaultArtifact pom = new DefaultArtifact(a.getGroupId(),
-                a.getArtifactId(), "pom", a.getVersion());
-        CollectRequest collectRequest = new CollectRequest();
-        collectRequest.setRoot(new Dependency(pom, "compile"));
-        collectRequest.setRepositories(repos);
-        return collectRequest;
+    public static Artifact aetherToMavenArtifact(
+            org.sonatype.aether.artifact.Artifact aetherArtifact, String scope) {
+        return aetherToMavenArtifact(
+                aetherArtifact,
+                scope,
+                AntBuildMojo.getInstance().getArtifactHandlerManager().getArtifactHandler(
+                        aetherArtifact.getExtension()));
     }
 
 }

@@ -17,7 +17,7 @@
 package org.nuxeo.build.maven;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.nuxeo.build.maven.graph.DependencyUtils;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 /**
@@ -139,11 +139,7 @@ public class ArtifactDescriptor {
      */
     public Artifact getArtifact() {
         org.sonatype.aether.artifact.Artifact aetherArtifact = getAetherArtifact();
-        return aetherToMavenArtifact(
-                aetherArtifact,
-                scope,
-                AntBuildMojo.getInstance().getArtifactHandlerManager().getArtifactHandler(
-                        aetherArtifact.getExtension()));
+        return DependencyUtils.aetherToMavenArtifact(aetherArtifact, scope);
     }
 
     /**
@@ -165,20 +161,6 @@ public class ArtifactDescriptor {
     public org.sonatype.aether.artifact.Artifact getAetherArtifact() {
         return new DefaultArtifact(groupId, artifactId, classifier, type,
                 version);
-    }
-
-    public static Artifact aetherToMavenArtifact(
-            org.sonatype.aether.artifact.Artifact aetherArtifact, String scope,
-            ArtifactHandler artifactHandler) {
-        org.apache.maven.artifact.DefaultArtifact mavenArtifact = new org.apache.maven.artifact.DefaultArtifact(
-                aetherArtifact.getGroupId(), aetherArtifact.getArtifactId(),
-                aetherArtifact.getVersion(), scope,
-                aetherArtifact.getExtension(), aetherArtifact.getClassifier(),
-                artifactHandler);
-        mavenArtifact.setFile(aetherArtifact.getFile());
-        // TODO NXBT-258 is already resolved?
-        mavenArtifact.setResolved(true);
-        return mavenArtifact;
     }
 
 }

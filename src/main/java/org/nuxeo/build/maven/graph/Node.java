@@ -28,7 +28,6 @@ import org.apache.maven.project.MavenProject;
 import org.apache.tools.ant.Project;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
-import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.filter.Filter;
 import org.sonatype.aether.graph.Dependency;
 import org.sonatype.aether.graph.DependencyNode;
@@ -96,11 +95,23 @@ public class Node implements DependencyNode {
 
     protected Node(Graph graph, Artifact artifact, MavenProject pom,
             DependencyNode dependencyNode) {
-        this.dependencyNode = dependencyNode;
-        this.id = genNodeId(artifact);
         this.graph = graph;
         this.artifact = artifact;
         this.pom = pom;
+        this.dependencyNode = dependencyNode;
+        this.id = genNodeId(artifact);
+    }
+
+    /**
+     * @param graph2
+     * @param child
+     * @since 2.0
+     */
+    public Node(Graph graph, DependencyNode dependencyNode) {
+        this(
+                graph,
+                DependencyUtils.getMavenArtifact(dependencyNode.getDependency()),
+                null, dependencyNode);
     }
 
     protected static final int UNKNOWN = 0;
@@ -114,11 +125,7 @@ public class Node implements DependencyNode {
     protected int state = UNKNOWN;
 
     public Artifact getArtifact() {
-        return ArtifactDescriptor.aetherToMavenArtifact(
-                getDependency().getArtifact(),
-                getDependency().getScope(),
-                AntBuildMojo.getInstance().getArtifactHandlerManager().getArtifactHandler(
-                        getDependency().getArtifact().getExtension()));
+        return DependencyUtils.getMavenArtifact(getDependency());
     }
 
     public File getFile() {

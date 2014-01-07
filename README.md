@@ -7,6 +7,8 @@ It extends [maven-antrun-plugin] with Maven related tasks for managing artifacts
 
 The main functionality is the management of Maven artifacts graph.
 
+[http://www.eclipse.org/aether](http://www.eclipse.org/aether)
+
 ## Available Ant tasks
 
 [All standard Ant tasks](http://ant.apache.org/manual/tasklist.html) are available. 
