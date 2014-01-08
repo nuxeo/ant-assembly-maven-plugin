@@ -30,10 +30,10 @@ import java.util.jar.Manifest;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.tools.ant.Project;
+import org.eclipse.aether.graph.DependencyNode;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.graph.Node;
-import org.sonatype.aether.graph.DependencyNode;
 
 /**
  * @author jcarsique
@@ -189,7 +189,7 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
 
     private boolean checkCategoryFromManifest(Node node) {
         boolean accept = false;
-        for (String valueToMatch : getValuesToMatch(node.getArtifact())) {
+        for (String valueToMatch : getValuesToMatch(node.getMavenArtifact())) {
             for (char[] pattern : patterns) {
                 if (matchPattern(valueToMatch, pattern)) {
                     if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {

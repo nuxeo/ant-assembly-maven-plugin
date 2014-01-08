@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,7 +56,7 @@ public class RemoveDuplicateTask extends Task {
         if (names == null) {
             return;
         }
-        HashMap<String, List<Entry>> map = new HashMap<String, List<Entry>>();
+        Map<String, List<Entry>> map = new HashMap<>();
         for (String name : names) {
             Matcher m = PATTERN.matcher(name);
             if (m.find()) {
@@ -64,7 +65,7 @@ public class RemoveDuplicateTask extends Task {
                 Entry entry = new Entry(new File(dir, name), Version.parse(v));
                 List<Entry> list = map.get(key);
                 if (list == null) {
-                    list = new ArrayList<RemoveDuplicateTask.Entry>();
+                    list = new ArrayList<>();
                     map.put(key, list);
                 }
                 list.add(entry);

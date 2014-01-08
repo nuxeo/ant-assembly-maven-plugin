@@ -16,9 +16,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.nuxeo.build</groupId>
-      <artifactId>ant-assembly-maven-plugin</artifactId>
-      <version>@pom.version@</version>
+      <groupId>org.nuxeo.connect</groupId>
+      <artifactId>nuxeo-connect-client</artifactId>
+      <version>1.4.13</version>
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
@@ -52,4 +52,16 @@
     </plugins>
   </build>
 
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 </project>

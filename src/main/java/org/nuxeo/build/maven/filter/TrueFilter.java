@@ -19,7 +19,7 @@ package org.nuxeo.build.maven.filter;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
-import org.sonatype.aether.graph.DependencyNode;
+import org.eclipse.aether.graph.DependencyNode;
 
 /**
  * @author slacoin

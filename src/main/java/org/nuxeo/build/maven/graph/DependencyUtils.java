@@ -18,13 +18,25 @@
 
 package org.nuxeo.build.maven.graph;
 
-import org.apache.maven.artifact.Artifact;
+import java.util.List;
+
 import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.tools.ant.Project;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.util.artifact.JavaScopes;
+import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
-import org.sonatype.aether.graph.Dependency;
 
 /**
- * Utility class for managing Maven dependencies.
+ * Utility class for dealing with {@link org.apache.maven.artifact.Artifact},
+ * {@link org.eclipse.aether.artifact.Artifact} and
+ * {@link org.eclipse.aether.graph.Dependency}
  *
  * @since 2.0
  */
@@ -33,8 +45,8 @@ public class DependencyUtils {
     private DependencyUtils() {
     }
 
-    public static org.apache.maven.artifact.Artifact aetherToMavenArtifact(
-            org.sonatype.aether.artifact.Artifact aetherArtifact, String scope,
+    public static org.apache.maven.artifact.Artifact aetherToMaven(
+            Artifact aetherArtifact, String scope,
             ArtifactHandler artifactHandler) {
         org.apache.maven.artifact.Artifact mavenArtifact = new org.apache.maven.artifact.DefaultArtifact(
                 aetherArtifact.getGroupId(), aetherArtifact.getArtifactId(),
@@ -46,22 +58,74 @@ public class DependencyUtils {
         return mavenArtifact;
     }
 
-    public static org.apache.maven.artifact.Artifact getMavenArtifact(
+    public static org.apache.maven.artifact.Artifact toMavenArtifact(
             Dependency dependency) {
-        return aetherToMavenArtifact(
+        return aetherToMaven(
                 dependency.getArtifact(),
                 dependency.getScope(),
                 AntBuildMojo.getInstance().getArtifactHandlerManager().getArtifactHandler(
                         dependency.getArtifact().getExtension()));
     }
 
-    public static Artifact aetherToMavenArtifact(
-            org.sonatype.aether.artifact.Artifact aetherArtifact, String scope) {
-        return aetherToMavenArtifact(
+    public static org.apache.maven.artifact.Artifact aetherToMaven(
+            Artifact aetherArtifact, String scope) {
+        return aetherToMaven(
                 aetherArtifact,
                 scope,
                 AntBuildMojo.getInstance().getArtifactHandlerManager().getArtifactHandler(
                         aetherArtifact.getExtension()));
+    }
+
+    public static Artifact mavenToAether(
+            org.apache.maven.artifact.Artifact artifact) {
+        return new DefaultArtifact(artifact.getGroupId(),
+                artifact.getArtifactId(), artifact.getClassifier(),
+                artifact.getType(), artifact.getVersion());
+    }
+
+    /**
+     * @throws org.eclipse.aether.resolution.ArtifactResolutionException
+     */
+    public static Artifact resolve(Artifact artifact)
+            throws org.eclipse.aether.resolution.ArtifactResolutionException {
+        AntBuildMojo mojo = AntBuildMojo.getInstance();
+        return resolve(artifact, mojo.getRemoteRepositories());
+    }
+
+    /**
+     * @throws org.eclipse.aether.resolution.ArtifactResolutionException
+     */
+    public static Artifact resolve(Artifact artifact,
+            List<RemoteRepository> remoteRepositories)
+            throws org.eclipse.aether.resolution.ArtifactResolutionException {
+        AntBuildMojo mojo = AntBuildMojo.getInstance();
+        ArtifactResult result = mojo.getSystem().resolveArtifact(
+                mojo.getRepositorySystemSession(),
+                new ArtifactRequest(artifact, remoteRepositories, null));
+        artifact = result.getArtifact();
+        AntClient.getInstance().log(
+                artifact + " resolved to  " + artifact.getFile(),
+                Project.MSG_DEBUG);
+        return artifact;
+    }
+
+    /**
+     * @throws ArtifactResolutionException
+     * @deprecated Prefer use of
+     *             {@link #resolve(org.eclipse.aether.artifact.Artifact)}
+     * @see #mavenToAether(Artifact)
+     */
+    @Deprecated
+    public static void resolve(org.apache.maven.artifact.Artifact artifact)
+            throws ArtifactResolutionException {
+        resolve(mavenToAether(artifact));
+    }
+
+    public static Dependency mavenToDependency(
+            org.apache.maven.artifact.Artifact artifact) {
+        String scope = artifact.getScope() != null ? artifact.getScope()
+                : JavaScopes.COMPILE;
+        return new Dependency(DependencyUtils.mavenToAether(artifact), scope);
     }
 
 }

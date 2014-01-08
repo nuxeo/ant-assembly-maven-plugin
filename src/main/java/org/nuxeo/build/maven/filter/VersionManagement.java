@@ -25,8 +25,9 @@ import org.nuxeo.build.maven.graph.Graph;
 import org.nuxeo.build.maven.graph.Node;
 
 /**
+ * TODO NXBT-258 Still used?
+ *
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
  */
 public class VersionManagement {
 
@@ -59,7 +60,7 @@ public class VersionManagement {
         if (versions != null) {
             return;
         }
-        versions = new HashMap<String, String>();
+        versions = new HashMap<>();
         Graph graph = AntBuildMojo.getInstance().getGraph();
         for (Node root : graph.getRoots()) {
             org.apache.maven.model.DependencyManagement mgr = root.getPom().getDependencyManagement();

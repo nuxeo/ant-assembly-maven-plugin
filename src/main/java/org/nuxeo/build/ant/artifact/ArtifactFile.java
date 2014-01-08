@@ -22,7 +22,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
-import org.nuxeo.build.maven.graph.AttachmentNode;
+import org.nuxeo.build.maven.graph.Graph;
 import org.nuxeo.build.maven.graph.Node;
 
 /**
@@ -31,20 +31,16 @@ import org.nuxeo.build.maven.graph.Node;
  */
 public class ArtifactFile extends FileResource {
 
+    protected Graph graph = AntBuildMojo.getInstance().getGraph();
+
     protected Node node;
 
     public String key;
 
     public ArtifactDescriptor ad = ArtifactDescriptor.emptyDescriptor();
 
-    public void setKey(String pattern) {
-        int p = pattern.lastIndexOf(';');
-        if (p > -1) {
-            key = pattern.substring(0, p);
-            ad.classifier = pattern.substring(p + 1);
-        } else {
-            key = pattern;
-        }
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public void setArtifactId(String artifactId) {
@@ -70,17 +66,13 @@ public class ArtifactFile extends FileResource {
     public Node getNode() {
         if (node == null) {
             if (key != null) {
-                node = AntBuildMojo.getInstance().getGraph().findFirst(key);
+                node = graph.findFirst(key);
             } else {
-                node = AntBuildMojo.getInstance().getGraph().findNode(ad);
+                node = graph.findNode(ad);
             }
             if (node == null) {
                 throw new BuildException("Artifact with pattern "
                         + (key != null ? key : ad) + " was not found in graph");
-            }
-            if (ad.classifier != null) {
-                // create a virtual node that points to the attachment
-                node = new AttachmentNode(node, ad.classifier);
             }
         }
         return node;

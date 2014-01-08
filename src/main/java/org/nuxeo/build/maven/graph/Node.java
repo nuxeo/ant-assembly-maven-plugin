@@ -23,18 +23,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.project.MavenProject;
 import org.apache.tools.ant.Project;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.graph.DependencyVisitor;
+import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.version.Version;
+import org.eclipse.aether.version.VersionConstraint;
 import org.nuxeo.build.ant.AntClient;
-import org.nuxeo.build.maven.AntBuildMojo;
-import org.nuxeo.build.maven.filter.Filter;
-import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.graph.DependencyNode;
-import org.sonatype.aether.graph.DependencyVisitor;
-import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.version.Version;
-import org.sonatype.aether.version.VersionConstraint;
 
 /**
  *
@@ -102,7 +100,7 @@ public class Node implements DependencyNode {
     public Node(Graph graph, DependencyNode dependencyNode) {
         this(
                 graph,
-                DependencyUtils.getMavenArtifact(dependencyNode.getDependency()),
+                DependencyUtils.toMavenArtifact(dependencyNode.getDependency()),
                 null, dependencyNode);
     }
 
@@ -118,36 +116,21 @@ public class Node implements DependencyNode {
 
     private List<DependencyNode> parents = new ArrayList<>();
 
-    public Artifact getArtifact() {
-        return DependencyUtils.getMavenArtifact(getDependency());
+    public Artifact getMavenArtifact() {
+        return DependencyUtils.toMavenArtifact(getDependency());
     }
 
     public File getFile() {
-        File file = getDependency().getArtifact().getFile();
-        if (file != null) {
-            // TODO NXBT-258: getName or getAbsolutePath?!
-            graph.file2artifacts.put(file.getName(), getArtifact());
+        File file = getArtifact().getFile();
+        if (file == null) {
+            try {
+                file = DependencyUtils.resolve(getArtifact()).getFile();
+            } catch (ArtifactResolutionException e) {
+                AntClient.getInstance().log(e.getMessage(), e, Project.MSG_ERR);
+                return null;
+            }
         }
         return file;
-    }
-
-    public File getFile(String classifier) {
-        Artifact artifact = getArtifact();
-        Artifact ca = AntBuildMojo.getInstance().getArtifactFactory().createArtifactWithClassifier(
-                artifact.getGroupId(), artifact.getArtifactId(),
-                artifact.getVersion(), artifact.getType(), classifier);
-        try {
-            graph.resolve(ca);
-            File file = ca.getFile();
-            if (file != null) {
-                // TODO NXBT-258: getName or getAbsolutePath?!
-                graph.file2artifacts.put(file.getAbsolutePath(), ca);
-            }
-            return file;
-        } catch (ArtifactNotFoundException e) {
-            AntClient.getInstance().log(e.getMessage(), e, Project.MSG_ERR);
-            return null;
-        }
     }
 
     public String getId() {
@@ -203,14 +186,6 @@ public class Node implements DependencyNode {
         return false;
     }
 
-    /**
-     * @deprecated
-     */
-    @Deprecated
-    private void expand(Filter filter, int depth) {
-        graph.resolveDependencies(this, filter, depth);
-    }
-
     @Override
     public List<DependencyNode> getChildren() {
         return dependencyNode.getChildren();
@@ -222,18 +197,18 @@ public class Node implements DependencyNode {
     }
 
     @Override
-    public void setArtifact(org.sonatype.aether.artifact.Artifact artifact) {
+    public void setArtifact(org.eclipse.aether.artifact.Artifact artifact) {
         dependencyNode.setArtifact(artifact);
 
     }
 
     @Override
-    public List<org.sonatype.aether.artifact.Artifact> getRelocations() {
+    public List<? extends org.eclipse.aether.artifact.Artifact> getRelocations() {
         return dependencyNode.getRelocations();
     }
 
     @Override
-    public Collection<org.sonatype.aether.artifact.Artifact> getAliases() {
+    public Collection<? extends org.eclipse.aether.artifact.Artifact> getAliases() {
         return dependencyNode.getAliases();
     }
 
@@ -253,16 +228,6 @@ public class Node implements DependencyNode {
     }
 
     @Override
-    public String getPremanagedVersion() {
-        return dependencyNode.getPremanagedVersion();
-    }
-
-    @Override
-    public String getPremanagedScope() {
-        return dependencyNode.getPremanagedScope();
-    }
-
-    @Override
     public List<RemoteRepository> getRepositories() {
         return dependencyNode.getRepositories();
     }
@@ -278,7 +243,7 @@ public class Node implements DependencyNode {
     }
 
     @Override
-    public Map<Object, Object> getData() {
+    public Map<?, ?> getData() {
         return dependencyNode.getData();
     }
 
@@ -301,5 +266,30 @@ public class Node implements DependencyNode {
      */
     public void addParent(Node node) {
         parents.add(node);
+    }
+
+    @Override
+    public void setChildren(List<DependencyNode> children) {
+        dependencyNode.setChildren(children);
+    }
+
+    @Override
+    public void setOptional(Boolean optional) {
+        dependencyNode.setOptional(optional);
+    }
+
+    @Override
+    public int getManagedBits() {
+        return dependencyNode.getManagedBits();
+    }
+
+    @Override
+    public void setData(Map<Object, Object> data) {
+        dependencyNode.setData(data);
+    }
+
+    @Override
+    public org.eclipse.aether.artifact.Artifact getArtifact() {
+        return dependencyNode.getArtifact();
     }
 }

@@ -22,13 +22,13 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.resolution.ArtifactDescriptorException;
-import org.sonatype.aether.resolution.ArtifactDescriptorRequest;
-import org.sonatype.aether.resolution.ArtifactDescriptorResult;
-import org.sonatype.aether.resolution.ArtifactRequest;
-import org.sonatype.aether.resolution.ArtifactResolutionException;
-import org.sonatype.aether.resolution.ArtifactResult;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.resolution.ArtifactDescriptorException;
+import org.eclipse.aether.resolution.ArtifactDescriptorRequest;
+import org.eclipse.aether.resolution.ArtifactDescriptorResult;
+import org.eclipse.aether.resolution.ArtifactRequest;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.ArtifactResult;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

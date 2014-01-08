@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+import org.eclipse.aether.util.artifact.JavaScopes;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.graph.Node;
 import org.nuxeo.build.maven.graph.PrintDependencyVisitor;
@@ -48,8 +49,8 @@ public class PrintGraphTask extends Task {
 
     private String source;
 
-    private List<String> scopes = Arrays.asList(new String[] { "compile",
-            "runtime", "system" });
+    private List<String> scopes = Arrays.asList(new String[] {
+            JavaScopes.COMPILE, JavaScopes.RUNTIME, JavaScopes.SYSTEM });
 
     @Override
     public void execute() throws BuildException {
@@ -98,8 +99,10 @@ public class PrintGraphTask extends Task {
     }
 
     /**
-     * @param mode print as tree if true, else print flat
      * @since 1.10.2
+     * @see {@link PrintDependencyVisitor#MODE_FLAT}
+     *      {@link PrintDependencyVisitor#MODE_TREE}
+     *      {@link PrintDependencyVisitor#MODE_SDK}
      */
     public void setMode(String mode) {
         if (PrintDependencyVisitor.MODE_SDK.equals(mode)) {

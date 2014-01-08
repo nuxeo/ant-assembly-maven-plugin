@@ -19,7 +19,7 @@ package org.nuxeo.build.maven.filter;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
-import org.sonatype.aether.graph.DependencyNode;
+import org.eclipse.aether.graph.DependencyNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -40,7 +40,7 @@ public class IsOptionalFilter extends AbstractFilter {
 
     @Override
     public boolean accept(DependencyNode node, List<DependencyNode> parents) {
-        org.sonatype.aether.graph.Dependency dependency = node.getDependency();
+        org.eclipse.aether.graph.Dependency dependency = node.getDependency();
         return result(dependency != null && dependency.isOptional(),
                 node.toString());
     }

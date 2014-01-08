@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
 import org.nuxeo.build.maven.ArtifactDescriptor;
-import org.sonatype.aether.graph.DependencyNode;
+import org.eclipse.aether.graph.DependencyNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>

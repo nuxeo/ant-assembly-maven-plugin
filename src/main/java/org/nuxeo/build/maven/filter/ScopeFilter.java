@@ -19,9 +19,7 @@ package org.nuxeo.build.maven.filter;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.model.Dependency;
-import org.nuxeo.build.maven.graph.Edge;
-import org.sonatype.aether.graph.DependencyNode;
+import org.eclipse.aether.graph.DependencyNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -44,14 +42,6 @@ public class ScopeFilter extends AbstractFilter {
         this.matcher = matcher;
     }
 
-    public boolean accept(Edge edge, Dependency dep) {
-        String scope = dep.getScope();
-        if (scope == null) {
-            return result(matcher == SegmentMatch.ANY, dep.toString());
-        }
-        return result(matcher.match(dep.getScope()), dep.toString());
-    }
-
     @Override
     public boolean accept(Artifact artifact) {
         return result(match(artifact.getScope()), artifact.toString());
@@ -59,7 +49,7 @@ public class ScopeFilter extends AbstractFilter {
 
     @Override
     public boolean accept(DependencyNode node, List<DependencyNode> parents) {
-        org.sonatype.aether.graph.Dependency dependency = node.getDependency();
+        org.eclipse.aether.graph.Dependency dependency = node.getDependency();
         if (dependency == null) {
             return result(matcher == SegmentMatch.ANY, node.toString());
         }

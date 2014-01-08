@@ -18,7 +18,6 @@ package org.nuxeo.build.ant.artifact;
 
 import java.util.Collection;
 
-import org.apache.maven.artifact.Artifact;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.nuxeo.build.maven.AntBuildMojo;
@@ -61,7 +60,6 @@ public class ExpandTask extends Task {
 
     @Override
     public void execute() throws BuildException {
-        // execute(AntBuildMojo.getInstance().newGraph());
         execute(AntBuildMojo.getInstance().getGraph());
     }
 
@@ -78,12 +76,6 @@ public class ExpandTask extends Task {
         for (Node node : nodes) {
             if (!acceptNode(node)) {
                 continue;
-            }
-            // NXBT-320 managed version don't resolve
-            // TODO NXBT-258 still needed?
-            Artifact artifact = node.getArtifact();
-            if (artifact.isSnapshot()) {
-                artifact.setVersion(artifact.getBaseVersion());
             }
             graph.resolveDependencies(node, CompositeFilter.compact(filter),
                     depth);

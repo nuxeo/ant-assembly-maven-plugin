@@ -25,12 +25,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
-import org.apache.maven.artifact.factory.ArtifactFactory;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.artifact.manager.WagonManager;
-import org.apache.maven.artifact.metadata.ArtifactMetadataSource;
 import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactResolver;
 import org.apache.maven.model.Profile;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -50,15 +47,15 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.StringUtils;
+import org.eclipse.aether.RepositorySystem;
+import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.repository.RemoteRepository;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.ant.artifact.Expand;
 import org.nuxeo.build.ant.profile.AntProfileManager;
 import org.nuxeo.build.maven.filter.TrueFilter;
 import org.nuxeo.build.maven.graph.Graph;
 import org.nuxeo.build.maven.graph.Node;
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.repository.RemoteRepository;
 
 /**
  *
@@ -113,8 +110,7 @@ public class AntBuildMojo extends AbstractMojo {
         return system;
     }
 
-    // @Parameter( defaultValue="${repositorySystemSession}" )
-    @Parameter(property = "repositorySystemSession")
+    @Parameter(property = "repositorySystemSession", readonly = true)
     protected RepositorySystemSession repositorySystemSession;
 
     public RepositorySystemSession getRepositorySystemSession() {
@@ -171,28 +167,11 @@ public class AntBuildMojo extends AbstractMojo {
         return remoteArtifactRepositories;
     }
 
-    @Parameter(property = "remoteProjectRepositories")
+    @Parameter(property = "remoteProjectRepositories", readonly = true)
     protected List<RemoteRepository> remoteRepositories;
 
     public List<RemoteRepository> getRemoteRepositories() {
         return remoteRepositories;
-    }
-
-    /**
-     * Used to look up Artifacts in the remote repository.
-     */
-    @Component
-    @Deprecated
-    protected ArtifactFactory factory;
-
-    /**
-     * Used to look up Artifacts in the remote repository.
-     */
-    @Component
-    protected ArtifactResolver resolver;
-
-    public ArtifactResolver getResolver() {
-        return resolver;
     }
 
     @Component
@@ -201,15 +180,6 @@ public class AntBuildMojo extends AbstractMojo {
     @Component
     @Deprecated
     protected MavenProjectBuilder mavenProjectBuilder;
-
-    @Component
-    @Deprecated
-    protected ArtifactMetadataSource metadataSource;
-
-    @Deprecated
-    public ArtifactMetadataSource getMetadataSource() {
-        return metadataSource;
-    }
 
     /**
      * The character encoding scheme to be applied.
@@ -468,15 +438,6 @@ public class AntBuildMojo extends AbstractMojo {
 
     public MavenProject getProject() {
         return project;
-    }
-
-    @Deprecated
-    public ArtifactFactory getArtifactFactory() {
-        return factory;
-    }
-
-    public ArtifactResolver getArtifactResolver() {
-        return resolver;
     }
 
     public ArtifactRepository getLocalRepository() {

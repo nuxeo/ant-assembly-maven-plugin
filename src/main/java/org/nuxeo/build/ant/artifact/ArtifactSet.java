@@ -30,6 +30,7 @@ import org.apache.tools.ant.types.Reference;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
+import org.eclipse.aether.artifact.Artifact;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.filter.AncestorFilter;
 import org.nuxeo.build.maven.filter.AndFilter;
@@ -44,7 +45,6 @@ import org.nuxeo.build.maven.filter.TypeFilter;
 import org.nuxeo.build.maven.filter.VersionFilter;
 import org.nuxeo.build.maven.graph.Graph;
 import org.nuxeo.build.maven.graph.Node;
-import org.sonatype.aether.artifact.Artifact;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -220,7 +220,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
 
             @Override
             public boolean add(Node node) {
-                if (!f.accept(node.getArtifact())) {
+                if (!f.accept(node.getMavenArtifact())) {
                     return false;
                 }
                 return super.add(node);
@@ -229,7 +229,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
             @Override
             public boolean addAll(Collection<? extends Node> c) {
                 for (Node node : c) {
-                    if (f.accept(node.getArtifact())) {
+                    if (f.accept(node.getMavenArtifact())) {
                         super.add(node);
                     }
                 }

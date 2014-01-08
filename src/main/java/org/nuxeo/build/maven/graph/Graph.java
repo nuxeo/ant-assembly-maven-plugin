@@ -18,45 +18,33 @@ package org.nuxeo.build.maven.graph;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.repository.ArtifactRepository;
-import org.apache.maven.artifact.resolver.ArtifactCollector;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
-import org.apache.maven.artifact.resolver.DefaultArtifactCollector;
-import org.apache.maven.artifact.resolver.ResolutionListener;
-import org.apache.maven.artifact.resolver.filter.ArtifactFilter;
 import org.apache.maven.artifact.versioning.OverConstrainedVersionException;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.ProjectBuildingException;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.eclipse.aether.collection.CollectRequest;
+import org.eclipse.aether.collection.CollectResult;
+import org.eclipse.aether.collection.DependencyCollectionException;
+import org.eclipse.aether.graph.DefaultDependencyNode;
+import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.eclipse.aether.resolution.DependencyRequest;
+import org.eclipse.aether.resolution.DependencyResolutionException;
+import org.eclipse.aether.resolution.DependencyResult;
+import org.eclipse.aether.util.artifact.JavaScopes;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.filter.Filter;
 import org.nuxeo.build.maven.filter.VersionManagement;
-import org.sonatype.aether.collection.CollectRequest;
-import org.sonatype.aether.collection.CollectResult;
-import org.sonatype.aether.collection.DependencyCollectionException;
-import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.graph.DependencyNode;
-import org.sonatype.aether.resolution.DependencyRequest;
-import org.sonatype.aether.resolution.DependencyResolutionException;
-import org.sonatype.aether.resolution.DependencyResult;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.sonatype.aether.util.graph.DefaultDependencyNode;
-import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -68,19 +56,22 @@ public class Graph {
 
     public final LinkedList<Node> roots = new LinkedList<>();
 
-    protected Map<String, Artifact> file2artifacts = new HashMap<>();
-
     // manage versions from dependency management -> lazy initialized when
     // required. (by calling artifact:resolveFile without a version)
+    // TODO NXBT-258 Still used?
     protected VersionManagement vmgr = new VersionManagement();
 
+    /**
+     * @deprecated
+     */
+    @Deprecated
     public VersionManagement getVersionManagement() {
         return vmgr;
     }
 
     protected boolean shouldLoadDependencyManagement = false;
 
-    private AntBuildMojo mojo;
+    private AntBuildMojo mojo = AntBuildMojo.getInstance();
 
     public void setShouldLoadDependencyManagement(
             boolean shouldLoadDependencyManagement) {
@@ -97,14 +88,6 @@ public class Graph {
 
     public Collection<Node> getNodes() {
         return nodes.values();
-    }
-
-    public Artifact getArtifactByFile(String fileName) {
-        return file2artifacts.get(fileName);
-    }
-
-    public Graph() {
-        mojo = AntBuildMojo.getInstance();
     }
 
     public Node[] getNodesArray() {
@@ -162,15 +145,8 @@ public class Graph {
     public Node addRootNode(MavenProject pom, Artifact artifact) {
         Node node = nodes.get(Node.genNodeId(artifact));
         if (node == null) {
-            String scope = artifact.getScope() != null ? artifact.getScope()
-                    : "compile";
-            AntClient.getInstance().log(
-                    "artifact.getScope(): " + artifact.getScope(),
-                    Project.MSG_DEBUG);
             DefaultDependencyNode newNode = new DefaultDependencyNode(
-                    new Dependency(new DefaultArtifact(artifact.getGroupId(),
-                            artifact.getArtifactId(), artifact.getClassifier(),
-                            artifact.getType(), artifact.getVersion()), scope));
+                    DependencyUtils.mavenToDependency(artifact));
             CollectResult collectResult = collectDependencies(newNode);
             DependencyNode root = collectResult.getRoot();
             node = new Node(this, artifact, pom, root);
@@ -195,14 +171,6 @@ public class Graph {
         }
     }
 
-    private Node lookup(String id) {
-        return nodes.get(id);
-    }
-
-    private Node lookup(Artifact artifact) {
-        return lookup(Node.genNodeId(artifact));
-    }
-
     public Node findNode(ArtifactDescriptor ad) {
         String key = ad.getNodeKeyPattern();
         Collection<Node> nodesToParse = null;
@@ -213,7 +181,7 @@ public class Graph {
         }
         Node returnNode = null;
         for (Node node : nodesToParse) {
-            Artifact artifact = node.getArtifact();
+            Artifact artifact = node.getMavenArtifact();
             if (ad.artifactId != null
                     && !ad.artifactId.equals(artifact.getArtifactId())) {
                 continue;
@@ -230,7 +198,7 @@ public class Graph {
             try {
                 if (returnNode != null
                         && artifact.getSelectedVersion().compareTo(
-                                returnNode.getArtifact().getSelectedVersion()) < 0) {
+                                returnNode.getMavenArtifact().getSelectedVersion()) < 0) {
                     continue;
                 }
             } catch (OverConstrainedVersionException e) {
@@ -240,82 +208,6 @@ public class Graph {
             returnNode = node;
         }
         return returnNode;
-    }
-
-    @Deprecated
-    public MavenProject loadPom(Artifact artifact) {
-        if ("system".equals(artifact.getScope()))
-            return null;
-        try {
-            return mojo.getMavenProjectBuilder().buildFromRepository(
-                    // this create another Artifact instance whose type is 'pom'
-                    mojo.getArtifactFactory().createProjectArtifact(
-                            artifact.getGroupId(), artifact.getArtifactId(),
-                            artifact.getVersion()),
-                    mojo.getRemoteArtifactRepositories(),
-                    mojo.getLocalRepository());
-        } catch (ProjectBuildingException e) {
-            mojo.getLog().error(e.getMessage(), e);
-            return null;
-        }
-    }
-
-    // TODO NXBT-258
-    public void test(DependencyNode node) {
-        // Convert org.apache.maven.artifact.Artifact to
-        // org.sonatype.aether.artifact.Artifact
-        // Artifact artifact = pom.getArtifact();
-        // org.sonatype.aether.artifact.Artifact aetherArtifact = new
-        // DefaultArtifact(
-        // artifact.getGroupId(), artifact.getArtifactId(),
-        // artifact.getClassifier(), artifact.getType(),
-        // artifact.getVersion());
-        // CollectRequest collectRequest = new CollectRequest();
-        // collectRequest.setRoot(new Dependency(aetherArtifact,
-        // artifact.getScope()));
-        CollectRequest collectRequest = new CollectRequest(
-                node.getDependency(), mojo.getRemoteRepositories());
-        DependencyNode root;
-        try {
-            CollectResult collectResult = mojo.getSystem().collectDependencies(
-                    mojo.getRepositorySystemSession(), collectRequest);
-            AntClient.getInstance().log("collectResult: " + collectResult,
-                    Project.MSG_DEBUG);
-            root = collectResult.getRoot();
-            AntClient.getInstance().log("Root: " + root, Project.MSG_DEBUG);
-            AntClient.getInstance().log(
-                    "root.getChildren(): "
-                            + Arrays.toString(root.getChildren().toArray()),
-                    Project.MSG_DEBUG);
-            PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
-            node.accept(nlg);
-            AntClient.getInstance().log(
-                    "nlg.getDependencies(true): "
-                            + Arrays.toString(nlg.getDependencies(true).toArray()),
-                    Project.MSG_DEBUG);
-            AntClient.getInstance().log(
-                    "node.getChildren(): "
-                            + Arrays.toString(node.getChildren().toArray()),
-                    Project.MSG_DEBUG);
-            DependencyRequest dependencyRequest = new DependencyRequest(root,
-                    null);
-            DependencyResult dependencyResult = mojo.getSystem().resolveDependencies(
-                    mojo.getRepositorySystemSession(), dependencyRequest);
-            AntClient.getInstance().log(
-                    "dependencyResult: " + dependencyResult, Project.MSG_DEBUG);
-        } catch (DependencyCollectionException | DependencyResolutionException e) {
-            throw new BuildException(e);
-        }
-        PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
-        root.accept(nlg);
-        AntClient.getInstance().log(
-                "nlg.getDependencies(true): "
-                        + Arrays.toString(nlg.getDependencies(true).toArray()),
-                Project.MSG_DEBUG);
-        AntClient.getInstance().log(
-                "root.getChildren(): "
-                        + Arrays.toString(root.getChildren().toArray()),
-                Project.MSG_DEBUG);
     }
 
     public CollectResult collectDependencies(DependencyNode node) {
@@ -358,14 +250,6 @@ public class Graph {
             AntClient.getInstance().log(
                     "Dependency exceptions: " + result.getCollectExceptions(),
                     Project.MSG_DEBUG);
-            // PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
-            // node.accept(nlg);
-            // AntClient.getInstance().log(.debug(
-            // "All dependencies: "
-            // + Arrays.toString(nlg.getDependencies(true).toArray()));
-            // AntClient.getInstance().log(.debug(
-            // "Direct dependencies: "
-            // + String.valueOf(node.getChildren()));
             return result;
         } catch (DependencyResolutionException e) {
             throw new BuildException("Cannot resolve dependency tree for "
@@ -374,59 +258,20 @@ public class Graph {
     }
 
     /**
-     * TODO NXBT-258 (3)
-     */
-    @Deprecated
-    public void resolveDependencyTree(Artifact artifact, ArtifactFilter filter,
-            ResolutionListener listener) throws ProjectBuildingException {
-        MavenProject mavenProject = mojo.getMavenProjectBuilder().buildFromRepository(
-                artifact, mojo.getRemoteArtifactRepositories(),
-                mojo.getLocalRepository());
-        ArtifactCollector collector = new DefaultArtifactCollector();
-        collector.collect(mavenProject.getDependencyArtifacts(),
-                mavenProject.getArtifact(),
-                mavenProject.getManagedVersionMap(), mojo.getLocalRepository(),
-                mavenProject.getRemoteArtifactRepositories(),
-                mojo.getMetadataSource(), filter,
-                Collections.singletonList(listener));
-    }
-
-    @Deprecated
-    public void resolve(Artifact artifact,
-            List<ArtifactRepository> remoteRepositories)
-            throws ArtifactNotFoundException {
-        if (artifact.isResolved()) {
-            return;
-        }
-        try {
-            mojo.getResolver().resolve(artifact, remoteRepositories,
-                    mojo.getLocalRepository());
-        } catch (ArtifactResolutionException e) {
-            throw new RuntimeException(e);
-        } catch (ArtifactNotFoundException e) {
-            tryResolutionOnLocalBaseVersion(artifact, e);
-        }
-    }
-
-    public void resolve(Artifact artifact) throws ArtifactNotFoundException {
-        resolve(artifact, mojo.getRemoteArtifactRepositories());
-    }
-
-    /**
      * TODO NXBT-258 (1)
      */
     @Deprecated
     public MavenProject load(Artifact artifact) {
-        if ("system".equals(artifact.getScope())) {
+        if (JavaScopes.SYSTEM.equals(artifact.getScope())) {
             return null;
         }
         try {
-            resolve(artifact);
+            DependencyUtils.resolve(artifact);
             // TODO NXBT-258 use {@link ProjectBuilder} instead
             return mojo.getMavenProjectBuilder().buildFromRepository(artifact,
                     mojo.getRemoteArtifactRepositories(),
                     mojo.getLocalRepository());
-        } catch (ProjectBuildingException | ArtifactNotFoundException e) {
+        } catch (ProjectBuildingException | ArtifactResolutionException e) {
             mojo.getLog().error("Error loading POM of " + artifact, e);
             return null;
         }

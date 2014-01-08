@@ -24,17 +24,16 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.DataType;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
+import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.resolution.DependencyResult;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.filter.AndFilter;
 import org.nuxeo.build.maven.filter.CompositeFilter;
 import org.nuxeo.build.maven.filter.Filter;
-import org.nuxeo.build.maven.graph.AttachmentNode;
 import org.nuxeo.build.maven.graph.Graph;
 import org.nuxeo.build.maven.graph.Node;
-import org.sonatype.aether.artifact.Artifact;
-import org.sonatype.aether.resolution.ArtifactResult;
-import org.sonatype.aether.resolution.DependencyResult;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -117,10 +116,6 @@ public class ArtifactDependencies extends DataType implements
             if (node == null) {
                 throw new BuildException("Artifact with pattern "
                         + (key != null ? key : ad) + " was not found in graph");
-            }
-            if (ad.classifier != null) {
-                // create a virtual node that points to the attachment
-                node = new AttachmentNode(node, ad.classifier);
             }
         }
         return node;

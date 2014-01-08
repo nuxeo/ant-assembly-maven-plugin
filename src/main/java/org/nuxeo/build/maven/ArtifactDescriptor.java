@@ -16,15 +16,24 @@
  */
 package org.nuxeo.build.maven;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.maven.artifact.Artifact;
+import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.util.artifact.JavaScopes;
 import org.nuxeo.build.maven.graph.DependencyUtils;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * @see org.eclipse.aether.util.artifact.ArtifactIdUtils
+ *      org.eclipse.aether.artifact.DefaultArtifact
+ *      org.eclipse.aether.graph.Dependency
  */
 public class ArtifactDescriptor {
+
+    protected static final String KEY_PATTERN = "(?<groupId>[^: ]+):(?<artifactId>[^: ]+)"
+            + "(?::(?<version>[^: ]*)(?::(?<type>[^: ]*)(?::(?<classifier>[^: ]*)(?::(?<scope>[^: ]*))?)?)?)?";
 
     public String groupId = null;
 
@@ -36,7 +45,9 @@ public class ArtifactDescriptor {
 
     public String classifier = null;
 
-    public String scope = "compile";
+    public String scope = JavaScopes.COMPILE;
+
+    protected final Pattern adPattern = Pattern.compile(KEY_PATTERN);
 
     public static ArtifactDescriptor emptyDescriptor() {
         ArtifactDescriptor ad = new ArtifactDescriptor();
@@ -57,48 +68,35 @@ public class ArtifactDescriptor {
         this.classifier = classifier;
     }
 
-    public ArtifactDescriptor(String expr) {
-        parse(expr);
-    }
-
-    public void parse(String expr) {
-        String[] result = expr.split(":");
-        if (result.length > 5) {
-            scope = "".equals(result[5]) ? "compile" : result[5];
-        }
-        if (result.length > 4) {
-            classifier = "".equals(result[4]) ? null : result[4];
-        }
-        if (result.length > 3) {
-            type = "".equals(result[3]) ? "jar" : result[3];
-        }
-        if (result.length > 2) {
-            version = "".equals(result[2]) ? null : result[2];
-        }
-        if (result.length > 1) {
-            artifactId = "".equals(result[1]) ? null : result[1];
-        }
-        if (result.length > 0) {
-            groupId = "".equals(result[0]) ? null : result[0];
-        }
-    }
-
     /**
-     * @deprecated since 2.0
+     * @param key Key for an artifact or a dependency with pattern
+     *            &lt;groupId&gt
+     *            ;:&lt;artifactId&gt;[:&lt;version&gt;[:&lt;type&gt
+     *            ;[:&lt;classifier&gt;[:&lt;scope&gt;]]]]
+     * @see #KEY_PATTERN
      */
-    @Deprecated
-    public Artifact toBuildArtifact() {
-        return AntBuildMojo.getInstance().getArtifactFactory().createBuildArtifact(
-                groupId, artifactId, version, type);
-    }
-
-    /**
-     * @deprecated since 2.0
-     */
-    @Deprecated
-    public Artifact toArtifactWithClassifier() {
-        return AntBuildMojo.getInstance().getArtifactFactory().createArtifactWithClassifier(
-                groupId, artifactId, version, type, classifier);
+    public ArtifactDescriptor(String key) {
+        Matcher m = adPattern.matcher(key);
+        if (!m.matches()) {
+            throw new IllegalArgumentException(
+                    String.format("Invalid key '%s', expected format is '%s'",
+                            key,
+                            "<groupId>:<artifactId>[:<version>[:<type>[:<classifier>[:<scope>]]]]"));
+        }
+        groupId = m.group("groupId");
+        artifactId = m.group("artifactId");
+        if (m.group("version") != null && !m.group("version").isEmpty()) {
+            version = m.group("version");
+        }
+        if (m.group("type") != null && !m.group("type").isEmpty()) {
+            type = m.group("type");
+        }
+        if (m.group("classifier") != null && !m.group("classifier").isEmpty()) {
+            classifier = m.group("classifier");
+        }
+        if (m.group("scope") != null && !m.group("scope").isEmpty()) {
+            scope = m.group("scope");
+        }
     }
 
     public String getNodeKeyPattern() {
@@ -138,27 +136,14 @@ public class ArtifactDescriptor {
      * @since 1.10.2
      */
     public Artifact getArtifact() {
-        org.sonatype.aether.artifact.Artifact aetherArtifact = getAetherArtifact();
-        return DependencyUtils.aetherToMavenArtifact(aetherArtifact, scope);
-    }
-
-    /**
-     * Should be equivalent to {@link #getArtifact()}...
-     *
-     * @return ArtifactFactory().createBuildArtifact()
-     * @since 1.10.2
-     * @Deprecated
-     */
-    @Deprecated
-    public Artifact getBuildArtifact() {
-        return AntBuildMojo.getInstance().getArtifactFactory().createBuildArtifact(
-                groupId, artifactId, version, type);
+        org.eclipse.aether.artifact.Artifact aetherArtifact = getAetherArtifact();
+        return DependencyUtils.aetherToMaven(aetherArtifact, scope);
     }
 
     /**
      * @since 2.0
      */
-    public org.sonatype.aether.artifact.Artifact getAetherArtifact() {
+    public org.eclipse.aether.artifact.Artifact getAetherArtifact() {
         return new DefaultArtifact(groupId, artifactId, classifier, type,
                 version);
     }

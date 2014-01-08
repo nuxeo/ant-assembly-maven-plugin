@@ -19,7 +19,7 @@ package org.nuxeo.build.maven.filter;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
-import org.sonatype.aether.graph.DependencyNode;
+import org.eclipse.aether.graph.DependencyNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -49,12 +49,11 @@ public class TypeFilter extends AbstractFilter {
 
     @Override
     public boolean accept(DependencyNode node, List<DependencyNode> parents) {
-        org.sonatype.aether.graph.Dependency dependency = node.getDependency();
-        if (dependency == null) {
+        org.eclipse.aether.artifact.Artifact artifact = node.getArtifact();
+        if (artifact == null) {
             return result(matcher == SegmentMatch.ANY, node.toString());
         }
-        return result(matcher.match(dependency.getArtifact().getExtension()),
-                node.toString());
+        return result(matcher.match(artifact.getExtension()), node.toString());
     }
 
 }

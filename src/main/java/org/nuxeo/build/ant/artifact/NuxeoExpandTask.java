@@ -24,11 +24,12 @@ import java.util.StringTokenizer;
 import org.apache.maven.artifact.Artifact;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.util.artifact.JavaScopes;
 import org.nuxeo.build.maven.filter.Filter;
 import org.nuxeo.build.maven.filter.GroupIdFilter;
 import org.nuxeo.build.maven.filter.NotFilter;
 import org.nuxeo.build.maven.graph.Node;
-import org.sonatype.aether.graph.DependencyNode;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -70,11 +71,11 @@ public class NuxeoExpandTask extends ExpandTask {
 
     @Override
     public void execute() throws BuildException {
-        getIncludedScopes().put("compile", includeCompileScope);
-        getIncludedScopes().put("provided", includeProvidedScope);
-        getIncludedScopes().put("runtime", includeRuntimeScope);
-        getIncludedScopes().put("test", includeTestScope);
-        getIncludedScopes().put("system", includeSystemScope);
+        getIncludedScopes().put(JavaScopes.COMPILE, includeCompileScope);
+        getIncludedScopes().put(JavaScopes.PROVIDED, includeProvidedScope);
+        getIncludedScopes().put(JavaScopes.RUNTIME, includeRuntimeScope);
+        getIncludedScopes().put(JavaScopes.TEST, includeTestScope);
+        getIncludedScopes().put(JavaScopes.SYSTEM, includeSystemScope);
 
         filter.addFilter(new Filter() {
 
