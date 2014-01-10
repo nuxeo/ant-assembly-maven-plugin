@@ -19,6 +19,7 @@ package org.nuxeo.build.ant.artifact;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import org.apache.maven.artifact.Artifact;
@@ -27,8 +28,6 @@ import org.apache.tools.ant.Project;
 import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.util.artifact.JavaScopes;
 import org.nuxeo.build.maven.filter.Filter;
-import org.nuxeo.build.maven.filter.GroupIdFilter;
-import org.nuxeo.build.maven.filter.NotFilter;
 import org.nuxeo.build.maven.graph.Node;
 
 /**
@@ -37,7 +36,7 @@ import org.nuxeo.build.maven.graph.Node;
  */
 public class NuxeoExpandTask extends ExpandTask {
 
-    private HashMap<String, Boolean> includedScopes = new HashMap<>();
+    private Map<String, Boolean> includedScopes = new HashMap<>();
 
     private boolean includeCompileScope = true;
 
@@ -100,7 +99,11 @@ public class NuxeoExpandTask extends ExpandTask {
         });
         // NXBT-258: range versions should not be an issue anymore
         // filter.addFilter(new NotFilter(new VersionFilter("[*)")));
-        filter.addFilter(new NotFilter(new GroupIdFilter("org.nuxeo.build")));
+        // AndFilter andFilter = new AndFilter();
+        // andFilter.addFilter(new GroupIdFilter("org.nuxeo.build"));
+        // andFilter.addFilter(new
+        // ArtifactIdFilter("ant-assembly-maven-plugin"));
+        // filter.addFilter(new NotFilter(andFilter));
         super.execute();
     }
 
@@ -117,7 +120,7 @@ public class NuxeoExpandTask extends ExpandTask {
     /**
      * @since 1.10.2
      */
-    protected HashMap<String, Boolean> getIncludedScopes() {
+    protected Map<String, Boolean> getIncludedScopes() {
         return includedScopes;
     }
 

@@ -16,29 +16,25 @@
  */
 package org.nuxeo.build.ant.artifact;
 
-
-
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
  */
 public class Expand extends FiltersCollection {
-    
-    public int depth = 1; // TRUE
+
+    public int depth = Integer.MAX_VALUE;
 
     public void setDepth(String expand) {
         depth = readExpand(expand);
     }
 
     public static int readExpand(String expand) {
-        int exp = 0;
-        if ("all".equals(expand)) {
+        int exp;
+        if ("all".equals(expand) || "true".equals(expand)) {
             exp = Integer.MAX_VALUE;
         } else if ("false".equals(expand)) {
             exp = 0;
-        } else if ("true".equals(expand)) {
-            exp = 1;
-        }else {
+        } else {
             exp = Integer.parseInt(expand);
         }
         return exp;

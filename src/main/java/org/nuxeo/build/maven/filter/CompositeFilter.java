@@ -25,6 +25,8 @@ import org.apache.tools.ant.Project;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  *
@@ -50,6 +52,10 @@ public abstract class CompositeFilter extends AbstractFilter {
 
     public void addFilters(List<Filter> filtersToAdd) {
         this.filters.addAll(filtersToAdd);
+    }
+
+    public void addFilters(Filter... filtersToAdd) {
+        this.filters.addAll(Arrays.asList(filtersToAdd));
     }
 
     public void removeFilters(@SuppressWarnings("hiding") List<Filter> filters) {
@@ -94,7 +100,7 @@ public abstract class CompositeFilter extends AbstractFilter {
     public static Filter compact(CompositeFilter filter) {
         Filter result = filter;
         CompositeFilter cf = filter;
-        if (cf.filters.size() == 1) {
+        if (cf != null && cf.filters.size() == 1) {
             result = cf.filters.get(0);
             if (result instanceof CompositeFilter) {
                 result = compact((CompositeFilter) result);

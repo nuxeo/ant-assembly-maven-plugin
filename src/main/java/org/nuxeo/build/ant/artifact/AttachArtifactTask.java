@@ -20,11 +20,13 @@ package org.nuxeo.build.ant.artifact;
 
 import java.io.File;
 
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.MavenProjectHelper;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
+import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
-import org.nuxeo.build.maven.graph.Node;
 
 /**
  * Attaches the artifact to Maven.
@@ -38,8 +40,6 @@ public class AttachArtifactTask extends Task {
     private String classifier;
 
     private String type;
-
-    private String targetArtifact;
 
     /**
      * The file to be treated as an artifact.
@@ -56,8 +56,16 @@ public class AttachArtifactTask extends Task {
         this.classifier = "".equals(classifier) ? null : classifier;
     }
 
+    /**
+     * @deprecated since 2.0 Attach now only works on the current
+     *             {@link MavenProject}
+     * @see AntBuildMojo#getProject()
+     */
+    @Deprecated
     public void setTarget(String artifactKey) {
-        this.targetArtifact = artifactKey;
+        AntClient.getInstance().log(
+                "The target parameter is deprecated and ignored. The attach task now only applies to the current project.",
+                Project.MSG_WARN);
     }
 
     /**
@@ -70,31 +78,20 @@ public class AttachArtifactTask extends Task {
 
     @Override
     public void execute() throws BuildException {
-        if (targetArtifact == null) {
-            throw new BuildException("Target artifact not set");
-        }
-        final Node node = AntBuildMojo.getInstance().getGraph().findFirst(
-                targetArtifact, true);
-        if (node == null) {
-            throw new BuildException("No such artifact found: "
-                    + targetArtifact);
-        }
-        log("Attaching " + file + " to " + targetArtifact, Project.MSG_INFO);
+        MavenProject pom = AntBuildMojo.getInstance().getProject();
+        log("Attaching " + file + " to " + pom, Project.MSG_INFO);
         if (type == null) {
             type = getExtension(file.getName());
-            log("Unspecified type, guessing is: " + type, Project.MSG_WARN);
+            log("Unspecified type, using: " + type, Project.MSG_WARN);
         }
-        if (classifier != null) {
-            AntBuildMojo.getInstance().getProjectHelper().attachArtifact(
-                    node.getPom(), type, classifier, file);
-        } else {
-            node.getPom().getArtifact().setFile(file);
-            node.getPom().getArtifact().setResolved(true);
-            // maven.getProjectHelper().attachArtifact(node.getPom(), type,
-            // file);
-        }
+        AntBuildMojo.getInstance().getProjectHelper().attachArtifact(pom, type,
+                classifier, file);
     }
 
+    /**
+     * Guess type from the file extension whereas the default implementation of
+     * {@link MavenProjectHelper} defaults to "jar".
+     */
     private String getExtension(String name) {
         int idx = name.lastIndexOf('.');
         return name.substring(idx + 1);

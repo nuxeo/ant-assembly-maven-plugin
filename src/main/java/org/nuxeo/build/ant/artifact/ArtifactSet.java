@@ -31,6 +31,9 @@ import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.resolution.DependencyResult;
+import org.eclipse.aether.util.graph.visitor.PostorderNodeListGenerator;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.filter.AncestorFilter;
 import org.nuxeo.build.maven.filter.AndFilter;
@@ -253,8 +256,6 @@ public class ArtifactSet extends DataType implements ResourceCollection {
     }
 
     protected Collection<Node> computeNodes() {
-        Graph graph = AntBuildMojo.getInstance().getGraph();
-        Filter finalFilter = buildFilter();
         Collection<Node> roots = new ArrayList<>();
         if (src != null) {
             collectImportedNodes(roots);
@@ -269,46 +270,33 @@ public class ArtifactSet extends DataType implements ResourceCollection {
                 roots.addAll(arti.getNodes());
             }
         }
+        Graph graph;
         if (roots.isEmpty()) {
-            roots = graph.getNodes();
-        }
-
-        if (finalFilter != Filter.ANY) {
-            List<Node> resultNodes = new ArrayList<>();
-            for (Node node : roots) {
-                if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                    log("Filtering - " + node + " ...", Project.MSG_DEBUG);
-                }
-                if (finalFilter.accept(node, node.getParents())) {
-                    resultNodes.add(node);
-                    if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                        log("Filtering - accepted " + node, Project.MSG_DEBUG);
-                    }
-                } else {
-                    if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                        log("Filtering - refused " + node, Project.MSG_DEBUG);
-                    }
-                }
+            graph = AntBuildMojo.getInstance().newGraph();
+        } else {
+            graph = new Graph();
+            for (Node root : roots) {
+                graph.addRootNode(root);
             }
-            roots = resultNodes;
         }
+        Filter finalFilter = buildFilter();
+        int depth = Integer.MAX_VALUE;
         if (expand != null) {
-            List<Node> resultNodes = new ArrayList<>();
-            if (expand.filter != null) {
-                Filter expandFilter = CompositeFilter.compact(expand.filter);
-                for (Node root : roots) {
-                    // TODO NXBT-258
-                    collectNodes(resultNodes, root, expandFilter, expand.depth);
-                }
-            } else {
-                for (Node root : roots) {
-                    // TODO NXBT-258
-                    collectNodes(resultNodes, root, expand.depth);
-                }
-            }
-            roots.addAll(resultNodes);
+            expand.filter.addFilter(finalFilter);
+            finalFilter = CompositeFilter.compact(expand.filter);
+            depth = expand.depth;
         }
-        return roots;
+        PostorderNodeListGenerator nlg = new PostorderNodeListGenerator();
+        for (Node node : graph.getRoots()) {
+            DependencyResult result = graph.resolveDependencies(node,
+                    finalFilter, depth);
+            result.getRoot().accept(nlg);
+        }
+        Collection<Node> resultNodes = new ArrayList<>();
+        for (Dependency dependency : nlg.getDependencies(true)) {
+            resultNodes.add(graph.getNode(dependency));
+        }
+        return resultNodes;
     }
 
     public Collection<Node> getNodes() {
@@ -333,12 +321,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
 
     public static Iterator<Resource> createIterator(Collection<Node> nodes) {
         List<Resource> files = new ArrayList<>();
-        // Graph graph = AntBuildMojo.getInstance().getGraph();
-        // List<Node> roots = graph.getRoots();
         for (Node node : nodes) {
-            // if (roots.contains(node)) {
-            // continue;
-            // }
             File file = node.getFile();
             if (file != null) {
                 FileResource fr = new FileResource(file);
@@ -382,37 +365,6 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         } catch (IOException e) {
             throw new BuildException("Failed to import artifacts file: " + src,
                     e);
-        }
-    }
-
-    /**
-     * @deprecated since 2.0
-     */
-    @Deprecated
-    public static void collectNodes(Collection<Node> nodes, Node node,
-            Filter filter, int depth) {
-        nodes.add(node);
-        if (depth > 0) {
-            depth--;
-            // for (Edge edge : node.getEdgesOut()) {
-            // if (filter.accept(edge)) {
-            // collectNodes(nodes, edge.out, filter, depth);
-            // }
-            // }
-        }
-    }
-
-    /**
-     * @deprecated since 2.0
-     */
-    @Deprecated
-    public static void collectNodes(Collection<Node> nodes, Node node, int depth) {
-        nodes.add(node);
-        if (depth > 0) {
-            depth--;
-            // for (Edge edge : node.getEdgesOut()) {
-            // collectNodes(nodes, edge.out, depth);
-            // }
         }
     }
 

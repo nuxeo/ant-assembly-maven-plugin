@@ -46,7 +46,7 @@ public class ArtifactDependencies extends DataType implements
 
     protected Node node;
 
-    protected List<Artifact> nodes;
+    protected List<Artifact> artifacts;
 
     public String key;
 
@@ -59,15 +59,7 @@ public class ArtifactDependencies extends DataType implements
     public Excludes excludes;
 
     public void setDepth(String depth) {
-        if ("all".equals(depth)) {
-            this.depth = Integer.MAX_VALUE;
-        } else {
-            this.depth = Integer.parseInt(depth);
-            if (this.depth == 0) {
-                throw new IllegalArgumentException(
-                        "0 is not a valid value for depth");
-            }
-        }
+        this.depth = Expand.readExpand(depth);
     }
 
     public void addExcludes(@SuppressWarnings("hiding") Excludes excludes) {
@@ -122,7 +114,7 @@ public class ArtifactDependencies extends DataType implements
     }
 
     public List<Artifact> getArtifacts() {
-        if (nodes == null) {
+        if (artifacts == null) {
             Filter filter = null;
             if (includes != null || excludes != null) {
                 AndFilter andf = new AndFilter();
@@ -137,14 +129,14 @@ public class ArtifactDependencies extends DataType implements
             // make sure node is expanded
             // if not already expanded, this expand may not be done correctly
             DependencyResult result = graph.resolveDependencies(getNode(),
-                    filter, Integer.MAX_VALUE);
+                    filter, depth);
             List<ArtifactResult> results = result.getArtifactResults();
-            nodes = new ArrayList<>();
+            artifacts = new ArrayList<>();
             for (ArtifactResult artifactResult : results) {
-                nodes.add(artifactResult.getArtifact());
+                artifacts.add(artifactResult.getArtifact());
             }
         }
-        return nodes;
+        return artifacts;
     }
 
     @Override

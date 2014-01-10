@@ -29,7 +29,6 @@ import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
-import org.eclipse.aether.util.artifact.JavaScopes;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 
@@ -123,9 +122,9 @@ public class DependencyUtils {
 
     public static Dependency mavenToDependency(
             org.apache.maven.artifact.Artifact artifact) {
-        String scope = artifact.getScope() != null ? artifact.getScope()
-                : JavaScopes.COMPILE;
-        return new Dependency(DependencyUtils.mavenToAether(artifact), scope);
+        // String scope = artifact.getScope() != null ? artifact.getScope()
+        // : JavaScopes.COMPILE;
+        return new Dependency(mavenToAether(artifact), artifact.getScope());
     }
 
 }

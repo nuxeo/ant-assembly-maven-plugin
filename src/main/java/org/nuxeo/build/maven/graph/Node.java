@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.project.MavenProject;
 import org.apache.tools.ant.Project;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.DependencyNode;
@@ -46,14 +45,16 @@ public class Node implements DependencyNode {
     protected final String id;
 
     @Deprecated
-    protected final Artifact artifact;
-
-    protected final MavenProject pom;
-
     private List<char[]> acceptedCategories;
 
-    private DependencyNode dependencyNode;
+    private List<DependencyNode> parents = new ArrayList<>();
 
+    protected DependencyNode dependencyNode;
+
+    /**
+     * @deprecated since 2.0
+     */
+    @Deprecated
     public List<char[]> getAcceptedCategories() {
         if (acceptedCategories == null) {
             acceptedCategories = new ArrayList<>();
@@ -75,46 +76,37 @@ public class Node implements DependencyNode {
         return sb.toString();
     }
 
+    public static String genNodeId(Dependency dependency) {
+        org.eclipse.aether.artifact.Artifact artifact = dependency.getArtifact();
+        StringBuilder sb = new StringBuilder();
+        sb.append(artifact.getGroupId());
+        sb.append(':').append(artifact.getArtifactId());
+        sb.append(':').append(artifact.getVersion());
+        sb.append(':').append(artifact.getExtension());
+        sb.append(':');
+        if (artifact.getClassifier() != null) {
+            sb.append(artifact.getClassifier());
+        }
+        sb.append(':').append(dependency.getScope());
+        return sb.toString();
+    }
+
     public Node(Node node) {
         this.dependencyNode = node.dependencyNode;
         this.id = node.id;
         this.graph = node.graph;
-        this.artifact = node.artifact;
-        this.pom = node.pom;
-    }
-
-    protected Node(Graph graph, Artifact artifact, MavenProject pom,
-            DependencyNode dependencyNode) {
-        this.graph = graph;
-        this.artifact = artifact;
-        this.pom = pom;
-        this.dependencyNode = dependencyNode;
-        this.id = genNodeId(artifact);
+        this.acceptedCategories = node.acceptedCategories;
+        this.parents = node.parents;
     }
 
     /**
-     * @param graph2
-     * @param child
      * @since 2.0
      */
     public Node(Graph graph, DependencyNode dependencyNode) {
-        this(
-                graph,
-                DependencyUtils.toMavenArtifact(dependencyNode.getDependency()),
-                null, dependencyNode);
+        this.graph = graph;
+        this.dependencyNode = dependencyNode;
+        this.id = genNodeId(dependencyNode.getDependency());
     }
-
-    protected static final int UNKNOWN = 0;
-
-    protected static final int INCLUDED = 1;
-
-    protected static final int OMITTED = 2;
-
-    protected static final int FILTERED = 3;
-
-    protected int state = UNKNOWN;
-
-    private List<DependencyNode> parents = new ArrayList<>();
 
     public Artifact getMavenArtifact() {
         return DependencyUtils.toMavenArtifact(getDependency());
@@ -135,14 +127,6 @@ public class Node implements DependencyNode {
 
     public String getId() {
         return id;
-    }
-
-    public MavenProject getPom() {
-        return pom;
-    }
-
-    public MavenProject getPomIfAlreadyLoaded() {
-        return pom;
     }
 
     @Override
@@ -168,7 +152,9 @@ public class Node implements DependencyNode {
 
     /**
      * @param pattern
+     * @deprecated since 2.0
      */
+    @Deprecated
     public void setAcceptedCategory(char[] pattern) {
         getAcceptedCategories().add(pattern);
     }
@@ -176,7 +162,9 @@ public class Node implements DependencyNode {
     /**
      * @param patterns
      * @return true if at least one pattern has been accepted
+     * @deprecated since 2.0
      */
+    @Deprecated
     public boolean isAcceptedCategory(List<char[]> patterns) {
         for (char[] pattern : patterns) {
             if (getAcceptedCategories().contains(pattern)) {
@@ -257,6 +245,7 @@ public class Node implements DependencyNode {
         return dependencyNode.accept(visitor);
     }
 
+    @Deprecated
     public List<DependencyNode> getParents() {
         return this.parents;
     }

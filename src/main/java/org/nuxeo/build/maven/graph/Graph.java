@@ -27,24 +27,22 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.versioning.OverConstrainedVersionException;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.ProjectBuildingException;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.collection.CollectResult;
 import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.graph.DefaultDependencyNode;
+import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.DependencyNode;
-import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.DependencyRequest;
 import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.resolution.DependencyResult;
-import org.eclipse.aether.util.artifact.JavaScopes;
+import org.eclipse.aether.util.artifact.SubArtifact;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.filter.Filter;
-import org.nuxeo.build.maven.filter.VersionManagement;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -56,31 +54,7 @@ public class Graph {
 
     public final LinkedList<Node> roots = new LinkedList<>();
 
-    // manage versions from dependency management -> lazy initialized when
-    // required. (by calling artifact:resolveFile without a version)
-    // TODO NXBT-258 Still used?
-    protected VersionManagement vmgr = new VersionManagement();
-
-    /**
-     * @deprecated
-     */
-    @Deprecated
-    public VersionManagement getVersionManagement() {
-        return vmgr;
-    }
-
-    protected boolean shouldLoadDependencyManagement = false;
-
     private AntBuildMojo mojo = AntBuildMojo.getInstance();
-
-    public void setShouldLoadDependencyManagement(
-            boolean shouldLoadDependencyManagement) {
-        this.shouldLoadDependencyManagement = shouldLoadDependencyManagement;
-    }
-
-    public boolean shouldLoadDependencyManagement() {
-        return shouldLoadDependencyManagement;
-    }
 
     public List<Node> getRoots() {
         return roots;
@@ -88,10 +62,6 @@ public class Graph {
 
     public Collection<Node> getNodes() {
         return nodes.values();
-    }
-
-    public Node[] getNodesArray() {
-        return nodes.values().toArray(new Node[nodes.size()]);
     }
 
     public Node findFirst(String pattern) {
@@ -130,13 +100,7 @@ public class Graph {
 
     public Node addRootNode(String key) {
         ArtifactDescriptor ad = new ArtifactDescriptor(key);
-        Artifact artifact = ad.getArtifact();
-        return addRootNode(artifact);
-    }
-
-    public Node addRootNode(Artifact artifact) {
-        MavenProject pom = load(artifact);
-        return addRootNode(pom, artifact);
+        return addRootNode(ad.getDependency());
     }
 
     /**
@@ -145,16 +109,45 @@ public class Graph {
     public Node addRootNode(MavenProject pom, Artifact artifact) {
         Node node = nodes.get(Node.genNodeId(artifact));
         if (node == null) {
-            DefaultDependencyNode newNode = new DefaultDependencyNode(
-                    DependencyUtils.mavenToDependency(artifact));
-            CollectResult collectResult = collectDependencies(newNode);
-            DependencyNode root = collectResult.getRoot();
-            node = new Node(this, artifact, pom, root);
-            addNode(node);
-            roots.add(node);
-            AntClient.getInstance().log("Added root node: " + node,
-                    Project.MSG_DEBUG);
+            org.eclipse.aether.artifact.Artifact aetherArtifact = DependencyUtils.mavenToAether(artifact);
+            org.eclipse.aether.artifact.Artifact pomArtifact = new SubArtifact(
+                    aetherArtifact, null, "pom", pom.getFile());
+            Dependency dependency = new Dependency(pomArtifact,
+                    artifact.getScope());
+            addRootNode(dependency);
         }
+        return node;
+    }
+
+    /**
+     * @since 2.0
+     */
+    public Node addRootNode(Dependency dependency) {
+        Node node = nodes.get(Node.genNodeId(dependency));
+        if (node == null) {
+            DependencyNode newNode = new DefaultDependencyNode(dependency);
+            node = addRootNode(newNode);
+        }
+        return node;
+    }
+
+    /**
+     * @since 2.0
+     */
+    public Node addRootNode(Node node) {
+        if (!nodes.containsKey(node.id)) {
+            node = addRootNode((DependencyNode) node);
+        }
+        return nodes.get(node.id);
+    }
+
+    private Node addRootNode(DependencyNode dependencyNode) {
+        CollectResult collectResult = collectDependencies(dependencyNode);
+        Node node = new Node(this, collectResult.getRoot());
+        addNode(node);
+        roots.add(node);
+        AntClient.getInstance().log("Added root node: " + node,
+                Project.MSG_DEBUG);
         return node;
     }
 
@@ -258,26 +251,6 @@ public class Graph {
     }
 
     /**
-     * TODO NXBT-258 (1)
-     */
-    @Deprecated
-    public MavenProject load(Artifact artifact) {
-        if (JavaScopes.SYSTEM.equals(artifact.getScope())) {
-            return null;
-        }
-        try {
-            DependencyUtils.resolve(artifact);
-            // TODO NXBT-258 use {@link ProjectBuilder} instead
-            return mojo.getMavenProjectBuilder().buildFromRepository(artifact,
-                    mojo.getRemoteArtifactRepositories(),
-                    mojo.getLocalRepository());
-        } catch (ProjectBuildingException | ArtifactResolutionException e) {
-            mojo.getLog().error("Error loading POM of " + artifact, e);
-            return null;
-        }
-    }
-
-    /**
      * Try to locally resolve an artifact with its "unique" version.
      *
      * @since 1.11.1
@@ -305,6 +278,13 @@ public class Graph {
             mojo.getLog().warn("Cannot resolve " + artifact, e);
             throw e;
         }
+    }
+
+    /**
+     * @since 2.0
+     */
+    public Node getNode(Dependency dependency) {
+        return nodes.get(Node.genNodeId(dependency));
     }
 
 }

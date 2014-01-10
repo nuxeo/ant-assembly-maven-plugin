@@ -102,6 +102,8 @@ public class PrintGraphTask extends Task {
             if (output != null) {
                 out = new FileOutputStream(output, append);
             }
+            // TODO NXBT-258 see DependencyFilterUtils.classpathFilter( JavaScopes.COMPILE );
+            // system.resolveDependencies( session, dependencyRequest ).getArtifactResults();
             AbstractDependencyVisitor pdv;
             if (PrintGraphTask.MODE_TREE.equals(mode)) {
                 pdv = new TreePrinterDependencyVisitor(out, format, scopes);

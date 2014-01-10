@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.util.artifact.JavaScopes;
 import org.nuxeo.build.maven.graph.DependencyUtils;
 
@@ -135,17 +136,27 @@ public class ArtifactDescriptor {
      * @return a "Maven" artifact (versus AetherArtifact)
      * @since 1.10.2
      */
-    public Artifact getArtifact() {
+    public Artifact getMavenArtifact() {
         org.eclipse.aether.artifact.Artifact aetherArtifact = getAetherArtifact();
         return DependencyUtils.aetherToMaven(aetherArtifact, scope);
     }
 
     /**
+     * Prefer use of {@link #getDependency()} to also get the artifact scope.
+     *
      * @since 2.0
      */
     public org.eclipse.aether.artifact.Artifact getAetherArtifact() {
         return new DefaultArtifact(groupId, artifactId, classifier, type,
                 version);
+    }
+
+    /**
+     * @since 2.0
+     */
+    public Dependency getDependency() {
+        return new Dependency(new DefaultArtifact(groupId, artifactId,
+                classifier, type, version), scope);
     }
 
 }

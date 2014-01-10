@@ -264,7 +264,7 @@ public class AntBuildMojo extends AbstractMojo {
             targets = new String[] { target };
         }
         for (File file : buildFiles) {
-            newGraph();
+            graph = newGraph();
             try {
                 if (targets != null && targets.length > 0) {
                     ant.run(file, Arrays.asList(targets));
@@ -300,20 +300,10 @@ public class AntBuildMojo extends AbstractMojo {
      * @since 2.0
      */
     public Graph newGraph(MavenProject pom) {
-        graph = new Graph();
-        graph.addRootNode(pom);
-        expandGraph();
-        return graph;
-    }
-
-    protected void expandGraph() {
-        int depth = Expand.readExpand(expand);
-        if (depth > 0) {
-            Collection<Node> nodes = graph.getRoots();
-            for (Node node : nodes) {
-                graph.resolveDependencies(node, new TrueFilter(), depth);
-            }
-        }
+        Graph newGraph = new Graph();
+        newGraph.addRootNode(pom);
+        expandGraph(newGraph);
+        return newGraph;
     }
 
     /**
@@ -323,10 +313,20 @@ public class AntBuildMojo extends AbstractMojo {
      * @since 2.0
      */
     public Graph newGraph(String key) {
-        graph = new Graph();
-        graph.addRootNode(key);
-        expandGraph();
-        return graph;
+        Graph newGraph = new Graph();
+        newGraph.addRootNode(key);
+        expandGraph(newGraph);
+        return newGraph;
+    }
+
+    protected void expandGraph(Graph newGraph) {
+        int depth = Expand.readExpand(expand);
+        if (depth > 0) {
+            Collection<Node> nodes = newGraph.getRoots();
+            for (Node node : nodes) {
+                newGraph.resolveDependencies(node, new TrueFilter(), depth);
+            }
+        }
     }
 
     /**

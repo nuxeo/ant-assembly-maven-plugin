@@ -34,7 +34,7 @@ public class ExpandTask extends Task {
 
     public String key;
 
-    public int depth = 1;
+    public int depth = Integer.MAX_VALUE;
 
     public AndFilter filter = new AndFilter();
 
@@ -74,6 +74,7 @@ public class ExpandTask extends Task {
             nodes = graph.find(key);
         }
         for (Node node : nodes) {
+            // TODO NXBT-258 use a filter or remove nodes/roots...
             if (!acceptNode(node)) {
                 continue;
             }
