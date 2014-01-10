@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -21,12 +21,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
-import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.eclipse.aether.graph.DependencyNode;
+import org.nuxeo.build.maven.ArtifactDescriptor;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * TODO NXBT-258
  */
 public class AncestorFilter extends AbstractFilter {
 

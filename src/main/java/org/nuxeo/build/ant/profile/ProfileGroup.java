@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -19,30 +19,36 @@ package org.nuxeo.build.ant.profile;
 import org.apache.tools.ant.BuildException;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * TODO NXBT-258
  */
 public class ProfileGroup {
 
     protected Profile defaultProfile;
+
     protected Profile[] profiles;
 
-    public ProfileGroup(AntProfileManager mgr, String[] profiles, String defaultProfile) {
+    public ProfileGroup(AntProfileManager mgr, String[] profiles,
+            String defaultProfile) {
         if (defaultProfile != null) {
             this.defaultProfile = mgr.getOrCreateProfile(defaultProfile);
         }
         this.profiles = new Profile[profiles.length];
         Profile activeProfile = null;
-        for (int i=0; i<profiles.length; i++) {
+        for (int i = 0; i < profiles.length; i++) {
             String profileName = profiles[i];
             Profile profile = mgr.getOrCreateProfile(profileName);
             if (profile.group != null) {
-                throw new BuildException("A profile is part of 2 distinct groups: "+profileName);
+                throw new BuildException(
+                        "A profile is part of 2 distinct groups: "
+                                + profileName);
             }
             profile.group = this;
             if (profile.isActive()) {
                 if (activeProfile != null) {
-                    throw new BuildException("Profile Group has 2 active profiles: "+activeProfile.getName()+", "+profileName);
+                    throw new BuildException(
+                            "Profile Group has 2 active profiles: "
+                                    + activeProfile.getName() + ", "
+                                    + profileName);
                 }
                 activeProfile = profile;
             }

@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.build.ant.artifact;
 
@@ -29,9 +29,9 @@ import org.nuxeo.build.maven.filter.TypeFilter;
 import org.nuxeo.build.maven.filter.VersionFilter;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- * 
+ * TODO NXBT-258
  */
+@SuppressWarnings("deprecation")
 public class ArtifactPattern extends DataType {
 
     private AndFilter filter = new AndFilter();
@@ -58,6 +58,7 @@ public class ArtifactPattern extends DataType {
 
     protected boolean isDependsOnCategory = true;
 
+    @Deprecated
     private ManifestBundleCategoryFilter categoryFilter = null;
 
     public AndFilter getFilter() {
@@ -111,12 +112,21 @@ public class ArtifactPattern extends DataType {
         filter.addFilter(AncestorFilter.class, ancestor);
     }
 
+    /**
+     * @deprecated since 2.0
+     */
+    @Deprecated
     public void setCategory(String category) {
         this.category = category;
-        categoryFilter = new ManifestBundleCategoryFilter(category, isDependsOnCategory);
+        categoryFilter = new ManifestBundleCategoryFilter(category,
+                isDependsOnCategory);
         filter.addFilter(categoryFilter);
     }
 
+    /**
+     * @deprecated since 2.0
+     */
+    @Deprecated
     public void setDependsOnCategory(boolean isDependsOnCategory) {
         this.isDependsOnCategory = isDependsOnCategory;
         // in case category has been set before isDependsOnCategory and

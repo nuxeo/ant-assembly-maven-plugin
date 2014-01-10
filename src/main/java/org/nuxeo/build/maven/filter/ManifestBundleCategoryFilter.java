@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -36,9 +36,11 @@ import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.graph.Node;
 
 /**
- * @author jcarsique
+ * TODO NXBT-258
  *
+ * @deprecated since 2.0
  */
+@Deprecated
 public class ManifestBundleCategoryFilter extends AbstractFilter {
 
     public static final String MANIFEST_BUNDLE_CATEGORY = "Bundle-Category";

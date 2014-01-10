@@ -45,8 +45,7 @@ import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.filter.Filter;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
+ * TODO NXBT-258
  */
 public class Graph {
 

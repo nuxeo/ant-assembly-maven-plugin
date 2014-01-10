@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,7 +12,7 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     bstefanescu
+ *     bstefanescu, jcarsique
  */
 package org.nuxeo.build.ant;
 
@@ -33,9 +33,6 @@ import org.apache.tools.ant.Task;
  * Remove duplicate jars (with different versions) and preserve only the latest
  * version. The pattern to detect duplicates is: (.*)-([0-9]+.*).jar. The
  * versions are compared and the lower versions are removed.
- *
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
- *
  */
 public class RemoveDuplicateTask extends Task {
 

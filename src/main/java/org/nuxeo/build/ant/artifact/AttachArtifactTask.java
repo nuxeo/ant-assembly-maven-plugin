@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2013 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -12,8 +12,8 @@
  * Lesser General Public License for more details.
  *
  * Contributors:
- *     Nuxeo - initial API and implementation
- *     bstefanescu, jcarsique, slacoin
+ *     Kohsuke Kawaguchi - initial implementation
+ *     Nuxeo - bstefanescu, jcarsique, slacoin
  */
 
 package org.nuxeo.build.ant.artifact;

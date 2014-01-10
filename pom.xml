@@ -256,6 +256,11 @@
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>2.16</version>
       </dependency>
+      <dependency>
+        <groupId>org.freemarker</groupId>
+        <artifactId>freemarker</artifactId>
+        <version>2.3.16</version>
+      </dependency>
 
       <!-- scope test -->
       <dependency>
@@ -341,6 +346,10 @@
       <groupId>org.nuxeo.connect</groupId>
       <artifactId>nuxeo-connect-client</artifactId>
       <version>${nuxeo.connect.client.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
     </dependency>
 
     <!-- scope test -->

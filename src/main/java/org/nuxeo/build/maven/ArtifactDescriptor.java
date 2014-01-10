@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2011 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -26,7 +26,6 @@ import org.eclipse.aether.util.artifact.JavaScopes;
 import org.nuxeo.build.maven.graph.DependencyUtils;
 
 /**
- * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
  * @see org.eclipse.aether.util.artifact.ArtifactIdUtils
  *      org.eclipse.aether.artifact.DefaultArtifact
  *      org.eclipse.aether.graph.Dependency
