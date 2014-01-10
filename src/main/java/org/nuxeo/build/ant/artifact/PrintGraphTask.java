@@ -16,8 +16,8 @@
  */
 package org.nuxeo.build.ant.artifact;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,8 +30,10 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.eclipse.aether.util.artifact.JavaScopes;
 import org.nuxeo.build.maven.AntBuildMojo;
+import org.nuxeo.build.maven.graph.AbstractDependencyVisitor;
+import org.nuxeo.build.maven.graph.FlatPrinterDependencyVisitor;
 import org.nuxeo.build.maven.graph.Node;
-import org.nuxeo.build.maven.graph.PrintDependencyVisitor;
+import org.nuxeo.build.maven.graph.TreePrinterDependencyVisitor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -41,9 +43,19 @@ public class PrintGraphTask extends Task {
 
     private String output;
 
-    private String mode = PrintDependencyVisitor.MODE_TREE;
+    private String mode = PrintGraphTask.MODE_TREE;
 
-    private int format = PrintDependencyVisitor.FORMAT_GAV;
+    /**
+     * Default format with GAV: group:artifact:version:type:classifier
+     */
+    public static final int FORMAT_GAV = 0;
+
+    /**
+     * Key-value format: FILENAME=GAV
+     */
+    public static final int FORMAT_KV_F_GAV = 1;
+
+    private int format = FORMAT_GAV;
 
     private boolean append = false;
 
@@ -51,6 +63,25 @@ public class PrintGraphTask extends Task {
 
     private List<String> scopes = Arrays.asList(new String[] {
             JavaScopes.COMPILE, JavaScopes.RUNTIME, JavaScopes.SYSTEM });
+
+    /**
+     * In sdk mode, root nodes are not printed
+     *
+     * @since 1.10.2
+     */
+    public static final String MODE_SDK = "sdk";
+
+    /**
+     * In flat mode, root nodes are not printed
+     *
+     * @since 1.10.2
+     */
+    public static final String MODE_FLAT = "flat";
+
+    /**
+     * @since 1.10.2
+     */
+    public static final String MODE_TREE = "tree";
 
     @Override
     public void execute() throws BuildException {
@@ -71,23 +102,27 @@ public class PrintGraphTask extends Task {
             if (output != null) {
                 out = new FileOutputStream(output, append);
             }
-            PrintDependencyVisitor pdv = new PrintDependencyVisitor(out, mode,
-                    format, scopes);
+            AbstractDependencyVisitor pdv;
+            if (PrintGraphTask.MODE_TREE.equals(mode)) {
+                pdv = new TreePrinterDependencyVisitor(out, format, scopes);
+            } else {
+                pdv = new FlatPrinterDependencyVisitor(out, format, scopes);
+            }
             // Ignore roots in flat mode
-            if (PrintDependencyVisitor.MODE_FLAT.equalsIgnoreCase(mode)) {
+            if (pdv instanceof FlatPrinterDependencyVisitor) {
                 pdv.setIgnores(roots);
             }
-            // DependencyVisitor tdv = new TreeDependencyVisitor(pdv);
-            // PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
             for (Node node : roots) {
-                // node.accept(nlg);
                 log("Visiting " + node, Project.MSG_DEBUG);
                 node.accept(pdv);
+            }
+            if (pdv instanceof FlatPrinterDependencyVisitor) {
+                ((FlatPrinterDependencyVisitor) pdv).print();
             }
             log("All dependencies: "
                     + String.valueOf(pdv.getDependencies(true)),
                     Project.MSG_DEBUG);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             throw new BuildException(e);
         } finally {
             IOUtils.closeQuietly(out);
@@ -100,25 +135,20 @@ public class PrintGraphTask extends Task {
 
     /**
      * @since 1.10.2
-     * @see {@link PrintDependencyVisitor#MODE_FLAT}
-     *      {@link PrintDependencyVisitor#MODE_TREE}
-     *      {@link PrintDependencyVisitor#MODE_SDK}
+     * @see PrintDependencyVisitor
      */
     public void setMode(String mode) {
-        if (PrintDependencyVisitor.MODE_SDK.equals(mode)) {
-            this.mode = PrintDependencyVisitor.MODE_FLAT;
-            this.format = PrintDependencyVisitor.FORMAT_KV_F_GAV;
-        } else {
-            this.mode = mode;
+        if (PrintGraphTask.MODE_SDK.equals(mode)) {
+            this.format = FORMAT_KV_F_GAV;
         }
+        this.mode = mode;
     }
 
     /**
      * Defines output format
      *
      * @param format
-     * @see PrintDependencyVisitor#FORMAT_GAV
-     * @see PrintDependencyVisitor#FORMAT_KV_F_GAV
+     * @see PrintDependencyVisitor
      * @since 1.10.2
      */
     public void setFormat(int format) {

@@ -177,13 +177,19 @@ use the Mojo bound to the current thread).
 
 # Build and tests
 
+    mvn clean package [-o] [-DskipTests] [-DskipITs] [-DdebugITs=true] [-Dinvoker.test=...]
+
+See:  
+- [maven-invoker-plugin](http://maven.apache.org/plugins/maven-invoker-plugin/)  
+- [maven-surefire-plugin](http://maven.apache.org/surefire/maven-surefire-plugin/)
+
 ## Build and run all Unit and integration tests
 
     mvn clean integration-test [-o] [-DdebugITs=true]
 
 ## Build with no test
 
-    mvn clean package -DskipTests
+    mvn clean package -DskipTests -DskipITs
 
 ## Build and run Unit tests only (default)
 
@@ -191,7 +197,7 @@ use the Mojo bound to the current thread).
     
 ## Build and run integration tests only
 
-    mvn clean integration-test -Dmaven.test.skip=true
+    mvn clean integration-test -DskipTests
 
 ## Run only some integration tests
 

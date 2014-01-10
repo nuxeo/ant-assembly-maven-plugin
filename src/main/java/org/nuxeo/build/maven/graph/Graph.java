@@ -217,7 +217,7 @@ public class Graph {
                 node.getDependency(), mojo.getRemoteRepositories());
         try {
             CollectResult result = mojo.getSystem().collectDependencies(
-                    mojo.getRepositorySystemSession(), collectRequest);
+                    mojo.getSession(), collectRequest);
             node = result.getRoot();
             AntClient.getInstance().log("Collect result: " + result,
                     Project.MSG_DEBUG);
@@ -244,7 +244,7 @@ public class Graph {
                 filter);
         try {
             DependencyResult result = mojo.getSystem().resolveDependencies(
-                    mojo.getRepositorySystemSession(), dependencyRequest);
+                    mojo.getSession(), dependencyRequest);
             AntClient.getInstance().log("Dependency result: " + result,
                     Project.MSG_DEBUG);
             AntClient.getInstance().log(

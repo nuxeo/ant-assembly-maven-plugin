@@ -20,8 +20,6 @@ import java.io.File;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.resources.FileResource;
-import org.nuxeo.build.maven.AntBuildMojo;
-import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.resolution.ArtifactDescriptorException;
 import org.eclipse.aether.resolution.ArtifactDescriptorRequest;
@@ -29,6 +27,8 @@ import org.eclipse.aether.resolution.ArtifactDescriptorResult;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
+import org.nuxeo.build.maven.AntBuildMojo;
+import org.nuxeo.build.maven.ArtifactDescriptor;
 
 /**
  * @author <a href="mailto:bs@nuxeo.com">Bogdan Stefanescu</a>
@@ -74,7 +74,7 @@ public class ResolveFile extends FileResource {
                 artifact, mojo.getRemoteRepositories(), null);
         try {
             ArtifactDescriptorResult adResult = mojo.getSystem().readArtifactDescriptor(
-                    mojo.getRepositorySystemSession(), adRequest);
+                    mojo.getSession(), adRequest);
             // The artifact after following any relocations
             artifact = adResult.getArtifact();
         } catch (ArtifactDescriptorException e) {
@@ -87,7 +87,7 @@ public class ResolveFile extends FileResource {
                     mojo.getRemoteRepositories(), null);
             try {
                 ArtifactResult artifactResult = mojo.getSystem().resolveArtifact(
-                        mojo.getRepositorySystemSession(), artifactRequest);
+                        mojo.getSession(), artifactRequest);
                 artifact = artifactResult.getArtifact();
             } catch (ArtifactResolutionException e) {
                 throw new BuildException(

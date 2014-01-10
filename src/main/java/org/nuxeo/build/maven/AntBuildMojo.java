@@ -47,9 +47,12 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.StringUtils;
+import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
+import org.eclipse.aether.util.graph.manager.DependencyManagerUtils;
+import org.eclipse.aether.util.graph.transformer.ConflictResolver;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.ant.artifact.Expand;
 import org.nuxeo.build.ant.profile.AntProfileManager;
@@ -113,8 +116,19 @@ public class AntBuildMojo extends AbstractMojo {
     @Parameter(property = "repositorySystemSession", readonly = true)
     protected RepositorySystemSession repositorySystemSession;
 
-    public RepositorySystemSession getRepositorySystemSession() {
-        return repositorySystemSession;
+    private DefaultRepositorySystemSession session;
+
+    public DefaultRepositorySystemSession getSession() {
+        if (session == null) {
+            session = new DefaultRepositorySystemSession(
+                    repositorySystemSession);
+            session.setConfigProperty(ConflictResolver.CONFIG_PROP_VERBOSE,
+                    true);
+            session.setConfigProperty(
+                    DependencyManagerUtils.CONFIG_PROP_VERBOSE, true);
+            session.setReadOnly();
+        }
+        return session;
     }
 
     @Component

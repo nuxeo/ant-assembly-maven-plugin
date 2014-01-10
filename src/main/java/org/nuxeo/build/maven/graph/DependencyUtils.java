@@ -100,7 +100,7 @@ public class DependencyUtils {
             throws org.eclipse.aether.resolution.ArtifactResolutionException {
         AntBuildMojo mojo = AntBuildMojo.getInstance();
         ArtifactResult result = mojo.getSystem().resolveArtifact(
-                mojo.getRepositorySystemSession(),
+                mojo.getSession(),
                 new ArtifactRequest(artifact, remoteRepositories, null));
         artifact = result.getArtifact();
         AntClient.getInstance().log(
