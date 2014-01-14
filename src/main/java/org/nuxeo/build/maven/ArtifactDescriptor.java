@@ -141,13 +141,12 @@ public class ArtifactDescriptor {
     }
 
     /**
-     * Prefer use of {@link #getDependency()} to also get the artifact scope.
+     * Prefer use of {@link #getDependency()} if the artifact scope is needed.
      *
      * @since 2.0
      */
     public org.eclipse.aether.artifact.Artifact getAetherArtifact() {
-        return new DefaultArtifact(groupId, artifactId, classifier, type,
-                version);
+        return getDependency().getArtifact();
     }
 
     /**
@@ -157,5 +156,4 @@ public class ArtifactDescriptor {
         return new Dependency(new DefaultArtifact(groupId, artifactId,
                 classifier, type, version), scope);
     }
-
 }

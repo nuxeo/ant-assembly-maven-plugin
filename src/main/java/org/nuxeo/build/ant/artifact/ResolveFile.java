@@ -19,25 +19,23 @@ package org.nuxeo.build.ant.artifact;
 import java.io.File;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.eclipse.aether.artifact.Artifact;
-import org.eclipse.aether.resolution.ArtifactDescriptorException;
-import org.eclipse.aether.resolution.ArtifactDescriptorRequest;
-import org.eclipse.aether.resolution.ArtifactDescriptorResult;
-import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
-import org.eclipse.aether.resolution.ArtifactResult;
-import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
+import org.nuxeo.build.maven.graph.DependencyUtils;
 
 /**
  * TODO NXBT-258
  */
 public class ResolveFile extends FileResource {
 
-    public String key;
+    protected String key;
 
-    public String classifier;
+    protected String classifier;
+
+    private File file = null;
 
     public void setKey(String pattern) {
         int p = pattern.lastIndexOf(';');
@@ -56,11 +54,12 @@ public class ResolveFile extends FileResource {
      */
     @Deprecated
     public void setClassifier(String classifier) {
+        log("The classifier parameter is deprecated, put it in the key.",
+                Project.MSG_WARN);
         this.classifier = classifier;
     }
 
     protected File resolveFile() {
-        AntBuildMojo mojo = AntBuildMojo.getInstance();
         ArtifactDescriptor ad = new ArtifactDescriptor(key);
         // Sync classifier set from key or from setClassifier()
         if (ad.classifier != null) {
@@ -68,34 +67,28 @@ public class ResolveFile extends FileResource {
         } else if (classifier != null) {
             ad.classifier = classifier;
         }
-        Artifact artifact = ad.getAetherArtifact();
-        ArtifactDescriptorRequest adRequest = new ArtifactDescriptorRequest(
-                artifact, mojo.getRemoteRepositories(), null);
         try {
-            ArtifactDescriptorResult adResult = mojo.getSystem().readArtifactDescriptor(
-                    mojo.getSession(), adRequest);
-            // The artifact after following any relocations
-            artifact = adResult.getArtifact();
-        } catch (ArtifactDescriptorException e) {
-            throw new BuildException(String.format(
-                    "Cannot resolve file with key '%s', failed request: %s",
-                    ad, adRequest), e);
-        }
-        if (artifact.getFile() == null) {
-            ArtifactRequest artifactRequest = new ArtifactRequest(artifact,
-                    mojo.getRemoteRepositories(), null);
-            try {
-                ArtifactResult artifactResult = mojo.getSystem().resolveArtifact(
-                        mojo.getSession(), artifactRequest);
-                artifact = artifactResult.getArtifact();
-            } catch (ArtifactResolutionException e) {
-                throw new BuildException(
-                        String.format(
-                                "Cannot resolve file with key '%s', failed request: %s",
-                                ad, artifactRequest), e);
+            if (file != null) {
+                return file;
             }
+            Artifact artifact = ad.getAetherArtifact();
+            if (artifact.getFile() != null) {
+                file = artifact.getFile();
+                return file;
+            }
+            if ("".equals(artifact.getVersion())) {
+                artifact = DependencyUtils.setManagedVersion(artifact);
+            }
+            if ("".equals(artifact.getVersion())) {
+                artifact = DependencyUtils.setNewestVersion(artifact);
+            }
+            artifact = DependencyUtils.resolve(artifact);
+            file = artifact.getFile();
+            return file;
+        } catch (ArtifactResolutionException e) {
+            throw new BuildException(String.format(
+                    "Cannot resolve file with key '%s'", ad), e);
         }
-        return artifact.getFile();
     }
 
     @Override

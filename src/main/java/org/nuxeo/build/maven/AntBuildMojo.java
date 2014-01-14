@@ -41,6 +41,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.project.ProjectBuilder;
+import org.apache.maven.project.ProjectDependenciesResolver;
 import org.apache.maven.settings.Settings;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -112,7 +113,7 @@ public class AntBuildMojo extends AbstractMojo {
     }
 
     @Parameter(property = "repositorySystemSession", readonly = true)
-    protected RepositorySystemSession repositorySystemSession;
+    private RepositorySystemSession repositorySystemSession;
 
     private DefaultRepositorySystemSession session;
 
@@ -125,6 +126,7 @@ public class AntBuildMojo extends AbstractMojo {
             session.setConfigProperty(
                     DependencyManagerUtils.CONFIG_PROP_VERBOSE, true);
             session.setReadOnly();
+            repositorySystemSession = session;
         }
         return session;
     }
@@ -150,7 +152,7 @@ public class AntBuildMojo extends AbstractMojo {
     @Parameter(defaultValue = "maven.")
     protected String propertyPrefix;
 
-    @Parameter(property = "localRepository", readonly = true)
+    @Parameter(property = "localRepository")
     protected ArtifactRepository localRepository;
 
     /**
@@ -172,14 +174,14 @@ public class AntBuildMojo extends AbstractMojo {
     /**
      * List of Remote Repositories used by the resolver
      */
-    @Parameter(property = "remoteArtifactRepositories")
+    @Parameter(property = "project.remoteArtifactRepositories")
     protected List<ArtifactRepository> remoteArtifactRepositories;
 
     public List<ArtifactRepository> getRemoteArtifactRepositories() {
         return remoteArtifactRepositories;
     }
 
-    @Parameter(property = "remoteProjectRepositories", readonly = true)
+    @Parameter(property = "project.remoteProjectRepositories")
     protected List<RemoteRepository> remoteRepositories;
 
     public List<RemoteRepository> getRemoteRepositories() {
@@ -205,6 +207,9 @@ public class AntBuildMojo extends AbstractMojo {
     @Component
     @Deprecated
     protected WagonManager wagonManager;
+
+    @Component
+    public ProjectDependenciesResolver resolver;
 
     @Parameter(property = "settings")
     protected Settings settings;

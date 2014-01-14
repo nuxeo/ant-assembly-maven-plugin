@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<project name="test-resolve"
+         default="all-tests"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <target name="all-tests" description="Test assembly">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <mkdir dir="${outdir}" />
+    <copy todir="${outdir}/files" overwrite="true">
+      <artifact:resolveFile key="log4j:log4j:1.2.16" />
+      <artifact:resolveFile key="log4j:log4j" />
+      <artifact:resolveFile key="org.nuxeo.common:nuxeo-common" />
+      <artifact:resolveFiles source="${basedir}/artifacts.properties" />
+      <!-- TODO NXBT-691 manage scope test -->
+      <!-- <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-test" /> -->
+    </copy>
+
+    <!-- Checks -->
+    <resourcecount property="count">
+      <fileset dir="${outdir}/files">
+        <include name="*.jar" />
+      </fileset>
+    </resourcecount>
+    <fail>
+      <condition>
+        <not>
+          <and>
+            <available file="${outdir}/files/nuxeo-common-5.9.1.jar" />
+            <available file="${outdir}/files/log4j-1.2.16.jar" />
+            <available file="${outdir}/files/log4j-1.2.17.jar" />
+            <available file="${outdir}/files/nuxeo-runtime-5.9.1.jar" />
+            <available file="${outdir}/files/nuxeo-runtime-remoting-5.9.1.jar" />
+            <!-- TODO NXBT-691 manage scope test -->
+            <!-- <equals arg1="${count}" arg2="6" /> -->
+            <equals arg1="${count}" arg2="5" />
+          </and>
+        </not>
+      </condition>
+    </fail>
+  </target>
+
+</project>

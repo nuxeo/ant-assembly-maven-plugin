@@ -20,15 +20,21 @@ package org.nuxeo.build.maven.graph;
 
 import java.util.List;
 
+import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.tools.ant.Project;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
+import org.eclipse.aether.collection.DependencyManagement;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.resolution.VersionRangeRequest;
+import org.eclipse.aether.resolution.VersionRangeResolutionException;
+import org.eclipse.aether.resolution.VersionRangeResult;
+import org.eclipse.aether.util.artifact.ArtifactIdUtils;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 
@@ -125,6 +131,86 @@ public class DependencyUtils {
         // String scope = artifact.getScope() != null ? artifact.getScope()
         // : JavaScopes.COMPILE;
         return new Dependency(mavenToAether(artifact), artifact.getScope());
+    }
+
+    /**
+     * FIXME JC doesn't work because of depth < 2 in
+     * org.eclipse.aether.collection.DependencyManager
+     *
+     * @return The dependency on which the dependencyManagement has been
+     *         applied.
+     */
+    public static Dependency getManagedDependency(Dependency dependency) {
+        AntBuildMojo mojo = AntBuildMojo.getInstance();
+        DependencyManagement depMgt = mojo.getSession().getDependencyManager().manageDependency(
+                dependency);
+        if (depMgt != null) {
+            if (depMgt.getVersion() != null) {
+                Artifact artifact = dependency.getArtifact();
+                dependency = dependency.setArtifact(artifact.setVersion(depMgt.getVersion()));
+            }
+            if (depMgt.getProperties() != null) {
+                Artifact artifact = dependency.getArtifact();
+                dependency = dependency.setArtifact(artifact.setProperties(depMgt.getProperties()));
+            }
+            if (depMgt.getScope() != null) {
+                dependency = dependency.setScope(depMgt.getScope());
+            }
+            if (depMgt.getOptional() != null) {
+                dependency = dependency.setOptional(depMgt.getOptional());
+            }
+            if (depMgt.getExclusions() != null) {
+                dependency = dependency.setExclusions(depMgt.getExclusions());
+            }
+        }
+        return dependency;
+    }
+
+    /**
+     * Look for a version in the project dependencyManagement for the given
+     * artifact and set it.
+     *
+     * @return The new artifact if the version changed, else the original one
+     */
+    public static Artifact setManagedVersion(Artifact artifact) {
+        AntBuildMojo mojo = AntBuildMojo.getInstance();
+        List<org.apache.maven.model.Dependency> managedDeps = AntBuildMojo.getInstance().getProject().getDependencyManagement().getDependencies();
+        for (org.apache.maven.model.Dependency dependency : managedDeps) {
+            Artifact managedArtifact = RepositoryUtils.toDependency(dependency,
+                    mojo.getSession().getArtifactTypeRegistry()).getArtifact();
+            if (ArtifactIdUtils.equalsVersionlessId(managedArtifact, artifact)) {
+                artifact = artifact.setVersion(managedArtifact.getVersion());
+                AntClient.getInstance().log(
+                        "Managed version set on " + artifact);
+                break;
+            }
+        }
+        return artifact;
+    }
+
+    /**
+     * Look for the newest available version in the configured repositories.
+     *
+     * @return The new artifact if the version changed, else the original one
+     */
+    public static Artifact setNewestVersion(Artifact artifact) {
+        AntBuildMojo mojo = AntBuildMojo.getInstance();
+        artifact = artifact.setVersion("[0,)");
+        VersionRangeRequest rangeRequest = new VersionRangeRequest(artifact,
+                AntBuildMojo.getInstance().getRemoteRepositories(), null);
+        try {
+            VersionRangeResult rangeResult = mojo.getSystem().resolveVersionRange(
+                    mojo.getSession(), rangeRequest);
+            AntClient.getInstance().log(
+                    String.format("Versions found for %s: %s", artifact,
+                            rangeResult.getVersions()), Project.MSG_DEBUG);
+            artifact = artifact.setVersion(rangeResult.getHighestVersion().toString());
+            AntClient.getInstance().log(
+                    "Highest version found set on " + artifact);
+        } catch (VersionRangeResolutionException e) {
+            AntClient.getInstance().log(e.getMessage(), e, Project.MSG_ERR);
+        }
+        return artifact;
     }
 
 }

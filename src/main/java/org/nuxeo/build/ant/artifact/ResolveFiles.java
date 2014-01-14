@@ -34,6 +34,7 @@ import org.apache.tools.ant.types.DataType;
 import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
+import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.graph.DependencyUtils;
@@ -89,7 +90,6 @@ public class ResolveFiles extends DataType implements ResourceCollection {
         if (isReference()) {
             return ((ResourceCollection) getCheckedRef()).iterator();
         }
-
         if (artifacts == null) {
             artifacts = new ArrayList<>();
             for (Iterator<?> it = source.values().iterator(); it.hasNext();) {
@@ -110,10 +110,22 @@ public class ResolveFiles extends DataType implements ResourceCollection {
         if (classifier != null) {
             ad.classifier = classifier;
         }
-        org.eclipse.aether.artifact.Artifact artifact = ad.getAetherArtifact();
-        DependencyUtils.resolve(artifact);
-        FileResource fr = new FileResource(artifact.getFile());
-        fr.setBaseDir(artifact.getFile().getParentFile());
+        Artifact artifact = ad.getAetherArtifact();
+        File file;
+        if (artifact.getFile() != null) {
+            file = artifact.getFile();
+        } else {
+            if ("".equals(artifact.getVersion())) {
+                artifact = DependencyUtils.setManagedVersion(artifact);
+            }
+            if ("".equals(artifact.getVersion())) {
+                artifact = DependencyUtils.setNewestVersion(artifact);
+            }
+            artifact = DependencyUtils.resolve(artifact);
+            file = artifact.getFile();
+        }
+        FileResource fr = new FileResource(file);
+        fr.setBaseDir(file.getParentFile());
         return fr;
     }
 
