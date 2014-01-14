@@ -20,6 +20,7 @@ package org.nuxeo.build.maven.graph;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -36,7 +37,7 @@ import org.nuxeo.build.ant.AntClient;
 
 /**
  * Prints the graph while traversing it.
- * Do not print nodes provided through {@link #setIgnores(List)}.
+ * Do not print nodes provided through {@link #addIgnores(List)}.
  * Inspired from
  * {@link org.eclipse.aether.util.graph.visitor.AbstractDepthFirstNodeListGenerator}
  *
@@ -58,15 +59,15 @@ public abstract class AbstractDependencyVisitor implements DependencyVisitor {
         return nodes;
     }
 
-    protected List<Node> ignores;
+    protected final List<DependencyNode> ignores;
 
     protected List<String> scopes = null;
 
     /**
-     * @param nodes Nodes to ignore during the visit
+     * @param nodesToIgnore Nodes to ignore during the visit
      */
-    public void setIgnores(List<Node> nodes) {
-        this.ignores = nodes;
+    public void addIgnores(Collection<? extends DependencyNode> nodesToIgnore) {
+        this.ignores.addAll(nodesToIgnore);
     }
 
     /**
@@ -75,6 +76,7 @@ public abstract class AbstractDependencyVisitor implements DependencyVisitor {
     public AbstractDependencyVisitor(List<String> scopes) {
         nodes = new ArrayList<>(128);
         visitedNodes = new IdentityHashMap<>(512);
+        ignores = new ArrayList<>();
         this.scopes = scopes;
     }
 
@@ -117,6 +119,7 @@ public abstract class AbstractDependencyVisitor implements DependencyVisitor {
         }
         if (ignoreNode) {
             visitChildren = false;
+            ignores.add(node);
         } else {
             DependencyNode winner = (DependencyNode) node.getData().get(
                     ConflictResolver.NODE_DATA_WINNER);
@@ -135,12 +138,18 @@ public abstract class AbstractDependencyVisitor implements DependencyVisitor {
     }
 
     /**
-     * Actions to perform when visiting a node.
+     * Actions to perform when visiting a node. The method is not called if the
+     * node was "ignored" (ie included in {@link #ignores}.
      *
      * @param newNode True if visiting the node for the first time
      */
     protected abstract void doVisit(DependencyNode node, boolean newNode);
 
+    /**
+     * Note that method is always called, even if
+     * {@link #doVisit(DependencyNode, boolean)} was not. Check {@link #ignores}
+     * if needed.
+     */
     @Override
     public boolean visitLeave(DependencyNode node) {
         AntClient.getInstance().log("leave: " + node, Project.MSG_DEBUG);

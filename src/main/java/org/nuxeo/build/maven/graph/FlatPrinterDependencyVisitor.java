@@ -21,9 +21,9 @@ package org.nuxeo.build.maven.graph;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.tools.ant.Project;
 import org.eclipse.aether.artifact.Artifact;
@@ -46,7 +46,7 @@ public class FlatPrinterDependencyVisitor extends AbstractDependencyVisitor {
 
     protected OutputStream output;
 
-    protected List<String> lines = new ArrayList<>();
+    protected Set<String> lines = new TreeSet<>();
 
     /**
      * @param format 0 = standard GAV ; 1 = File + GAV
@@ -98,7 +98,6 @@ public class FlatPrinterDependencyVisitor extends AbstractDependencyVisitor {
     }
 
     public void print() throws UnsupportedEncodingException, IOException {
-        Collections.sort(lines);
         for (String line : lines) {
             output.write(line.getBytes(AntBuildMojo.getInstance().getEncoding()));
         }

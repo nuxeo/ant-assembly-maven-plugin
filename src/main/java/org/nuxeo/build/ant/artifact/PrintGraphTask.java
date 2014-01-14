@@ -113,7 +113,7 @@ public class PrintGraphTask extends Task {
             }
             // Ignore roots in flat mode
             if (pdv instanceof FlatPrinterDependencyVisitor) {
-                pdv.setIgnores(roots);
+                pdv.addIgnores(roots);
             }
             for (Node node : roots) {
                 log("Visiting " + node, Project.MSG_DEBUG);

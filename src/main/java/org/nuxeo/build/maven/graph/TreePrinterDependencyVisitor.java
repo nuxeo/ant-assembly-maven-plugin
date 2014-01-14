@@ -77,7 +77,9 @@ public class TreePrinterDependencyVisitor extends AbstractDependencyVisitor {
     @Override
     public boolean visitLeave(DependencyNode node) {
         boolean visit = super.visitLeave(node);
-        tabs = tabs.substring(0, tabs.length() - TAB_STR.length());
+        if (!ignores.contains(node)) {
+            tabs = tabs.substring(0, tabs.length() - TAB_STR.length());
+        }
         return visit;
     }
 
