@@ -26,7 +26,6 @@ import java.util.Set;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
-import org.apache.maven.artifact.manager.WagonManager;
 import org.apache.maven.artifact.repository.ArtifactRepository;
 import org.apache.maven.model.Profile;
 import org.apache.maven.plugin.AbstractMojo;
@@ -38,10 +37,7 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.project.MavenProjectBuilder;
 import org.apache.maven.project.MavenProjectHelper;
-import org.apache.maven.project.ProjectBuilder;
-import org.apache.maven.project.ProjectDependenciesResolver;
 import org.apache.maven.settings.Settings;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -171,16 +167,6 @@ public class AntBuildMojo extends AbstractMojo {
     @Parameter
     protected Set<String> exportedAntProperties;
 
-    /**
-     * List of Remote Repositories used by the resolver
-     */
-    @Parameter(property = "project.remoteArtifactRepositories")
-    protected List<ArtifactRepository> remoteArtifactRepositories;
-
-    public List<ArtifactRepository> getRemoteArtifactRepositories() {
-        return remoteArtifactRepositories;
-    }
-
     @Parameter(property = "project.remoteProjectRepositories")
     protected List<RemoteRepository> remoteRepositories;
 
@@ -188,28 +174,11 @@ public class AntBuildMojo extends AbstractMojo {
         return remoteRepositories;
     }
 
-    @Component
-    protected ProjectBuilder projectBuilder;
-
-    @Component
-    @Deprecated
-    protected MavenProjectBuilder mavenProjectBuilder;
-
     /**
      * The character encoding scheme to be applied.
      */
     @Parameter(property = "project.build.sourceEncoding")
     protected String encoding;
-
-    /**
-     * @since 1.12
-     */
-    @Component
-    @Deprecated
-    protected WagonManager wagonManager;
-
-    @Component
-    public ProjectDependenciesResolver resolver;
 
     @Parameter(property = "settings")
     protected Settings settings;
@@ -459,15 +428,6 @@ public class AntBuildMojo extends AbstractMojo {
 
     public ArtifactRepository getLocalRepository() {
         return localRepository;
-    }
-
-    public ProjectBuilder getProjectBuilder() {
-        return projectBuilder;
-    }
-
-    @Deprecated
-    public MavenProjectBuilder getMavenProjectBuilder() {
-        return mavenProjectBuilder;
     }
 
     public MavenProjectHelper getProjectHelper() {

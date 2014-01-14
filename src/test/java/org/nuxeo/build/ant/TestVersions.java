@@ -23,8 +23,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.regex.Matcher;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.codehaus.plexus.logging.Logger;
+import org.codehaus.plexus.logging.console.ConsoleLogger;
 import org.junit.Test;
 
 /**
@@ -32,7 +32,7 @@ import org.junit.Test;
  */
 public class TestVersions {
 
-    private static final Log log = LogFactory.getLog(TestVersions.class);
+    private static final Logger log = new ConsoleLogger();
 
     @Test
     public void testVersionString() throws Exception {

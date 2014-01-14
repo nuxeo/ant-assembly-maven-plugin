@@ -19,13 +19,12 @@ package org.nuxeo.build.maven.filter;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.tools.ant.Project;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.ArtifactDescriptor;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * TODO NXBT-258

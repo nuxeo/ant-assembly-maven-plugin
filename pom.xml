@@ -43,7 +43,6 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <nuxeo.connect.client.version>1.4.13</nuxeo.connect.client.version>
     <debugITs>false</debugITs>
     <mavenVersion>3.1.1</mavenVersion>
     <aetherVersion>0.9.0.M4</aetherVersion>
@@ -233,11 +232,6 @@
       </dependency>
       <dependency>
         <groupId>org.apache.maven</groupId>
-        <artifactId>maven-artifact-manager</artifactId>
-        <version>2.2.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven</groupId>
         <artifactId>maven-core</artifactId>
         <version>3.1.1</version>
       </dependency>
@@ -245,11 +239,6 @@
         <groupId>org.apache.maven</groupId>
         <artifactId>maven-model</artifactId>
         <version>3.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.maven</groupId>
-        <artifactId>maven-project</artifactId>
-        <version>2.2.1</version>
       </dependency>
       <dependency>
         <groupId>org.apache.maven.plugins</groupId>
@@ -260,6 +249,11 @@
         <groupId>org.freemarker</groupId>
         <artifactId>freemarker</artifactId>
         <version>2.3.16</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-settings</artifactId>
+        <version>3.1.1</version>
       </dependency>
 
       <!-- scope test -->
@@ -289,10 +283,6 @@
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-plugin-api</artifactId>
     </dependency>
-    <!-- <dependency> -->
-    <!-- <groupId>org.apache.maven</groupId> -->
-    <!-- <artifactId>maven-compat</artifactId> -->
-    <!-- </dependency> -->
     <dependency>
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-api</artifactId>
@@ -301,14 +291,6 @@
       <groupId>org.eclipse.aether</groupId>
       <artifactId>aether-util</artifactId>
     </dependency>
-    <!-- <dependency> -->
-    <!-- <groupId>org.apache.httpcomponents</groupId> -->
-    <!-- <artifactId>httpclient</artifactId> -->
-    <!-- </dependency> -->
-    <!-- <dependency> -->
-    <!-- <groupId>org.apache.httpcomponents</groupId> -->
-    <!-- <artifactId>httpmime</artifactId> -->
-    <!-- </dependency> -->
     <!-- generated help Mojo has a dependency to plexus-utils -->
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -324,10 +306,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact-manager</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.maven</groupId>
       <artifactId>maven-core</artifactId>
     </dependency>
     <dependency>
@@ -335,21 +313,16 @@
       <artifactId>maven-model</artifactId>
     </dependency>
     <!-- <dependency> -->
-    <!-- <groupId>org.apache.maven</groupId> -->
-    <!-- <artifactId>maven-project</artifactId> -->
+    <!-- <groupId>org.apache.maven.plugins</groupId> -->
+    <!-- <artifactId>maven-failsafe-plugin</artifactId> -->
     <!-- </dependency> -->
-    <dependency>
-      <groupId>org.apache.maven.plugins</groupId>
-      <artifactId>maven-failsafe-plugin</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.connect</groupId>
-      <artifactId>nuxeo-connect-client</artifactId>
-      <version>${nuxeo.connect.client.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>
       <artifactId>freemarker</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-settings</artifactId>
     </dependency>
 
     <!-- scope test -->
@@ -371,6 +344,7 @@
             <source>1.7</source>
             <target>1.7</target>
             <showDeprecation>true</showDeprecation>
+            <showWarnings>true</showWarnings>
           </configuration>
         </plugin>
         <plugin>
@@ -460,37 +434,6 @@
               <goal>analyze-only</goal>
             </goals>
             <configuration>
-              <!-- <failOnWarning>true</failOnWarning> -->
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-shade-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <configuration>
-              <createDependencyReducedPom>false</createDependencyReducedPom>
-              <keepDependenciesWithProvidedScope>true</keepDependenciesWithProvidedScope>
-              <shadedArtifactAttached>true</shadedArtifactAttached>
-              <shadedClassifierName>all</shadedClassifierName>
-              <transformers>
-                <transformer
-                  implementation="org.apache.maven.plugins.shade.resource.ComponentsXmlResourceTransformer"></transformer>
-              </transformers>
-              <artifactSet>
-                <excludes>
-                  <exclude>junit:junit</exclude>
-                  <exclude>jmock:jmock</exclude>
-                  <exclude>org.slf4j:slf4j-nop</exclude>
-                  <exclude>org.slf4j:slf4j-jdk14</exclude>
-                  <exclude>org.apache.maven.wagon:wagon-webdav-jackrabbit</exclude>
-                </excludes>
-              </artifactSet>
             </configuration>
           </execution>
         </executions>
