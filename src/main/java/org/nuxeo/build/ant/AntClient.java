@@ -94,12 +94,10 @@ public class AntClient {
         return instance.get();
     }
 
-    // xmlns:nx="urn:nuxeo-build"
-    // xmlns:artifact="urn:nuxeo-artifact">
-    // <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
-    // <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
-    // uri="urn:nuxeo-artifact" />
     /**
+     * xmlns:nx="urn:nuxeo-build"
+     * xmlns:artifact="urn:nuxeo-artifact"
+     *
      * @since 2.0
      */
     protected void initTasks() {
@@ -107,10 +105,12 @@ public class AntClient {
         Typedef typedef = new Typedef();
         typedef.setProject(project);
         typedef.setResource("org/nuxeo/build/antlib.xml");
+        typedef.setURI("urn:nuxeo-build");
         typedef.execute();
         typedef = new Typedef();
         typedef.setProject(project);
         typedef.setResource("org/nuxeo/build/artifact/antlib.xml");
+        typedef.setURI("urn:nuxeo-artifact");
         typedef.execute();
     }
 

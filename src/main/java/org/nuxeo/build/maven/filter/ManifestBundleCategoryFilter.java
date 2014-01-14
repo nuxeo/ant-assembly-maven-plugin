@@ -210,8 +210,8 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
     }
 
     /**
-     * @deprecated prefer use of {@link #accept(Node)} as it remembers already
-     *             parsed artifacts
+     * @deprecated prefer use of {@link #accept(Node, boolean, boolean)} as it
+     *             remembers already parsed artifacts
      */
     @Deprecated
     @Override

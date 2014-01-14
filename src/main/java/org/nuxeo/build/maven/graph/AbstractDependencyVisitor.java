@@ -37,7 +37,7 @@ import org.nuxeo.build.ant.AntClient;
 
 /**
  * Prints the graph while traversing it.
- * Do not print nodes provided through {@link #addIgnores(List)}.
+ * Do not print nodes provided through {@link #addIgnores(Collection)}.
  * Inspired from
  * {@link org.eclipse.aether.util.graph.visitor.AbstractDepthFirstNodeListGenerator}
  *

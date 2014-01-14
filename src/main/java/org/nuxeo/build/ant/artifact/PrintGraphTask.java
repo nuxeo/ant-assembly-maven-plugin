@@ -138,10 +138,9 @@ public class PrintGraphTask extends Task {
 
     /**
      * @since 1.10.2
-     * @see PrintDependencyVisitor
      */
     public void setMode(String mode) {
-        if (PrintGraphTask.MODE_SDK.equals(mode)) {
+        if (MODE_SDK.equals(mode)) {
             this.format = FORMAT_KV_F_GAV;
         }
         this.mode = mode;
@@ -151,7 +150,6 @@ public class PrintGraphTask extends Task {
      * Defines output format
      *
      * @param format
-     * @see PrintDependencyVisitor
      * @since 1.10.2
      */
     public void setFormat(int format) {

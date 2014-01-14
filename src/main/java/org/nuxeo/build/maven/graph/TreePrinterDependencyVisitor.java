@@ -92,8 +92,8 @@ public class TreePrinterDependencyVisitor extends AbstractDependencyVisitor {
 
     /**
      * @return String representation depending on {@link #format}
-     * @see #FORMAT_GAV
-     * @see #FORMAT_KV_F_GAV
+     * @see PrintGraphTask#FORMAT_GAV
+     * @see PrintGraphTask#FORMAT_KV_F_GAV
      */
     public String toString(DependencyNode node) {
         Artifact artifact = node.getArtifact();

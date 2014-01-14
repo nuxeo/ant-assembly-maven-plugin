@@ -261,7 +261,6 @@ public class AntBuildMojo extends AbstractMojo {
     }
 
     /**
-     * @param project2
      * @since 1.10.2
      */
     public Graph newGraph() {

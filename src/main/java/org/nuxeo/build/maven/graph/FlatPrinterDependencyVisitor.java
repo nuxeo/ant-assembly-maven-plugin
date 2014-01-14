@@ -32,6 +32,7 @@ import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.util.artifact.ArtifactIdUtils;
 import org.eclipse.aether.util.graph.transformer.ConflictResolver;
 import org.nuxeo.build.ant.AntClient;
+import org.nuxeo.build.ant.artifact.PrintGraphTask;
 import org.nuxeo.build.maven.AntBuildMojo;
 
 /**
@@ -50,8 +51,6 @@ public class FlatPrinterDependencyVisitor extends AbstractDependencyVisitor {
 
     /**
      * @param format 0 = standard GAV ; 1 = File + GAV
-     * @param out
-     * @param scopes
      */
     public FlatPrinterDependencyVisitor(OutputStream output, int format,
             List<String> scopes) {
@@ -105,8 +104,8 @@ public class FlatPrinterDependencyVisitor extends AbstractDependencyVisitor {
 
     /**
      * @return String representation depending on {@link #format}
-     * @see #FORMAT_GAV
-     * @see #FORMAT_KV_F_GAV
+     * @see PrintGraphTask#FORMAT_GAV
+     * @see PrintGraphTask#FORMAT_KV_F_GAV
      */
     public String toString(DependencyNode node) {
         Artifact artifact = node.getArtifact();
