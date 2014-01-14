@@ -30,7 +30,7 @@
             <filesmatch file1="${outdir}/dependency-tree1.log"
                         file2="dependency-tree1.expected" />
             <available file="${outdir}/test-artifacts1.properties" />
-            <!-- TODO NXBT-258 manage scope test -->
+            <!-- TODO NXBT-691 manage scope test -->
             <!-- <filesmatch file1="${outdir}/test-artifacts1.properties" -->
             <!-- file2="test-artifacts1.expected" /> -->
           </and>
@@ -59,7 +59,7 @@
             <filesmatch file1="${outdir}/dependency-tree2.log"
                         file2="dependency-tree2.expected" />
             <available file="${outdir}/test-artifacts2.properties" />
-            <!-- TODO NXBT-258 manage scope test -->
+            <!-- TODO NXBT-691 manage scope test -->
             <!-- <filesmatch file1="${outdir}/test-artifacts2.properties" -->
             <!-- file2="test-artifacts2.expected" /> -->
           </and>

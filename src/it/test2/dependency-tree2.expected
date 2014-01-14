@@ -1,55 +1,49 @@
-org.nuxeo.build:test2:pom:1.16-SNAPSHOT
- |-- org.nuxeo.connect:nuxeo-connect-client:jar:1.4.13:compile
- |--  |-- commons-httpclient:commons-httpclient:jar:3.1:compile
- |--  |--  |-- commons-logging:commons-logging:jar:1.0.4:compile
- |--  |--  |-- commons-codec:commons-codec:jar:1.2:compile
- |--  |-- commons-collections:commons-collections:jar:3.2:compile
- |--  |-- commons-io:commons-io:jar:1.4:compile
- |--  |-- org.json:json:jar:20070829:compile
- |--  |-- org.eclipse.equinox:org.eclipse.equinox.p2.cudf:jar:1.17-NX:compile
- |--  |--  |-- org.sat4j:org.sat4j.pb:jar:2.3.1:compile
- |--  |--  |-- org.sat4j:org.sat4j.core:jar:2.3.1:compile
- |--  |--  |-- org.eclipse.core:org.eclipse.core.jobs:jar:3.5.0.v20100515:compile
- |--  |--  |-- org.eclipse.equinox:org.eclipse.equinox.common:jar:3.6.0.v20100503:compile
- |--  |--  |-- org.osgi:org.osgi.core:jar:4.2.0:compile
- |--  |--  |-- commons-logging:commons-logging:jar:1.0.4:compile
- |--  |--  |-- log4j:log4j:jar:1.2.16:compile
- |-- org.apache.maven:maven-project:jar:2.2.1:compile
- |--  |-- org.apache.maven:maven-settings:jar:2.2.1:compile
- |--  |--  |-- org.apache.maven:maven-model:jar:2.2.1:compile
- |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:jar:1.5.15:compile
- |--  |--  |-- org.codehaus.plexus:plexus-interpolation:jar:1.11:compile
- |--  |--  |-- org.codehaus.plexus:plexus-utils:jar:1.5.15:compile
- |--  |--  |-- org.codehaus.plexus:plexus-container-default:jar:1.0-alpha-9-stable-1:compile
- |--  |--  |--  |-- junit:junit:jar:3.8.1:compile
- |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:jar:1.5.15:compile
- |--  |--  |--  |-- classworlds:classworlds:jar:1.1-alpha-2:compile
- |--  |-- org.apache.maven:maven-profile:jar:2.2.1:compile
- |--  |--  |-- org.apache.maven:maven-model:jar:2.2.1:compile
- |--  |--  |-- org.codehaus.plexus:plexus-utils:jar:1.5.15:compile
- |--  |--  |-- org.codehaus.plexus:plexus-interpolation:jar:1.11:compile
- |--  |--  |-- org.codehaus.plexus:plexus-container-default:jar:1.0-alpha-9-stable-1:compile
- |--  |-- org.apache.maven:maven-model:jar:2.2.1:compile
- |--  |--  |-- org.codehaus.plexus:plexus-utils:jar:1.5.15:compile
- |--  |-- org.apache.maven:maven-artifact-manager:jar:2.2.1:compile
- |--  |--  |-- org.apache.maven:maven-repository-metadata:jar:2.2.1:compile
- |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:jar:1.5.15:compile
- |--  |--  |-- org.codehaus.plexus:plexus-utils:jar:1.5.15:compile
- |--  |--  |-- org.apache.maven:maven-artifact:jar:2.2.1:compile
- |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:jar:1.5.15:compile
- |--  |--  |-- org.codehaus.plexus:plexus-container-default:jar:1.0-alpha-9-stable-1:compile
- |--  |--  |-- org.apache.maven.wagon:wagon-provider-api:jar:1.0-beta-6:compile
- |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:jar:1.5.15:compile
- |--  |--  |-- backport-util-concurrent:backport-util-concurrent:jar:3.1:compile
- |--  |-- org.apache.maven:maven-plugin-registry:jar:2.2.1:compile
- |--  |--  |-- org.codehaus.plexus:plexus-utils:jar:1.5.15:compile
- |--  |--  |-- org.codehaus.plexus:plexus-container-default:jar:1.0-alpha-9-stable-1:compile
- |--  |-- org.codehaus.plexus:plexus-interpolation:jar:1.11:compile
- |--  |-- org.codehaus.plexus:plexus-utils:jar:1.5.15:compile
- |--  |-- org.apache.maven:maven-artifact:jar:2.2.1:compile
- |--  |--  |-- org.codehaus.plexus:plexus-utils:jar:1.5.15:compile
- |--  |-- org.codehaus.plexus:plexus-container-default:jar:1.0-alpha-9-stable-1:compile
- |--  |--  |-- junit:junit:jar:3.8.1:compile
- |--  |--  |-- org.codehaus.plexus:plexus-utils:jar:1.5.15:compile
- |--  |--  |-- classworlds:classworlds:jar:1.1-alpha-2:compile
- |-- junit:junit:jar:4.8.1:test
+org.nuxeo.build:test2:2.0-SNAPSHOT:pom::
+ |-- org.nuxeo.connect:nuxeo-connect-client:1.4.13:jar::compile
+ |--  |-- commons-httpclient:commons-httpclient:3.1:jar::compile
+ |--  |--  |-- commons-logging:commons-logging:1.0.4:jar::compile
+ |--  |--  |-- commons-codec:commons-codec:1.2:jar::compile
+ |--  |-- commons-collections:commons-collections:3.2:jar::compile
+ |--  |-- commons-io:commons-io:1.4:jar::compile
+ |--  |-- org.json:json:20070829:jar::compile
+ |--  |-- org.eclipse.equinox:org.eclipse.equinox.p2.cudf:1.17-NX:jar::compile
+ |--  |--  |-- org.sat4j:org.sat4j.pb:2.3.1:jar::compile
+ |--  |--  |-- org.sat4j:org.sat4j.core:2.3.1:jar::compile
+ |--  |--  |-- org.eclipse.core:org.eclipse.core.jobs:3.5.0.v20100515:jar::compile
+ |--  |--  |-- org.eclipse.equinox:org.eclipse.equinox.common:3.6.0.v20100503:jar::compile
+ |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile
+ |--  |--  |-- commons-logging:commons-logging:1.1:jar::compile (conflicts with 1.0.4)
+ |--  |--  |-- log4j:log4j:1.2.16:jar::compile
+ |-- org.apache.maven:maven-project:2.2.1:jar::compile
+ |--  |-- org.apache.maven:maven-settings:2.2.1:jar::compile
+ |--  |--  |-- org.apache.maven:maven-model:2.2.1:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-interpolation:1.11:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
+ |--  |-- org.apache.maven:maven-profile:2.2.1:jar::compile
+ |--  |--  |-- org.apache.maven:maven-model:2.2.1:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-interpolation:1.11:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
+ |--  |-- org.apache.maven:maven-model:2.2.1:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |-- org.apache.maven:maven-artifact-manager:2.2.1:jar::compile
+ |--  |--  |-- org.apache.maven:maven-repository-metadata:2.2.1:jar::compile
+ |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |--  |-- org.apache.maven:maven-artifact:2.2.1:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
+ |--  |--  |-- org.apache.maven.wagon:wagon-provider-api:1.0-beta-6:jar::compile
+ |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.4.2:jar::compile (conflicts with 1.5.15)
+ |--  |--  |-- backport-util-concurrent:backport-util-concurrent:3.1:jar::compile
+ |--  |-- org.apache.maven:maven-plugin-registry:2.2.1:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
+ |--  |-- org.codehaus.plexus:plexus-interpolation:1.11:jar::compile
+ |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |-- org.apache.maven:maven-artifact:2.2.1:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
+ |--  |--  |-- junit:junit:3.8.1:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:1.0.4:jar::compile (conflicts with 1.5.15)
+ |--  |--  |-- classworlds:classworlds:1.1-alpha-2:jar::compile
