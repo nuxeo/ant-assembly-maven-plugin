@@ -451,6 +451,9 @@
           <settingsFile>src/it/settings.xml</settingsFile>
           <localRepositoryPath>${project.build.directory}/it-local-repo</localRepositoryPath>
           <addTestClassPath>true</addTestClassPath>
+          <extraArtifacts>
+            <extraArtifact>org.nuxeo.build:nuxeo-distribution-tools:2.0-SNAPSHOT:maven-plugin</extraArtifact>
+          </extraArtifacts>
         </configuration>
         <executions>
           <execution>
