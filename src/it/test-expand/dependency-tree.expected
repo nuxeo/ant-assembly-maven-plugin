@@ -10,25 +10,17 @@ org.nuxeo.build:test-expand:2.0-SNAPSHOT:pom::
  |--  |-- commons-io:commons-io:2.4:jar::compile
  |--  |-- org.apache.maven:maven-artifact:3.1.1:jar::compile
  |--  |--  |-- org.codehaus.plexus:plexus-utils:3.0.15:jar::compile (conflicts with 3.0.16)
- |--  |-- org.apache.maven:maven-artifact-manager:2.2.1:jar::compile
- |--  |--  |-- org.apache.maven:maven-repository-metadata:2.2.1:jar::compile
- |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile (conflicts with 3.0.16)
- |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile (conflicts with 3.0.16)
- |--  |--  |-- org.apache.maven:maven-artifact:2.2.1:jar::compile (conflicts with 3.1.1)
- |--  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
- |--  |--  |-- org.apache.maven.wagon:wagon-provider-api:1.0-beta-6:jar::compile
- |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.4.2:jar::compile (conflicts with 3.0.16)
- |--  |--  |-- backport-util-concurrent:backport-util-concurrent:3.1:jar::compile
  |--  |-- org.apache.maven:maven-core:3.1.1:jar::compile
  |--  |--  |-- org.apache.maven:maven-model:3.1.1:jar::compile
- |--  |--  |-- org.apache.maven:maven-settings:3.1.1:jar::compile (conflicts with 2.2.1)
+ |--  |--  |-- org.apache.maven:maven-settings:3.1.1:jar::compile
  |--  |--  |-- org.apache.maven:maven-settings-builder:3.1.1:jar::compile
  |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:3.0.15:jar::compile (conflicts with 3.0.16)
  |--  |--  |--  |-- org.codehaus.plexus:plexus-interpolation:1.19:jar::compile (conflicts with 1.11)
  |--  |--  |--  |-- org.codehaus.plexus:plexus-component-annotations:1.5.5:jar::compile
- |--  |--  |--  |-- org.apache.maven:maven-settings:3.1.1:jar::compile (conflicts with 2.2.1)
+ |--  |--  |--  |-- org.apache.maven:maven-settings:3.1.1:jar::compile
  |--  |--  |--  |-- org.sonatype.plexus:plexus-sec-dispatcher:1.3:jar::compile
- |--  |--  |-- org.apache.maven:maven-repository-metadata:3.1.1:jar::compile (conflicts with 2.2.1)
+ |--  |--  |-- org.apache.maven:maven-repository-metadata:3.1.1:jar::compile
+ |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:3.0.15:jar::compile (conflicts with 3.0.16)
  |--  |--  |-- org.apache.maven:maven-artifact:3.1.1:jar::compile
  |--  |--  |-- org.apache.maven:maven-plugin-api:3.1.1:jar::compile
  |--  |--  |--  |-- org.apache.maven:maven-model:3.1.1:jar::compile
@@ -42,7 +34,7 @@ org.nuxeo.build:test-expand:2.0-SNAPSHOT:pom::
  |--  |--  |-- org.apache.maven:maven-aether-provider:3.1.1:jar::compile
  |--  |--  |--  |-- org.apache.maven:maven-model:3.1.1:jar::compile
  |--  |--  |--  |-- org.apache.maven:maven-model-builder:3.1.1:jar::compile
- |--  |--  |--  |-- org.apache.maven:maven-repository-metadata:3.1.1:jar::compile (conflicts with 2.2.1)
+ |--  |--  |--  |-- org.apache.maven:maven-repository-metadata:3.1.1:jar::compile
  |--  |--  |--  |-- org.eclipse.aether:aether-api:0.9.0.M2:jar::compile (conflicts with 0.9.0.M4)
  |--  |--  |--  |-- org.eclipse.aether:aether-spi:0.9.0.M2:jar::compile
  |--  |--  |--  |--  |-- org.eclipse.aether:aether-api:0.9.0.M2:jar::compile (conflicts with 0.9.0.M4)
@@ -78,50 +70,11 @@ org.nuxeo.build:test-expand:2.0-SNAPSHOT:pom::
  |--  |--  |--  |-- org.sonatype.plexus:plexus-cipher:1.4:jar::compile
  |--  |-- org.apache.maven:maven-model:3.1.1:jar::compile
  |--  |--  |-- org.codehaus.plexus:plexus-utils:3.0.15:jar::compile (conflicts with 3.0.16)
- |--  |-- org.apache.maven.plugins:maven-failsafe-plugin:2.16:jar::compile
- |--  |--  |-- org.apache.maven:maven-plugin-api:2.0.9:jar::compile (conflicts with 3.1.1)
- |--  |--  |-- org.apache.maven.surefire:maven-surefire-common:2.16:jar::compile
- |--  |--  |--  |-- org.apache.maven:maven-plugin-api:2.0.9:jar::compile (conflicts with 3.1.1)
- |--  |--  |--  |-- org.apache.maven.plugin-tools:maven-plugin-annotations:3.2:jar::compile
- |--  |--  |--  |-- org.apache.maven.surefire:surefire-api:2.16:jar::compile
- |--  |--  |--  |-- org.apache.maven.surefire:surefire-booter:2.16:jar::compile
- |--  |--  |--  |--  |-- org.apache.maven.surefire:surefire-api:2.16:jar::compile
- |--  |--  |--  |-- org.apache.maven:maven-artifact:2.0.9:jar::compile (conflicts with 3.1.1)
- |--  |--  |--  |-- org.apache.maven:maven-plugin-descriptor:2.0.9:jar::compile
- |--  |--  |--  |--  |-- org.apache.maven:maven-plugin-api:2.0.9:jar::compile (conflicts with 3.1.1)
- |--  |--  |--  |--  |-- org.apache.maven:maven-artifact:2.0.9:jar::compile (conflicts with 3.1.1)
- |--  |--  |--  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
- |--  |--  |--  |-- org.apache.maven:maven-project:2.0.9:jar::compile (conflicts with 2.2.1)
- |--  |--  |--  |-- org.apache.maven:maven-model:2.0.9:jar::compile (conflicts with 3.1.1)
- |--  |--  |--  |-- org.apache.maven:maven-core:2.0.9:jar::compile (conflicts with 3.1.1)
- |--  |--  |--  |-- org.apache.maven:maven-toolchain:2.0.9:jar::compile
- |--  |--  |--  |--  |-- org.apache.maven:maven-core:2.0.9:jar::compile (conflicts with 3.1.1)
- |--  |--  |--  |--  |-- org.apache.maven:maven-artifact:2.0.9:jar::compile (conflicts with 3.1.1)
- |--  |--  |--  |-- org.apache.commons:commons-lang3:3.1:jar::compile
- |--  |--  |-- org.apache.maven.surefire:surefire-api:2.16:jar::compile
- |--  |--  |-- org.apache.maven.plugin-tools:maven-plugin-annotations:3.2:jar::compile
- |--  |--  |--  |-- org.apache.maven:maven-artifact:3.0:jar::compile (conflicts with 3.1.1)
- |--  |-- org.nuxeo.connect:nuxeo-connect-client:1.4.13:jar::compile
- |--  |--  |-- commons-httpclient:commons-httpclient:3.1:jar::compile
- |--  |--  |--  |-- commons-logging:commons-logging:1.0.4:jar::compile
- |--  |--  |--  |-- commons-codec:commons-codec:1.2:jar::compile
- |--  |--  |-- commons-collections:commons-collections:3.2:jar::compile
- |--  |--  |-- commons-io:commons-io:1.4:jar::compile (conflicts with 2.4)
- |--  |--  |-- org.json:json:20070829:jar::compile
- |--  |--  |-- org.eclipse.equinox:org.eclipse.equinox.p2.cudf:1.17-NX:jar::compile
- |--  |--  |--  |-- org.sat4j:org.sat4j.pb:2.3.1:jar::compile
- |--  |--  |--  |-- org.sat4j:org.sat4j.core:2.3.1:jar::compile
- |--  |--  |--  |-- org.eclipse.core:org.eclipse.core.jobs:3.5.0.v20100515:jar::compile
- |--  |--  |--  |-- org.eclipse.equinox:org.eclipse.equinox.common:3.6.0.v20100503:jar::compile
- |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile
- |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar::compile (conflicts with 1.0.4)
- |--  |--  |--  |-- log4j:log4j:1.2.16:jar::compile
+ |--  |-- org.freemarker:freemarker:2.3.16:jar::compile
+ |--  |-- org.apache.maven:maven-settings:3.1.1:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:3.0.15:jar::compile (conflicts with 3.0.16)
  |-- org.apache.maven:maven-project:2.2.1:jar::compile
- |--  |-- org.apache.maven:maven-settings:2.2.1:jar::compile
- |--  |--  |-- org.apache.maven:maven-model:2.2.1:jar::compile (conflicts with 3.1.1)
- |--  |--  |-- org.codehaus.plexus:plexus-interpolation:1.11:jar::compile
- |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile (conflicts with 3.0.16)
- |--  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
+ |--  |-- org.apache.maven:maven-settings:2.2.1:jar::compile (conflicts with 3.1.1)
  |--  |-- org.apache.maven:maven-profile:2.2.1:jar::compile
  |--  |--  |-- org.apache.maven:maven-model:2.2.1:jar::compile (conflicts with 3.1.1)
  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile (conflicts with 3.0.16)
@@ -129,6 +82,13 @@ org.nuxeo.build:test-expand:2.0-SNAPSHOT:pom::
  |--  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
  |--  |-- org.apache.maven:maven-model:2.2.1:jar::compile (conflicts with 3.1.1)
  |--  |-- org.apache.maven:maven-artifact-manager:2.2.1:jar::compile
+ |--  |--  |-- org.apache.maven:maven-repository-metadata:2.2.1:jar::compile (conflicts with 3.1.1)
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile (conflicts with 3.0.16)
+ |--  |--  |-- org.apache.maven:maven-artifact:2.2.1:jar::compile (conflicts with 3.1.1)
+ |--  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
+ |--  |--  |-- org.apache.maven.wagon:wagon-provider-api:1.0-beta-6:jar::compile
+ |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.4.2:jar::compile (conflicts with 3.0.16)
+ |--  |--  |-- backport-util-concurrent:backport-util-concurrent:3.1:jar::compile
  |--  |-- org.apache.maven:maven-plugin-registry:2.2.1:jar::compile
  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile (conflicts with 3.0.16)
  |--  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
