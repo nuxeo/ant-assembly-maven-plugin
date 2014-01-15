@@ -49,6 +49,7 @@
     <sonar.host.url>https://sonar.nuxeo.org/</sonar.host.url>
     <sonar.java.source>1.7</sonar.java.source>
     <invoker.test>test*,!test-MNG-5561</invoker.test>
+    <license.useMissingFile>true</license.useMissingFile>
   </properties>
 
   <repositories>
@@ -733,6 +734,9 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <version>1.4</version>
+        <configuration>
+          <excludedScopes>test,provided,system</excludedScopes>
+        </configuration>
         <reportSets>
           <reportSet>
             <reports>
