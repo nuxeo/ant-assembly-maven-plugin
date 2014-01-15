@@ -70,7 +70,7 @@ org.nuxeo.build:test-expand:2.0-SNAPSHOT:pom::
  |--  |--  |--  |-- org.sonatype.plexus:plexus-cipher:1.4:jar::compile
  |--  |-- org.apache.maven:maven-model:3.1.1:jar::compile
  |--  |--  |-- org.codehaus.plexus:plexus-utils:3.0.15:jar::compile (conflicts with 3.0.16)
- |--  |-- org.freemarker:freemarker:2.3.16:jar::compile
+ |--  |-- org.freemarker:freemarker:2.3.20:jar::compile
  |--  |-- org.apache.maven:maven-settings:3.1.1:jar::compile
  |--  |--  |-- org.codehaus.plexus:plexus-utils:3.0.15:jar::compile (conflicts with 3.0.16)
  |-- org.apache.maven:maven-project:2.2.1:jar::compile
