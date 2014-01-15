@@ -46,6 +46,7 @@
     <debugITs>false</debugITs>
     <mavenVersion>3.1.1</mavenVersion>
     <aetherVersion>0.9.0.M4</aetherVersion>
+    <invoker.test>test*,!test-MNG-5561</invoker.test>
   </properties>
 
   <repositories>
@@ -445,15 +446,13 @@
           <debug>${debugITs}</debug>
           <projectsDirectory>src/it</projectsDirectory>
           <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-          <pomIncludes>
-            <pomInclude>**/pom.xml</pomInclude>
-          </pomIncludes>
           <settingsFile>src/it/settings.xml</settingsFile>
           <localRepositoryPath>${project.build.directory}/it-local-repo</localRepositoryPath>
           <addTestClassPath>true</addTestClassPath>
           <extraArtifacts>
             <extraArtifact>org.nuxeo.build:nuxeo-distribution-tools:2.0-SNAPSHOT:maven-plugin</extraArtifact>
           </extraArtifacts>
+          <invokerTest>${invoker.test}</invokerTest>
         </configuration>
         <executions>
           <execution>
