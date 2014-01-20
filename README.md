@@ -177,7 +177,7 @@ use the Mojo bound to the current thread).
 
 # Build and tests
 
-    mvn clean package [-o] [-DskipTests] [-DskipITs] [-DdebugITs=true] [-Dinvoker.test=...]
+    mvn clean package [-o] [-DskipTests] [-DskipITs] [-DdebugITs=true] [-Dinvoker.test=...] [-Pdebug]
 
 See:  
 - [maven-invoker-plugin](http://maven.apache.org/plugins/maven-invoker-plugin/)  

@@ -48,7 +48,6 @@
     <aetherVersion>0.9.0.M4</aetherVersion>
     <sonar.host.url>https://sonar.nuxeo.org/</sonar.host.url>
     <sonar.java.source>1.7</sonar.java.source>
-    <invoker.test>test*,!test-MNG-5561</invoker.test>
     <license.useMissingFile>true</license.useMissingFile>
   </properties>
 
@@ -399,6 +398,17 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-invoker-plugin</artifactId>
           <version>1.8</version>
+          <configuration>
+            <skipInvocation>${skipITs}</skipInvocation>
+            <debug>${debugITs}</debug>
+            <projectsDirectory>src/it</projectsDirectory>
+            <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+            <settingsFile>src/it/settings.xml</settingsFile>
+            <localRepositoryPath>${project.build.directory}/it-local-repo</localRepositoryPath>
+            <addTestClassPath>true</addTestClassPath>
+            <mavenExecutable>mvn</mavenExecutable>
+            <parallelThreads>5</parallelThreads>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -476,19 +486,6 @@
       </plugin>
       <plugin>
         <artifactId>maven-invoker-plugin</artifactId>
-        <configuration>
-          <skipInvocation>${skipITs}</skipInvocation>
-          <debug>${debugITs}</debug>
-          <projectsDirectory>src/it</projectsDirectory>
-          <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
-          <settingsFile>src/it/settings.xml</settingsFile>
-          <localRepositoryPath>${project.build.directory}/it-local-repo</localRepositoryPath>
-          <addTestClassPath>true</addTestClassPath>
-          <extraArtifacts>
-            <extraArtifact>org.nuxeo.build:nuxeo-distribution-tools:2.0-SNAPSHOT:maven-plugin</extraArtifact>
-          </extraArtifacts>
-          <invokerTest>${invoker.test}</invokerTest>
-        </configuration>
         <executions>
           <execution>
             <id>integration-test</id>
@@ -504,7 +501,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <!-- <argLine>-Xdebug -Xrunjdwp:transport=dt_socket,address=9000,server=y,suspend=y</argLine> -->
         </configuration>
       </plugin>
       <plugin>
@@ -664,6 +660,26 @@
             <artifactId>jacoco-maven-plugin</artifactId>
           </plugin>
         </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>debug</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-invoker-plugin</artifactId>
+              <configuration>
+                <mavenExecutable>mvnDebug</mavenExecutable>
+                <parallelThreads>1</parallelThreads>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
       </build>
     </profile>
   </profiles>

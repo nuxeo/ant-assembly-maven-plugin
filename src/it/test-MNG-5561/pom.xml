@@ -8,7 +8,8 @@
   <version>@pom.version@</version>
   <packaging>pom</packaging>
   <name>TEST MNG-5561: Test plugin relocation</name>
-  <description>See http://jira.codehaus.org/browse/MNG-5561</description>
+  <description>See http://jira.codehaus.org/browse/MNG-5561
+Test success means the expected failure happened (invoker.buildResult=failure)</description>
 
   <properties>
     <test1.property>success</test1.property>
