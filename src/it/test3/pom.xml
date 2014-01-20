@@ -6,7 +6,7 @@
   <groupId>org.nuxeo.build</groupId>
   <artifactId>test3</artifactId>
   <version>@pom.version@</version>
-  <packaging>pom</packaging>
+  <packaging>zip</packaging>
   <name>TEST 3: assembly test</name>
   <description>Retrieve artifacts from dependency tree, depending on various parameters such as groupId. Covers:
   - artifact:print
@@ -56,15 +56,7 @@
         <groupId>org.nuxeo.build</groupId>
         <artifactId>ant-assembly-maven-plugin</artifactId>
         <version>@pom.version@</version>
-        <executions>
-          <execution>
-            <id>packaging</id>
-            <goals>
-              <goal>build</goal>
-            </goals>
-            <phase>package</phase>
-          </execution>
-        </executions>
+        <extensions>true</extensions>
       </plugin>
     </plugins>
   </build>

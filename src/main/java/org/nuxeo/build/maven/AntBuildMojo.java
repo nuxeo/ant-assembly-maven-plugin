@@ -60,7 +60,9 @@ import org.nuxeo.build.maven.graph.Node;
 /**
  * TODO NXBT-258
  */
-@Mojo(name = "build", threadSafe = true, requiresDependencyResolution = ResolutionScope.TEST, defaultPhase = LifecyclePhase.PACKAGE)
+@Mojo(name = "build", threadSafe = true, defaultPhase = LifecyclePhase.PACKAGE, //
+requiresDependencyCollection = ResolutionScope.TEST, //
+requiresDependencyResolution = ResolutionScope.TEST)
 public class AntBuildMojo extends AbstractMojo {
 
     private static final ThreadLocal<AntBuildMojo> instance = new ThreadLocal<>();

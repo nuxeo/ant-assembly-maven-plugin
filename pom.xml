@@ -514,7 +514,7 @@
         <configuration>
           <goalPrefix>ant-assembly</goalPrefix>
           <!-- see http://jira.codehaus.org/browse/MNG-5346 -->
-          <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+          <!-- <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound> -->
         </configuration>
         <executions>
           <execution>

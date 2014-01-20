@@ -20,6 +20,7 @@ package org.nuxeo.build.ant.artifact;
 
 import java.io.File;
 
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.apache.tools.ant.BuildException;
@@ -84,8 +85,14 @@ public class AttachArtifactTask extends Task {
             type = getExtension(file.getName());
             log("Unspecified type, using: " + type, Project.MSG_WARN);
         }
-        AntBuildMojo.getInstance().getProjectHelper().attachArtifact(pom, type,
-                classifier, file);
+        Artifact pomArtifact = pom.getArtifact();
+        if (classifier != null || !type.equals(pomArtifact.getType())) {
+            AntBuildMojo.getInstance().getProjectHelper().attachArtifact(pom,
+                    type, classifier, file);
+        } else {
+            pomArtifact.setFile(file);
+            pomArtifact.setResolved(true);
+        }
     }
 
     /**
