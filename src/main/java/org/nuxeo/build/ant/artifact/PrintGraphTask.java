@@ -29,8 +29,8 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.eclipse.aether.util.artifact.JavaScopes;
+import org.eclipse.aether.util.graph.visitor.CloningDependencyVisitor;
 import org.nuxeo.build.maven.AntBuildMojo;
-import org.nuxeo.build.maven.graph.AbstractDependencyVisitor;
 import org.nuxeo.build.maven.graph.FlatPrinterDependencyVisitor;
 import org.nuxeo.build.maven.graph.Node;
 import org.nuxeo.build.maven.graph.TreePrinterDependencyVisitor;
@@ -105,26 +105,27 @@ public class PrintGraphTask extends Task {
             // JavaScopes.COMPILE );
             // system.resolveDependencies( session, dependencyRequest
             // ).getArtifactResults();
-            AbstractDependencyVisitor pdv;
             if (PrintGraphTask.MODE_TREE.equals(mode)) {
-                pdv = new TreePrinterDependencyVisitor(out, format, scopes);
+                TreePrinterDependencyVisitor pdv = new TreePrinterDependencyVisitor(
+                        out, format, scopes, roots);
+                for (Node node : roots) {
+                    log("Visiting " + node, Project.MSG_DEBUG);
+                    // Work on a clone to avoid graph being altered
+                    CloningDependencyVisitor cdv = new CloningDependencyVisitor();
+                    node.accept(cdv);
+                    cdv.getRootNode().accept(pdv);
+                }
             } else {
-                pdv = new FlatPrinterDependencyVisitor(out, format, scopes);
-            }
-            // Ignore roots in flat mode
-            if (pdv instanceof FlatPrinterDependencyVisitor) {
+                FlatPrinterDependencyVisitor pdv = new FlatPrinterDependencyVisitor(
+                        out, format, scopes);
+                // Ignore roots in flat mode
                 pdv.addIgnores(roots);
+                for (Node node : roots) {
+                    log("Visiting " + node, Project.MSG_DEBUG);
+                    node.accept(pdv);
+                }
+                pdv.print();
             }
-            for (Node node : roots) {
-                log("Visiting " + node, Project.MSG_DEBUG);
-                node.accept(pdv);
-            }
-            if (pdv instanceof FlatPrinterDependencyVisitor) {
-                ((FlatPrinterDependencyVisitor) pdv).print();
-            }
-            log("All dependencies: "
-                    + String.valueOf(pdv.getDependencies(true)),
-                    Project.MSG_DEBUG);
         } catch (IOException e) {
             throw new BuildException(e);
         } finally {

@@ -8,11 +8,12 @@ org.nuxeo.build:test2:2.0-SNAPSHOT:pom::
  |--  |-- org.json:json:20070829:jar::compile
  |--  |-- org.eclipse.equinox:org.eclipse.equinox.p2.cudf:1.17-NX:jar::compile
  |--  |--  |-- org.sat4j:org.sat4j.pb:2.3.1:jar::compile
+ |--  |--  |--  |-- org.sat4j:org.sat4j.core:2.3.1:jar::compile
  |--  |--  |-- org.sat4j:org.sat4j.core:2.3.1:jar::compile
  |--  |--  |-- org.eclipse.core:org.eclipse.core.jobs:3.5.0.v20100515:jar::compile
+ |--  |--  |--  |-- org.eclipse.equinox:org.eclipse.equinox.common:3.6.0.v20100503:jar::compile
  |--  |--  |-- org.eclipse.equinox:org.eclipse.equinox.common:3.6.0.v20100503:jar::compile
  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile
- |--  |--  |-- commons-logging:commons-logging:1.1:jar::compile (conflicts with 1.0.4)
  |--  |--  |-- log4j:log4j:1.2.16:jar::compile
  |-- org.apache.maven:maven-project:2.2.1:jar::compile
  |--  |-- org.apache.maven:maven-settings:2.2.1:jar::compile
@@ -30,12 +31,11 @@ org.nuxeo.build:test2:2.0-SNAPSHOT:pom::
  |--  |-- org.apache.maven:maven-artifact-manager:2.2.1:jar::compile
  |--  |--  |-- org.apache.maven:maven-repository-metadata:2.2.1:jar::compile
  |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |--  |-- org.apache.maven.wagon:wagon-provider-api:1.0-beta-6:jar::compile
+ |--  |--  |-- backport-util-concurrent:backport-util-concurrent:3.1:jar::compile
  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
  |--  |--  |-- org.apache.maven:maven-artifact:2.2.1:jar::compile
  |--  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
- |--  |--  |-- org.apache.maven.wagon:wagon-provider-api:1.0-beta-6:jar::compile
- |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.4.2:jar::compile (conflicts with 1.5.15)
- |--  |--  |-- backport-util-concurrent:backport-util-concurrent:3.1:jar::compile
  |--  |-- org.apache.maven:maven-plugin-registry:2.2.1:jar::compile
  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
  |--  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
@@ -45,5 +45,4 @@ org.nuxeo.build:test2:2.0-SNAPSHOT:pom::
  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
  |--  |--  |-- junit:junit:3.8.1:jar::compile
- |--  |--  |-- org.codehaus.plexus:plexus-utils:1.0.4:jar::compile (conflicts with 1.5.15)
  |--  |--  |-- classworlds:classworlds:1.1-alpha-2:jar::compile

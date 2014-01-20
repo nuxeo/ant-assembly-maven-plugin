@@ -28,8 +28,8 @@ import org.junit.Test;
 public class ArtifactDescriptorTest {
 
     /**
-     * Test method for
-     * {@link org.nuxeo.build.maven.ArtifactDescriptor#parse(java.lang.String)}.
+     * Test method for constructor
+     * {@link ArtifactDescriptor#ArtifactDescriptor(String)}.
      * Check read of artifact's coordinates given in one String (named key).
      * Key is of the form: groupId:artifactId:version:type:classifier:scope
      */

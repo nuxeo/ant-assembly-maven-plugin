@@ -21,15 +21,27 @@ package org.nuxeo.build.maven.graph;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.Project;
 import org.eclipse.aether.artifact.Artifact;
+import org.eclipse.aether.graph.DefaultDependencyNode;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.resolution.ArtifactDescriptorException;
+import org.eclipse.aether.resolution.ArtifactDescriptorRequest;
+import org.eclipse.aether.resolution.ArtifactDescriptorResult;
 import org.eclipse.aether.util.artifact.ArtifactIdUtils;
+import org.eclipse.aether.util.artifact.JavaScopes;
 import org.eclipse.aether.util.graph.manager.DependencyManagerUtils;
 import org.eclipse.aether.util.graph.transformer.ConflictResolver;
+import org.eclipse.aether.util.graph.visitor.PreorderNodeListGenerator;
+import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.ant.artifact.PrintGraphTask;
 import org.nuxeo.build.maven.AntBuildMojo;
 
@@ -52,35 +64,133 @@ public class TreePrinterDependencyVisitor extends AbstractDependencyVisitor {
 
     protected OutputStream output;
 
+    protected Map<String, DependencyNode> dependencyMap = new HashMap<>();
+
+    protected Map<String, List<Dependency>> directDepsByArtifact = new HashMap<>();
+
     /**
      * @param output
      * @param format 0 = standard GAV ; 1 = File + GAV
      * @param scopes
+     * @param list
      */
     public TreePrinterDependencyVisitor(OutputStream output, int format,
-            List<String> scopes) {
+            List<String> scopes, List<Node> roots) {
         super(scopes);
         this.output = output;
         this.format = format;
+        PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
+        for (Node node : roots) {
+            node.accept(nlg);
+        }
+        for (DependencyNode node : nlg.getNodes()) {
+            dependencyMap.put(node.getArtifact().toString(), node);
+        }
     }
 
     @Override
     protected void doVisit(DependencyNode node, boolean newNode) {
         try {
             print(node);
-            tabs += TAB_STR;
+            if (newNode) {
+                addMissingChildren(node);
+            }
+            incTabs();
         } catch (IOException e) {
             throw new BuildException(e);
         }
+    }
+
+    /**
+     * Add child nodes which were removed by the ConflictResolver (it lets no
+     * duplicate)
+     */
+    protected void addMissingChildren(DependencyNode node) {
+        AntBuildMojo mojo = AntBuildMojo.getInstance();
+        incTabs();
+        try {
+            List<Dependency> directDeps = directDepsByArtifact.get(node.getArtifact().toString());
+            if (directDeps == null) {
+                ArtifactDescriptorRequest descriptorRequest = new ArtifactDescriptorRequest(
+                        node.getArtifact(), mojo.getRemoteRepositories(), null);
+                ArtifactDescriptorResult descriptorResult = mojo.getSystem().readArtifactDescriptor(
+                        mojo.getSession(), descriptorRequest);
+                directDeps = descriptorResult.getDependencies();
+            }
+            for (Dependency dependency : directDeps) {
+                boolean removed = true;
+                if (JavaScopes.TEST.equals(dependency.getScope())
+                        && !JavaScopes.TEST.equals(node.getDependency().getScope())) {
+                    continue;
+                }
+                for (DependencyNode childNode : node.getChildren()) {
+                    if (childNode.getArtifact().toString().equals(
+                            dependency.getArtifact().toString())) {
+                        removed = false;
+                    }
+                }
+                if (removed) {
+                    DependencyNode childNode = dependencyMap.get(dependency.getArtifact().toString());
+                    if (childNode == null) {
+                        AntClient.getInstance().log(
+                                dependency.getArtifact().toString()
+                                        + " not in graph", Project.MSG_WARN);
+                        // childNode = new DefaultDependencyNode(dependency);
+                        continue;
+                    } else {
+                        int managedBits = 0;
+                        childNode = new DefaultDependencyNode(childNode);
+                        childNode.setScope(dependency.getScope());
+                        // String managedScope = dependency.getScope();
+                        // String scope = childNode.getDependency().getScope();
+                        // if (!managedScope.equals(scope)) {
+                        // managedBits |= DependencyNode.MANAGED_SCOPE;
+                        // childNode.setData(
+                        // DependencyManagerUtils.NODE_DATA_PREMANAGED_SCOPE,
+                        // managedScope);
+                        // }
+                        String managedVersion = dependency.getArtifact().getBaseVersion();
+                        String version = childNode.getArtifact().getBaseVersion();
+                        if (!managedVersion.equals(version)) {
+                            managedBits |= DependencyNode.MANAGED_VERSION;
+                            childNode.setData(
+                                    DependencyManagerUtils.NODE_DATA_PREMANAGED_VERSION,
+                                    managedVersion);
+                        }
+                        ((DefaultDependencyNode) childNode).setManagedBits(managedBits);
+                    }
+                    childNode.setChildren(Collections.<DependencyNode> emptyList());
+                    if (node.getChildren().isEmpty()) {
+                        node.setChildren(new ArrayList<DependencyNode>());
+                    }
+                    node.getChildren().add(childNode);
+                    // Mark added child as already visited to avoid expanding it
+                    // again
+                    setVisited(childNode);
+                }
+            }
+        } catch (ArtifactDescriptorException e) {
+            AntClient.getInstance().log(e.getMessage(), e, Project.MSG_ERR);
+        } finally {
+            decTabs();
+        }
+    }
+
+    protected void incTabs() {
+        tabs += TAB_STR;
     }
 
     @Override
     public boolean visitLeave(DependencyNode node) {
         boolean visit = super.visitLeave(node);
         if (!ignores.contains(node)) {
-            tabs = tabs.substring(0, tabs.length() - TAB_STR.length());
+            decTabs();
         }
         return visit;
+    }
+
+    protected void decTabs() {
+        tabs = tabs.substring(0, tabs.length() - TAB_STR.length());
     }
 
     protected void print(DependencyNode node)
@@ -131,7 +241,7 @@ public class TreePrinterDependencyVisitor extends AbstractDependencyVisitor {
         if (winner != null
                 && !ArtifactIdUtils.equalsId(artifact, winner.getArtifact())) {
             Artifact w = winner.getArtifact();
-            sb.append(" (conflicts with ");
+            sb.append(" (superseded by ");
             if (ArtifactIdUtils.toVersionlessId(artifact).equals(
                     ArtifactIdUtils.toVersionlessId(w))) {
                 sb.append(w.getVersion());

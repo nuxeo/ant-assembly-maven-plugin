@@ -118,7 +118,7 @@ public class AntBuildMojo extends AbstractMojo {
             session = new DefaultRepositorySystemSession(
                     repositorySystemSession);
             session.setConfigProperty(ConflictResolver.CONFIG_PROP_VERBOSE,
-                    true);
+                    false);
             session.setConfigProperty(
                     DependencyManagerUtils.CONFIG_PROP_VERBOSE, true);
             session.setReadOnly();
@@ -209,8 +209,6 @@ public class AntBuildMojo extends AbstractMojo {
         settings.setInteractiveMode(false);
         AntClient ant = new AntClient(getLog());
         ant.getProject().setBaseDir(project.getBasedir());
-
-        // MavenClientFactory.setInstance(this);
         try {
             setAntReferencesFromMaven(ant.getProject());
         } catch (BuildException | DependencyResolutionRequiredException e) {

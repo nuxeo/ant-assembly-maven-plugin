@@ -21,12 +21,12 @@ package org.nuxeo.build.maven.graph;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.tools.ant.Project;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.DependencyNode;
@@ -47,7 +47,7 @@ public abstract class AbstractDependencyVisitor implements DependencyVisitor {
 
     private final Map<DependencyNode, Object> visitedNodes;
 
-    protected final List<DependencyNode> nodes;
+    protected final Map<String, DependencyNode> nodesMap;
 
     /**
      * Gets the list of dependency nodes that was generated during the graph
@@ -55,8 +55,8 @@ public abstract class AbstractDependencyVisitor implements DependencyVisitor {
      *
      * @return The list of dependency nodes, never {@code null}.
      */
-    public List<DependencyNode> getNodes() {
-        return nodes;
+    public Collection<DependencyNode> getNodes() {
+        return nodesMap.values();
     }
 
     protected final List<DependencyNode> ignores;
@@ -74,8 +74,8 @@ public abstract class AbstractDependencyVisitor implements DependencyVisitor {
      * @param scopes Included scopes (if null, all scopes are included).
      */
     public AbstractDependencyVisitor(List<String> scopes) {
-        nodes = new ArrayList<>(128);
-        visitedNodes = new IdentityHashMap<>(512);
+        nodesMap = new HashMap<>();
+        visitedNodes = new IdentityHashMap<>();
         ignores = new ArrayList<>();
         this.scopes = scopes;
     }
@@ -94,7 +94,7 @@ public abstract class AbstractDependencyVisitor implements DependencyVisitor {
 
     @Override
     public boolean visitEnter(DependencyNode node) {
-        AntClient.getInstance().log("enter: " + node, Project.MSG_DEBUG);
+        // AntClient.getInstance().log("enter: " + node, Project.MSG_VERBOSE);
         boolean newNode = setVisited(node);
         boolean visitChildren = newNode;
         boolean ignoreNode = false;
@@ -130,7 +130,7 @@ public abstract class AbstractDependencyVisitor implements DependencyVisitor {
                 newNode = false;
             }
             if (newNode) {
-                nodes.add(node);
+                nodesMap.put(node.getArtifact().toString(), node);
             }
             doVisit(node, newNode);
         }
@@ -152,7 +152,7 @@ public abstract class AbstractDependencyVisitor implements DependencyVisitor {
      */
     @Override
     public boolean visitLeave(DependencyNode node) {
-        AntClient.getInstance().log("leave: " + node, Project.MSG_DEBUG);
+        // AntClient.getInstance().log("leave: " + node, Project.MSG_VERBOSE);
         return true;
     }
 
