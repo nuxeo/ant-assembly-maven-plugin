@@ -64,7 +64,7 @@ public class Node implements DependencyNode {
         StringBuilder sb = new StringBuilder();
         sb.append(artifact.getGroupId());
         sb.append(':').append(artifact.getArtifactId());
-        sb.append(':').append(artifact.getVersion());
+        sb.append(':').append(artifact.getBaseVersion());
         sb.append(':').append(artifact.getType());
         sb.append(':');
         if (artifact.getClassifier() != null) {
@@ -79,7 +79,7 @@ public class Node implements DependencyNode {
         StringBuilder sb = new StringBuilder();
         sb.append(artifact.getGroupId());
         sb.append(':').append(artifact.getArtifactId());
-        sb.append(':').append(artifact.getVersion());
+        sb.append(':').append(artifact.getBaseVersion());
         sb.append(':').append(artifact.getExtension());
         sb.append(':');
         if (artifact.getClassifier() != null) {
@@ -134,6 +134,9 @@ public class Node implements DependencyNode {
         }
         if (obj instanceof Node) {
             return ((Node) obj).id.equals(this);
+        }
+        if (obj instanceof DependencyNode) {
+            return ((DependencyNode) obj).equals(dependencyNode);
         }
         return false;
     }

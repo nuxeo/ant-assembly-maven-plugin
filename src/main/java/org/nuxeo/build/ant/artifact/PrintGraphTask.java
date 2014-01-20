@@ -60,8 +60,7 @@ public class PrintGraphTask extends Task {
 
     private String source;
 
-    private List<String> scopes = Arrays.asList(new String[] {
-            JavaScopes.COMPILE, JavaScopes.RUNTIME, JavaScopes.SYSTEM });
+    private List<String> scopes = null;
 
     /**
      * In sdk mode, root nodes are not printed
@@ -84,6 +83,18 @@ public class PrintGraphTask extends Task {
 
     @Override
     public void execute() throws BuildException {
+        // If scopes is undefined, set default depending on the mode
+        if (scopes == null) {
+            // In tree mode, we usually want all scopes
+            if (MODE_TREE.equals(mode)) {
+                scopes = Arrays.asList(new String[] { JavaScopes.COMPILE,
+                        JavaScopes.PROVIDED, JavaScopes.RUNTIME,
+                        JavaScopes.SYSTEM, JavaScopes.TEST });
+            } else {
+                scopes = Arrays.asList(new String[] { JavaScopes.COMPILE,
+                        JavaScopes.RUNTIME, JavaScopes.SYSTEM });
+            }
+        }
         List<Node> roots;
         if (source != null) {
             // TODO NXBT-258
@@ -105,7 +116,7 @@ public class PrintGraphTask extends Task {
             // JavaScopes.COMPILE );
             // system.resolveDependencies( session, dependencyRequest
             // ).getArtifactResults();
-            if (PrintGraphTask.MODE_TREE.equals(mode)) {
+            if (MODE_TREE.equals(mode)) {
                 TreePrinterDependencyVisitor pdv = new TreePrinterDependencyVisitor(
                         out, format, scopes, roots);
                 for (Node node : roots) {

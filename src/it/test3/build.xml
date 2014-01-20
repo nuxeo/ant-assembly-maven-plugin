@@ -25,7 +25,7 @@
     <copy todir="${outdir}/lib" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="!org.nuxeo*" scope="!test" />
+          <artifact groupId="!org.nuxeo*" scope="!test" type="!pom" />
         </includes>
       </artifact:set>
       <artifact:resolveFile key="log4j:log4j:1.2.16" />
@@ -88,10 +88,10 @@
               </or>
             </not>
             <!-- TODO NXBT-691 manage scope test -->
-            <!-- <equals arg1="${count.bundles}" arg2="88" /> -->
+            <equals arg1="${count.bundles}" arg2="87" />
             <!-- TODO NXBT-258 filters -->
             <!-- <equals arg1="${count.bundles}" arg2="87" /> -->
-            <!-- <equals arg1="${count.libs}" arg2="156" /> -->
+            <equals arg1="${count.libs}" arg2="155" />
             <available file="${outdir}/bin/nuxeoctl" />
             <available file="${outdir}/includes" />
             <filesmatch file1="${outdir}/includes" file2="includes.expected" />

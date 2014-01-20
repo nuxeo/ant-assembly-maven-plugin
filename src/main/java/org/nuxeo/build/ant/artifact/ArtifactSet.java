@@ -32,6 +32,7 @@ import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.resolution.DependencyResult;
 import org.eclipse.aether.util.graph.visitor.PostorderNodeListGenerator;
 import org.nuxeo.build.maven.AntBuildMojo;
@@ -290,10 +291,16 @@ public class ArtifactSet extends DataType implements ResourceCollection {
             DependencyResult result = graph.resolveDependencies(node,
                     finalFilter, depth);
             result.getRoot().accept(nlg);
+            // root node is always kept; filter it out if not acceptable
+            if (!finalFilter.accept(result.getRoot(), null)) {
+                DependencyNode root = result.getRoot();
+                nlg.getNodes().remove(root);
+            }
         }
         Collection<Node> resultNodes = new ArrayList<>();
-        for (Dependency dependency : nlg.getDependencies(true)) {
-            resultNodes.add(graph.getNode(dependency));
+        for (Dependency dependency : nlg.getDependencies(false)) {
+            Node node = graph.getNode(dependency);
+            resultNodes.add(node);
         }
         return resultNodes;
     }

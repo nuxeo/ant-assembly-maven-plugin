@@ -41,6 +41,7 @@ org.nuxeo.build:test2:2.0-SNAPSHOT:pom::
  |--  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
  |--  |-- org.codehaus.plexus:plexus-interpolation:1.11:jar::compile
  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-interpolation:1.11:jar::provided
  |--  |-- org.apache.maven:maven-artifact:2.2.1:jar::compile
  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
  |--  |-- org.codehaus.plexus:plexus-container-default:1.0-alpha-9-stable-1:jar::compile
