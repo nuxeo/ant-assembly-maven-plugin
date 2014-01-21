@@ -30,9 +30,8 @@
             <filesmatch file1="${outdir}/dependency-tree1.log"
                         file2="dependency-tree1.expected" />
             <available file="${outdir}/test-artifacts1.properties" />
-            <!-- TODO NXBT-691 manage scope test -->
-            <!-- <filesmatch file1="${outdir}/test-artifacts1.properties" -->
-            <!-- file2="test-artifacts1.expected" /> -->
+            <filesmatch file1="${outdir}/test-artifacts1.properties"
+                        file2="test-artifacts1.expected" />
           </and>
         </not>
       </condition>
@@ -41,7 +40,8 @@
 
   <target name="test2-2" description="Test artifact:nuxeo-expand">
     <property name="outdir" value="${maven.project.build.directory}" />
-    <artifact:nuxeo-expand groupPrefixes="org,junit" includetestscope="true" />
+    <artifact:nuxeo-expand groupPrefixes="org.nuxeo,junit"
+                           includetestscope="true" />
     <mkdir dir="${outdir}" />
     <artifact:print output="${outdir}/dependency-tree2.log" />
     <artifact:print output="${outdir}/artifacts2.properties" mode="sdk" />
@@ -59,9 +59,8 @@
             <filesmatch file1="${outdir}/dependency-tree2.log"
                         file2="dependency-tree2.expected" />
             <available file="${outdir}/test-artifacts2.properties" />
-            <!-- TODO NXBT-691 manage scope test -->
-            <!-- <filesmatch file1="${outdir}/test-artifacts2.properties" -->
-            <!-- file2="test-artifacts2.expected" /> -->
+            <filesmatch file1="${outdir}/test-artifacts2.properties"
+                        file2="test-artifacts2.expected" />
           </and>
         </not>
       </condition>

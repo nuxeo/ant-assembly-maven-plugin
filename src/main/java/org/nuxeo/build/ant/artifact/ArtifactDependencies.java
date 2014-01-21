@@ -125,8 +125,6 @@ public class ArtifactDependencies extends DataType implements
                 }
                 filter = CompositeFilter.compact(andf);
             }
-            // make sure node is expanded
-            // if not already expanded, this expand may not be done correctly
             DependencyResult result = graph.resolveDependencies(getNode(),
                     filter, depth);
             List<ArtifactResult> results = result.getArtifactResults();

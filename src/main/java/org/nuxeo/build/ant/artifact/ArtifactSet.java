@@ -31,10 +31,8 @@ import org.apache.tools.ant.types.Resource;
 import org.apache.tools.ant.types.ResourceCollection;
 import org.apache.tools.ant.types.resources.FileResource;
 import org.eclipse.aether.artifact.Artifact;
-import org.eclipse.aether.graph.Dependency;
-import org.eclipse.aether.graph.DependencyNode;
+import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyResult;
-import org.eclipse.aether.util.graph.visitor.PostorderNodeListGenerator;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.filter.AncestorFilter;
 import org.nuxeo.build.maven.filter.AndFilter;
@@ -71,7 +69,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
 
     public Excludes excludes;
 
-    protected Collection<Node> nodes;
+    protected Collection<Artifact> artifacts;
 
     public void setGroupId(String groupId) {
         if (isReference()) {
@@ -205,42 +203,6 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         return (ArtifactSet) getCheckedRef(p);
     }
 
-    protected List<Node> createInputNodeList() {
-        if (includes == null && excludes == null) {
-            return new ArrayList<>();
-        }
-        final AndFilter ieFilter = new AndFilter();
-        if (includes != null) {
-            ieFilter.addFilter(includes.getFilter());
-        }
-        if (excludes != null) {
-            ieFilter.addFilter(excludes.getFilter());
-        }
-        return new ArrayList<Node>() {
-            private static final long serialVersionUID = 1L;
-
-            Filter f = CompositeFilter.compact(ieFilter);
-
-            @Override
-            public boolean add(Node node) {
-                if (!f.accept(node.getMavenArtifact())) {
-                    return false;
-                }
-                return super.add(node);
-            }
-
-            @Override
-            public boolean addAll(Collection<? extends Node> c) {
-                for (Node node : c) {
-                    if (f.accept(node.getMavenArtifact())) {
-                        super.add(node);
-                    }
-                }
-                return true;
-            }
-        };
-    }
-
     protected Filter buildFilter() {
         AndFilter f = new AndFilter();
         if (!filter.isEmpty()) {
@@ -255,7 +217,8 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         return f.isEmpty() ? Filter.ANY : CompositeFilter.compact(f);
     }
 
-    protected Collection<Node> computeNodes() {
+    protected Collection<Artifact> computeNodes() {
+        Collection<Artifact> resultArtifacts = new ArrayList<>();
         Collection<Node> roots = new ArrayList<>();
         if (src != null) {
             collectImportedNodes(roots);
@@ -267,14 +230,15 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         }
         if (artifactSets != null) {
             for (ArtifactSet arti : artifactSets) {
-                roots.addAll(arti.getNodes());
+                resultArtifacts.addAll(arti.getArtifacts());
             }
         }
-        Graph graph;
+        Graph graph = new Graph();
         if (roots.isEmpty()) {
-            graph = AntBuildMojo.getInstance().newGraph();
+            for (Node root : AntBuildMojo.getInstance().getGraph().getRoots()) {
+                graph.addRootNode(root);
+            }
         } else {
-            graph = new Graph();
             for (Node root : roots) {
                 graph.addRootNode(root);
             }
@@ -286,49 +250,52 @@ public class ArtifactSet extends DataType implements ResourceCollection {
             finalFilter = CompositeFilter.compact(expand.filter);
             depth = expand.depth;
         }
-        PostorderNodeListGenerator nlg = new PostorderNodeListGenerator();
+        // PostorderNodeListGenerator nlg = new PostorderNodeListGenerator();
         for (Node node : graph.getRoots()) {
             DependencyResult result = graph.resolveDependencies(node,
                     finalFilter, depth);
-            result.getRoot().accept(nlg);
+            // result.getRoot().accept(nlg);
             // root node is always kept; filter it out if not acceptable
-            if (!finalFilter.accept(result.getRoot(), null)) {
-                DependencyNode root = result.getRoot();
-                nlg.getNodes().remove(root);
+            // if (!finalFilter.accept(result.getRoot(), null)) {
+            // DependencyNode root = result.getRoot();
+            // nlg.getNodes().remove(root);
+            // }
+            for (ArtifactResult artifactResult : result.getArtifactResults()) {
+                resultArtifacts.add(artifactResult.getArtifact());
             }
         }
-        Collection<Node> resultNodes = new ArrayList<>();
-        for (Dependency dependency : nlg.getDependencies(false)) {
-            Node node = graph.getNode(dependency);
-            resultNodes.add(node);
-        }
-        return resultNodes;
+        // for (Dependency dependency : nlg.getDependencies(false)) {
+        // Node node = graph.getNode(dependency);
+        // resultNodes.add(node);
+        // }
+        return resultArtifacts;
     }
 
-    public Collection<Node> getNodes() {
+    public Collection<Artifact> getArtifacts() {
         if (isReference()) {
-            return getRef(getProject()).getNodes();
+            return getRef(getProject()).getArtifacts();
         }
-        if (nodes == null) {
-            nodes = computeNodes();
+        if (artifacts == null) {
+            artifacts = computeNodes();
         }
         if (id != null) { // avoid caching if artifactSet is referencable
-            Collection<Node> copy = nodes;
-            nodes = null;
+            Collection<Artifact> copy = artifacts;
+            artifacts = null;
             return copy;
         }
-        return nodes;
+        return artifacts;
     }
 
     @Override
     public Iterator<Resource> iterator() {
-        return createIterator(getNodes());
+        return createIterator(getArtifacts());
     }
 
-    public static Iterator<Resource> createIterator(Collection<Node> nodes) {
+    public static Iterator<Resource> createIterator(
+            Collection<Artifact> collection) {
         List<Resource> files = new ArrayList<>();
-        for (Node node : nodes) {
-            File file = node.getFile();
+        for (Artifact artifact : collection) {
+            File file = artifact.getFile();
             if (file != null) {
                 FileResource fr = new FileResource(file);
                 fr.setBaseDir(file.getParentFile());
@@ -356,7 +323,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
 
     @Override
     public int size() {
-        return getNodes().size();
+        return getArtifacts().size();
     }
 
     @Override

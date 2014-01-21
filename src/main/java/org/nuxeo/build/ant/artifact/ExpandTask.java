@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
+import org.eclipse.aether.graph.DependencyNode;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.filter.AndFilter;
 import org.nuxeo.build.maven.filter.CompositeFilter;
@@ -53,33 +54,40 @@ public class ExpandTask extends Task {
         filter.addFilter(includes.getFilter());
     }
 
-    protected boolean acceptNode(Node node) {
+    protected boolean acceptNode(DependencyNode node) {
         return true;
     }
 
     @Override
     public void execute() throws BuildException {
-        execute(AntBuildMojo.getInstance().getGraph());
-    }
-
-    /**
-     * @since 1.10.2
-     */
-    public void execute(Graph graph) {
+        AntBuildMojo mojo = AntBuildMojo.getInstance();
+        Graph graph = mojo.getGraph();
         Collection<Node> nodes;
-        if (key == null) {
-            nodes = graph.getRoots();
-        } else {
+        if (key != null) {
+            // TODO NXBT-258 check relevance
             nodes = graph.find(key);
+        } else {
+            nodes = graph.getRoots();
         }
-        for (Node node : nodes) {
-            // TODO NXBT-258 use a filter or remove nodes/roots...
-            if (!acceptNode(node)) {
-                continue;
-            }
-            graph.resolveDependencies(node, CompositeFilter.compact(filter),
-                    depth);
-        }
+        graph = mojo.newGraph();
+        addRootNodes(graph, nodes);
+        graph.resolveDependencies(CompositeFilter.compact(filter), depth);
     }
 
+    public void addRootNodes(Graph graph,
+            Collection<? extends DependencyNode> nodes) {
+        for (DependencyNode node : nodes) {
+            if ("pom".equals(node.getArtifact().getExtension())) {
+                // Add the POM direct dependencies as root nodes instead
+                // addRootNodes(graph, node.getChildren());
+                for (DependencyNode child : node.getChildren()) {
+                    if (acceptNode(node)) {
+                        graph.addRootNode(new Node(graph, child));
+                    }
+                }
+            } else if (acceptNode(node)) {
+                graph.addRootNode(new Node(graph, node));
+            }
+        }
+    }
 }

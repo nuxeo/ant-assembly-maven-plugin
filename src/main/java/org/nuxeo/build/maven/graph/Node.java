@@ -61,21 +61,17 @@ public class Node implements DependencyNode {
     }
 
     public static String genNodeId(Artifact artifact) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(artifact.getGroupId());
-        sb.append(':').append(artifact.getArtifactId());
-        sb.append(':').append(artifact.getBaseVersion());
-        sb.append(':').append(artifact.getType());
-        sb.append(':');
-        if (artifact.getClassifier() != null) {
-            sb.append(artifact.getClassifier());
-        }
-        sb.append(':').append(artifact.getScope());
-        return sb.toString();
+        return genNodeId(DependencyUtils.mavenToDependency(artifact));
     }
 
     public static String genNodeId(Dependency dependency) {
         org.eclipse.aether.artifact.Artifact artifact = dependency.getArtifact();
+        String scope = dependency.getScope();
+        return genNodeId(artifact, scope);
+    }
+
+    public static String genNodeId(
+            org.eclipse.aether.artifact.Artifact artifact, String scope) {
         StringBuilder sb = new StringBuilder();
         sb.append(artifact.getGroupId());
         sb.append(':').append(artifact.getArtifactId());
@@ -85,7 +81,7 @@ public class Node implements DependencyNode {
         if (artifact.getClassifier() != null) {
             sb.append(artifact.getClassifier());
         }
-        sb.append(':').append(dependency.getScope());
+        sb.append(':').append(scope);
         return sb.toString();
     }
 
@@ -103,7 +99,12 @@ public class Node implements DependencyNode {
     public Node(Graph graph, DependencyNode dependencyNode) {
         this.graph = graph;
         this.dependencyNode = dependencyNode;
-        this.id = genNodeId(dependencyNode.getDependency());
+        Dependency dependency = dependencyNode.getDependency();
+        if (dependency != null) {
+            this.id = genNodeId(dependency);
+        } else {
+            this.id = genNodeId(dependencyNode.getArtifact(), "");
+        }
     }
 
     public Artifact getMavenArtifact() {

@@ -19,7 +19,6 @@ package org.nuxeo.build.maven;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
@@ -47,15 +46,19 @@ import org.codehaus.plexus.util.StringUtils;
 import org.eclipse.aether.DefaultRepositorySystemSession;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
+import org.eclipse.aether.collection.DependencySelector;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.util.graph.manager.DependencyManagerUtils;
+import org.eclipse.aether.util.graph.selector.AndDependencySelector;
+import org.eclipse.aether.util.graph.selector.ExclusionDependencySelector;
+import org.eclipse.aether.util.graph.selector.OptionalDependencySelector;
+import org.eclipse.aether.util.graph.selector.ScopeDependencySelector;
 import org.eclipse.aether.util.graph.transformer.ConflictResolver;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.ant.artifact.Expand;
 import org.nuxeo.build.ant.profile.AntProfileManager;
 import org.nuxeo.build.maven.filter.TrueFilter;
 import org.nuxeo.build.maven.graph.Graph;
-import org.nuxeo.build.maven.graph.Node;
 
 /**
  * TODO NXBT-258
@@ -119,6 +122,13 @@ public class AntBuildMojo extends AbstractMojo {
         if (session == null) {
             session = new DefaultRepositorySystemSession(
                     repositorySystemSession);
+            DependencySelector depSelector = session.getDependencySelector();
+            getLog().debug("Replace DependencySelector " + depSelector);
+            DependencySelector depFilter = new AndDependencySelector(
+                    new ScopeDependencySelector("provided"),
+                    new OptionalDependencySelector(),
+                    new ExclusionDependencySelector());
+            session.setDependencySelector(depFilter);
             session.setConfigProperty(ConflictResolver.CONFIG_PROP_VERBOSE,
                     false);
             session.setConfigProperty(
@@ -236,7 +246,7 @@ public class AntBuildMojo extends AbstractMojo {
             targets = new String[] { target };
         }
         for (File file : buildFiles) {
-            graph = newGraph();
+            graph = newGraph(project);
             try {
                 if (targets != null && targets.length > 0) {
                     ant.run(file, Arrays.asList(targets));
@@ -264,17 +274,20 @@ public class AntBuildMojo extends AbstractMojo {
      * @since 1.10.2
      */
     public Graph newGraph() {
-        return newGraph(project);
+        graph = new Graph();
+        return graph;
     }
 
     /**
+     * @param pom Root node. May be null.
      * @since 2.0
+     * @return A new graph attached to the build. Empty if {@code pom} was null.
      */
     public Graph newGraph(MavenProject pom) {
-        Graph newGraph = new Graph();
-        newGraph.addRootNode(pom);
-        expandGraph(newGraph);
-        return newGraph;
+        graph = new Graph();
+        graph.addRootNode(pom);
+        expandGraph(graph);
+        return graph;
     }
 
     /**
@@ -284,19 +297,16 @@ public class AntBuildMojo extends AbstractMojo {
      * @since 2.0
      */
     public Graph newGraph(String key) {
-        Graph newGraph = new Graph();
-        newGraph.addRootNode(key);
-        expandGraph(newGraph);
-        return newGraph;
+        graph = new Graph();
+        graph.addRootNode(key);
+        expandGraph(graph);
+        return graph;
     }
 
     protected void expandGraph(Graph newGraph) {
         int depth = Expand.readExpand(expand);
         if (depth > 0) {
-            Collection<Node> nodes = newGraph.getRoots();
-            for (Node node : nodes) {
-                newGraph.resolveDependencies(node, new TrueFilter(), depth);
-            }
+            newGraph.resolveDependencies(new TrueFilter(), depth);
         }
     }
 

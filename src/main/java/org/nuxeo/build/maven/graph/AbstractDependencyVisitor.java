@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tools.ant.Project;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.DependencyNode;
@@ -106,15 +107,17 @@ public abstract class AbstractDependencyVisitor implements DependencyVisitor {
         } else if (dependency.getScope() == null
                 || "".equals(dependency.getScope())) {
             AntClient.getInstance().log(
-                    String.format("Found node %s with null scope!", node));
+                    String.format("Found node %s with null scope!", node),
+                    Project.MSG_DEBUG);
         } else if (scopes != null && !scopes.contains(dependency.getScope())) {
             AntClient.getInstance().log(
                     String.format("Ignored node %s which scope is %s", node,
-                            dependency.getScope()));
+                            dependency.getScope()), Project.MSG_DEBUG);
             ignoreNode = true;
         }
         if (ignores != null && ignores.contains(node)) {
-            AntClient.getInstance().log("Ignored node as requested: " + node);
+            AntClient.getInstance().log("Ignored node as requested: " + node,
+                    Project.MSG_DEBUG);
             ignoreNode = true;
         }
         if (ignoreNode) {

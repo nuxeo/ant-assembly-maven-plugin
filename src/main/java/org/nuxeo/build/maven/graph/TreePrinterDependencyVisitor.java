@@ -133,8 +133,8 @@ public class TreePrinterDependencyVisitor extends AbstractDependencyVisitor {
                     DependencyNode childNode = dependencyMap.get(dependency.getArtifact().toString());
                     if (childNode == null) {
                         AntClient.getInstance().log(
-                                dependency.getArtifact().toString()
-                                        + " not in graph", Project.MSG_INFO);
+                                "Ignored dependency " + dependency
+                                        + " not in graph", Project.MSG_DEBUG);
                         // childNode = new DefaultDependencyNode(dependency);
                         continue;
                     } else {

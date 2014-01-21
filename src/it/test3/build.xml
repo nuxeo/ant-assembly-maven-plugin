@@ -19,8 +19,7 @@
           <artifact groupId="org.nuxeo*" scope="!test" type="!pom" />
         </includes>
       </artifact:set>
-      <!-- TODO NXBT-691 manage scope test -->
-      <!-- <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-test" /> -->
+      <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-test" />
     </copy>
     <copy todir="${outdir}/lib" overwrite="true">
       <artifact:set>
@@ -30,14 +29,13 @@
       </artifact:set>
       <artifact:resolveFile key="log4j:log4j:1.2.16" />
     </copy>
-    <!-- BROKEN artifact:dependencies-->
-    <!-- <copy todir="${outdir}/test" overwrite="true"> -->
-    <!--   <artifact:dependencies artifactId="nuxeo-platform-test"> -->
-    <!--     <includes> -->
-    <!--       <artifact scope="test" /> -->
-    <!--     </includes> -->
-    <!--   </artifact:dependencies> -->
-    <!-- </copy> -->
+    <copy todir="${outdir}/test" overwrite="true">
+      <artifact:dependencies artifactId="nuxeo-platform-test">
+        <includes>
+          <artifact scope="test" />
+        </includes>
+      </artifact:dependencies>
+    </copy>
 
     <nx:zipdiff file1="${outdir}/lib/log4j-1.2.17.jar"
                 file2="${outdir}/lib/log4j-1.2.16.jar"
@@ -73,8 +71,7 @@
           <and>
             <available file="${outdir}/bundles/nuxeo-common-5.9.1.jar" />
             <available file="${outdir}/bundles/nuxeo-platform-filemanager-core-5.9.1.jar" />
-            <!-- TODO NXBT-691 manage scope test -->
-            <!-- <available file="${outdir}/bundles/nuxeo-platform-test-5.9.1.jar" /> -->
+            <available file="${outdir}/bundles/nuxeo-platform-test-5.9.1.jar" />
             <available file="${outdir}/lib/chemistry-opencmis-commons-impl-0.10.0.jar" />
             <available file="${outdir}/lib/log4j-1.2.17.jar" />
             <not>
@@ -82,25 +79,20 @@
                 <available file="${outdir}/bundles/nuxeo-runtime-test-5.9.1.jar" />
                 <available file="${outdir}/lib/javax.inject-1.jar" />
                 <available file="${outdir}/lib/log4j-1.2.16.jar" />
-                <!-- TODO NXBT-258 artifact:set test filtering issue -->
-                <!-- <available file="${outdir}/lib/junit-4.8.1.jar" /> -->
+                <available file="${outdir}/lib/junit-4.8.1.jar" />
                 <available file="${outdir}/lib/relaxngDatatype-1.0.jar" />
               </or>
             </not>
-            <!-- TODO NXBT-691 manage scope test -->
             <equals arg1="${count.bundles}" arg2="87" />
-            <!-- TODO NXBT-258 filters -->
-            <!-- <equals arg1="${count.bundles}" arg2="87" /> -->
             <equals arg1="${count.libs}" arg2="155" />
             <available file="${outdir}/bin/nuxeoctl" />
             <available file="${outdir}/includes" />
             <filesmatch file1="${outdir}/includes" file2="includes.expected" />
-            <!-- BROKEN artifact:dependencies-->
-            <!-- <available file="${outdir}/test/hsqldb-1.8.0.1.jar" /> -->
-            <!-- <available file="${outdir}/test/nuxeo-runtime-scripting-5.9.1.jar" /> -->
-            <!-- <available file="${outdir}/test/nuxeo-runtime-remoting-5.9.1.jar" /> -->
-            <!-- <available file="${outdir}/test/backport-util-concurrent-3.1.jar" /> -->
-            <!-- <equals arg1="${count.test}" arg2="95" /> -->
+            <available file="${outdir}/test/hsqldb-1.8.0.1.jar" />
+            <available file="${outdir}/test/nuxeo-runtime-scripting-5.9.1.jar" />
+            <available file="${outdir}/test/nuxeo-runtime-remoting-5.9.1.jar" />
+            <available file="${outdir}/test/backport-util-concurrent-3.1.jar" />
+            <equals arg1="${count.test}" arg2="95" />
           </and>
         </not>
       </condition>

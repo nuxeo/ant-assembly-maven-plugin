@@ -28,7 +28,6 @@ import org.apache.tools.ant.Project;
 import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.util.artifact.JavaScopes;
 import org.nuxeo.build.maven.filter.Filter;
-import org.nuxeo.build.maven.graph.Node;
 
 /**
  * TODO NXBT-258
@@ -96,18 +95,11 @@ public class NuxeoExpandTask extends ExpandTask {
                 return getIncludedScopes().get(node.getDependency().getScope());
             }
         });
-        // NXBT-258: range versions should not be an issue anymore
-        // filter.addFilter(new NotFilter(new VersionFilter("[*)")));
-        // AndFilter andFilter = new AndFilter();
-        // andFilter.addFilter(new GroupIdFilter("org.nuxeo.build"));
-        // andFilter.addFilter(new
-        // ArtifactIdFilter("ant-assembly-maven-plugin"));
-        // filter.addFilter(new NotFilter(andFilter));
         super.execute();
     }
 
     @Override
-    protected boolean acceptNode(Node node) {
+    protected boolean acceptNode(DependencyNode node) {
         for (String prefix : groupPrefixes) {
             if (node.getArtifact().getGroupId().startsWith(prefix)) {
                 return true;

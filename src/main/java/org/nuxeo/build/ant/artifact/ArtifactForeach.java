@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Sequential;
-import org.nuxeo.build.maven.graph.Node;
+import org.eclipse.aether.artifact.Artifact;
 
 /**
  * Iterate through an artifact set
@@ -55,26 +55,27 @@ public class ArtifactForeach extends Sequential {
 
     @Override
     public void execute() throws BuildException {
-        for (Node node : artifactSet.getNodes()) {
+        for (Artifact artifact : artifactSet.getArtifacts()) {
             String canonicalPath = null;
             try {
-                canonicalPath = node.getFile().getCanonicalPath();
+                canonicalPath = artifact.getFile().getCanonicalPath();
             } catch (IOException e) {
                 throw new BuildException(
-                        "Failed to artifact file canonical path for " + node, e);
+                        "Failed to artifact file canonical path for "
+                                + artifact, e);
             }
             getProject().setProperty(property + ".file.path", canonicalPath);
             getProject().setProperty(property + ".archetypeId",
-                    node.getArtifact().getArtifactId());
+                    artifact.getArtifactId());
             getProject().setProperty(property + ".groupId",
-                    node.getArtifact().getGroupId());
+                    artifact.getGroupId());
             getProject().setProperty(property + ".version",
-                    node.getArtifact().getBaseVersion());
+                    artifact.getBaseVersion());
             try {
                 super.execute();
             } catch (BuildException e) {
                 throw new BuildException(
-                        "Couldn't execute the task for artifact " + node, e);
+                        "Couldn't execute the task for artifact " + artifact, e);
             }
         }
 
