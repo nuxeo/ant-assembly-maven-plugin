@@ -33,6 +33,7 @@ import org.apache.tools.ant.types.resources.FileResource;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyResult;
+import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.filter.AncestorFilter;
 import org.nuxeo.build.maven.filter.AndFilter;
@@ -45,7 +46,7 @@ import org.nuxeo.build.maven.filter.IsOptionalFilter;
 import org.nuxeo.build.maven.filter.ScopeFilter;
 import org.nuxeo.build.maven.filter.TypeFilter;
 import org.nuxeo.build.maven.filter.VersionFilter;
-import org.nuxeo.build.maven.graph.Graph;
+import org.nuxeo.build.maven.graph.DependencyUtils;
 import org.nuxeo.build.maven.graph.Node;
 
 /**
@@ -152,7 +153,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         this.expand = expand;
     }
 
-    public void addArtifact(ArtifactFile artifact) {
+    public void addFile(ArtifactFile artifact) {
         if (isReference()) {
             throw noChildrenAllowed();
         }
@@ -233,16 +234,6 @@ public class ArtifactSet extends DataType implements ResourceCollection {
                 resultArtifacts.addAll(arti.getArtifacts());
             }
         }
-        Graph graph = new Graph();
-        if (roots.isEmpty()) {
-            for (Node root : AntBuildMojo.getInstance().getGraph().getRoots()) {
-                graph.addRootNode(root);
-            }
-        } else {
-            for (Node root : roots) {
-                graph.addRootNode(root);
-            }
-        }
         Filter finalFilter = buildFilter();
         int depth = Integer.MAX_VALUE;
         if (expand != null) {
@@ -250,24 +241,19 @@ public class ArtifactSet extends DataType implements ResourceCollection {
             finalFilter = CompositeFilter.compact(expand.filter);
             depth = expand.depth;
         }
-        // PostorderNodeListGenerator nlg = new PostorderNodeListGenerator();
-        for (Node node : graph.getRoots()) {
-            DependencyResult result = graph.resolveDependencies(node,
+        roots.addAll(AntBuildMojo.getInstance().getGraph().getRoots());
+        for (Node node : roots) {
+            DependencyResult result = DependencyUtils.resolveDependencies(node,
                     finalFilter, depth);
-            // result.getRoot().accept(nlg);
-            // root node is always kept; filter it out if not acceptable
-            // if (!finalFilter.accept(result.getRoot(), null)) {
-            // DependencyNode root = result.getRoot();
-            // nlg.getNodes().remove(root);
-            // }
             for (ArtifactResult artifactResult : result.getArtifactResults()) {
                 resultArtifacts.add(artifactResult.getArtifact());
             }
+            // root artifact is always kept; filter it out if not acceptable
+            if (!finalFilter.accept(result.getRoot(), null)) {
+                Artifact root = result.getRoot().getArtifact();
+                resultArtifacts.remove(root);
+            }
         }
-        // for (Dependency dependency : nlg.getDependencies(false)) {
-        // Node node = graph.getNode(dependency);
-        // resultNodes.add(node);
-        // }
         return resultArtifacts;
     }
 
@@ -278,6 +264,8 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         if (artifacts == null) {
             artifacts = computeNodes();
         }
+        AntClient.getInstance().log("ArtifactSet.getArtifacts() " + artifacts,
+                new Error(), Project.MSG_DEBUG);
         if (id != null) { // avoid caching if artifactSet is referencable
             Collection<Artifact> copy = artifacts;
             artifacts = null;
@@ -295,22 +283,6 @@ public class ArtifactSet extends DataType implements ResourceCollection {
             Collection<Artifact> collection) {
         List<Resource> files = new ArrayList<>();
         for (Artifact artifact : collection) {
-            File file = artifact.getFile();
-            if (file != null) {
-                FileResource fr = new FileResource(file);
-                fr.setBaseDir(file.getParentFile());
-                files.add(fr);
-            }
-        }
-        return files.iterator();
-    }
-
-    /**
-     * @since 2.0
-     */
-    public static Iterator<Resource> createIterator(List<Artifact> artifacts) {
-        List<Resource> files = new ArrayList<>();
-        for (Artifact artifact : artifacts) {
             File file = artifact.getFile();
             if (file != null) {
                 FileResource fr = new FileResource(file);

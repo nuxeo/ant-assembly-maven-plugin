@@ -22,21 +22,27 @@ import java.util.List;
 
 import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.handler.ArtifactHandler;
+import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.DependencyManagement;
 import org.eclipse.aether.graph.Dependency;
+import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactRequest;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.resolution.ArtifactResult;
+import org.eclipse.aether.resolution.DependencyRequest;
+import org.eclipse.aether.resolution.DependencyResolutionException;
+import org.eclipse.aether.resolution.DependencyResult;
 import org.eclipse.aether.resolution.VersionRangeRequest;
 import org.eclipse.aether.resolution.VersionRangeResolutionException;
 import org.eclipse.aether.resolution.VersionRangeResult;
 import org.eclipse.aether.util.artifact.ArtifactIdUtils;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
+import org.nuxeo.build.maven.filter.Filter;
 
 /**
  * Utility class for dealing with {@link org.apache.maven.artifact.Artifact},
@@ -211,6 +217,32 @@ public class DependencyUtils {
             AntClient.getInstance().log(e.getMessage(), e, Project.MSG_ERR);
         }
         return artifact;
+    }
+
+    /**
+     * TODO NXBT-696 manage depth limit
+     */
+    public static DependencyResult resolveDependencies(DependencyNode node,
+            Filter filter, int depth) {
+        AntBuildMojo mojo = AntBuildMojo.getInstance();
+        AntClient.getInstance().log(
+                String.format("Resolving %s with filter %s and depth %d", node,
+                        filter, depth), Project.MSG_DEBUG);
+        DependencyRequest dependencyRequest = new DependencyRequest(node,
+                filter);
+        try {
+            DependencyResult result = mojo.getSystem().resolveDependencies(
+                    mojo.getSession(), dependencyRequest);
+            AntClient.getInstance().log("Dependency result: " + result,
+                    new Error(), Project.MSG_DEBUG);
+            AntClient.getInstance().log(
+                    "Dependency exceptions: " + result.getCollectExceptions(),
+                    Project.MSG_DEBUG);
+            return result;
+        } catch (DependencyResolutionException e) {
+            throw new BuildException("Cannot resolve dependency tree for "
+                    + node, e);
+        }
     }
 
 }

@@ -1,25 +1,43 @@
-org.nuxeo.connect:nuxeo-connect-client:1.4.13:jar::compile
- |-- commons-httpclient:commons-httpclient:3.1:jar::compile
- |--  |-- commons-logging:commons-logging:1.1:jar::compile (version managed from 1.0.4)
- |--  |--  |-- logkit:logkit:1.0.1:jar::compile
- |--  |--  |-- avalon-framework:avalon-framework:4.1.3:jar::compile
- |--  |-- commons-codec:commons-codec:1.2:jar::compile
- |-- commons-collections:commons-collections:3.2:jar::compile
- |-- commons-io:commons-io:1.4:jar::compile
- |-- org.json:json:20070829:jar::compile
- |-- org.eclipse.equinox:org.eclipse.equinox.p2.cudf:1.17-NX:jar::compile
- |--  |-- org.sat4j:org.sat4j.pb:2.3.1:jar::compile
+org.nuxeo.build:test2:2.0-SNAPSHOT:pom::
+ |-- org.nuxeo.connect:nuxeo-connect-client:1.4.13:jar::compile
+ |--  |-- commons-httpclient:commons-httpclient:3.1:jar::compile
+ |--  |--  |-- commons-logging:commons-logging:1.0.4:jar::compile
+ |--  |--  |-- commons-codec:commons-codec:1.2:jar::compile
+ |--  |-- commons-collections:commons-collections:3.2:jar::compile
+ |--  |-- commons-io:commons-io:1.4:jar::compile
+ |--  |-- org.json:json:20070829:jar::compile
+ |--  |-- org.eclipse.equinox:org.eclipse.equinox.p2.cudf:1.17-NX:jar::compile
+ |--  |--  |-- org.sat4j:org.sat4j.pb:2.3.1:jar::compile
+ |--  |--  |--  |-- org.sat4j:org.sat4j.core:2.3.1:jar::compile
  |--  |--  |-- org.sat4j:org.sat4j.core:2.3.1:jar::compile
- |--  |--  |-- org.sat4j:org.sat4j.core:2.3.1:jar:tests:compile
- |--  |-- org.sat4j:org.sat4j.core:2.3.1:jar::compile
- |--  |-- org.sat4j:org.sat4j.core:2.3.1:jar:tests:test
- |--  |-- org.eclipse.core:org.eclipse.core.jobs:3.5.0.v20100515:jar::compile
+ |--  |--  |-- org.eclipse.core:org.eclipse.core.jobs:3.5.0.v20100515:jar::compile
+ |--  |--  |--  |-- org.eclipse.equinox:org.eclipse.equinox.common:3.6.0.v20100503:jar::compile
  |--  |--  |-- org.eclipse.equinox:org.eclipse.equinox.common:3.6.0.v20100503:jar::compile
- |--  |-- org.eclipse.equinox:org.eclipse.equinox.common:3.6.0.v20100503:jar::compile
- |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile
- |--  |-- log4j:log4j:1.2.16:jar::compile
- |--  |--  |-- oro:oro:2.0.8:jar::test
- |--  |-- ant:ant:1.6.4:jar::test
- |--  |-- commons-logging:commons-logging:1.1:jar::compile
+ |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile
+ |--  |--  |-- log4j:log4j:1.2.16:jar::compile
+ |-- org.apache.maven:maven-project:2.2.1:jar::compile
+ |--  |-- org.apache.maven:maven-settings:2.2.1:jar::compile
+ |--  |--  |-- org.apache.maven:maven-model:2.2.1:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-interpolation:1.11:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |-- org.apache.maven:maven-profile:2.2.1:jar::compile
+ |--  |--  |-- org.apache.maven:maven-model:2.2.1:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-interpolation:1.11:jar::compile
+ |--  |-- org.apache.maven:maven-model:2.2.1:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |-- org.apache.maven:maven-artifact-manager:2.2.1:jar::compile
+ |--  |--  |-- org.apache.maven:maven-repository-metadata:2.2.1:jar::compile
+ |--  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |--  |-- org.apache.maven.wagon:wagon-provider-api:1.0-beta-6:jar::compile
+ |--  |--  |-- backport-util-concurrent:backport-util-concurrent:3.1:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |--  |-- org.apache.maven:maven-artifact:2.2.1:jar::compile
+ |--  |-- org.apache.maven:maven-plugin-registry:2.2.1:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |-- org.codehaus.plexus:plexus-interpolation:1.11:jar::compile
+ |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-interpolation:1.11:jar::provided
+ |--  |-- org.apache.maven:maven-artifact:2.2.1:jar::compile
+ |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
  |-- junit:junit:4.8.1:jar::test
-junit:junit:4.8.1:jar::test

@@ -149,7 +149,8 @@ public class Node implements DependencyNode {
 
     @Override
     public String toString() {
-        return getArtifact().toString();
+        return dependencyNode.toString();
+        // return getArtifact().toString();
     }
 
     /**

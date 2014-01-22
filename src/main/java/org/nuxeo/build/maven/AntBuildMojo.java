@@ -52,7 +52,6 @@ import org.eclipse.aether.util.graph.manager.DependencyManagerUtils;
 import org.eclipse.aether.util.graph.selector.AndDependencySelector;
 import org.eclipse.aether.util.graph.selector.ExclusionDependencySelector;
 import org.eclipse.aether.util.graph.selector.OptionalDependencySelector;
-import org.eclipse.aether.util.graph.selector.ScopeDependencySelector;
 import org.eclipse.aether.util.graph.transformer.ConflictResolver;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.ant.artifact.Expand;
@@ -125,7 +124,8 @@ public class AntBuildMojo extends AbstractMojo {
             DependencySelector depSelector = session.getDependencySelector();
             getLog().debug("Replace DependencySelector " + depSelector);
             DependencySelector depFilter = new AndDependencySelector(
-                    new ScopeDependencySelector("provided"),
+                    new org.nuxeo.build.maven.graph.ScopeDependencySelector(
+                            "provided", "test"),
                     new OptionalDependencySelector(),
                     new ExclusionDependencySelector());
             session.setDependencySelector(depFilter);
@@ -246,7 +246,6 @@ public class AntBuildMojo extends AbstractMojo {
             targets = new String[] { target };
         }
         for (File file : buildFiles) {
-            graph = newGraph(project);
             try {
                 if (targets != null && targets.length > 0) {
                     ant.run(file, Arrays.asList(targets));
@@ -275,17 +274,7 @@ public class AntBuildMojo extends AbstractMojo {
      */
     public Graph newGraph() {
         graph = new Graph();
-        return graph;
-    }
-
-    /**
-     * @param pom Root node. May be null.
-     * @since 2.0
-     * @return A new graph attached to the build. Empty if {@code pom} was null.
-     */
-    public Graph newGraph(MavenProject pom) {
-        graph = new Graph();
-        graph.addRootNode(pom);
+        graph.addRootNode(project);
         expandGraph(graph);
         return graph;
     }
@@ -444,6 +433,9 @@ public class AntBuildMojo extends AbstractMojo {
     }
 
     public Graph getGraph() {
+        if (graph == null) {
+            graph = newGraph();
+        }
         return graph;
     }
 

@@ -31,7 +31,9 @@ import org.apache.tools.ant.Task;
 import org.eclipse.aether.util.artifact.JavaScopes;
 import org.eclipse.aether.util.graph.visitor.CloningDependencyVisitor;
 import org.nuxeo.build.maven.AntBuildMojo;
+import org.nuxeo.build.maven.filter.TrueFilter;
 import org.nuxeo.build.maven.graph.FlatPrinterDependencyVisitor;
+import org.nuxeo.build.maven.graph.Graph;
 import org.nuxeo.build.maven.graph.Node;
 import org.nuxeo.build.maven.graph.TreePrinterDependencyVisitor;
 
@@ -103,7 +105,9 @@ public class PrintGraphTask extends Task {
             // expandTask.setDepth("all");
             // expandTask.execute(AntBuildMojo.getInstance().newGraph(source));
             roots = new ArrayList<>();
-            roots.add(AntBuildMojo.getInstance().getGraph().addRootNode(source));
+            Graph graph = new Graph();
+            roots.add(graph.addRootNode(source));
+            graph.resolveDependencies(new TrueFilter(), 0);
         } else {
             roots = AntBuildMojo.getInstance().getGraph().getRoots();
         }

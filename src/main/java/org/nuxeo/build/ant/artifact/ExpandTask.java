@@ -61,16 +61,15 @@ public class ExpandTask extends Task {
     @Override
     public void execute() throws BuildException {
         AntBuildMojo mojo = AntBuildMojo.getInstance();
-        Graph graph = mojo.getGraph();
-        Collection<Node> nodes;
+        Graph graph;
         if (key != null) {
-            // TODO NXBT-258 check relevance
-            nodes = graph.find(key);
+            graph = new Graph();
+            // TODO NXBT-258 mojo graph can be empty!
+            Collection<Node> nodes = mojo.getGraph().find(key);
+            addRootNodes(graph, nodes);
         } else {
-            nodes = graph.getRoots();
+            graph = mojo.newGraph();
         }
-        graph = mojo.newGraph();
-        addRootNodes(graph, nodes);
         graph.resolveDependencies(CompositeFilter.compact(filter), depth);
     }
 

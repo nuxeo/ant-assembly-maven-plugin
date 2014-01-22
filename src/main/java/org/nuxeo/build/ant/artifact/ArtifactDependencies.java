@@ -32,6 +32,7 @@ import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.filter.AndFilter;
 import org.nuxeo.build.maven.filter.CompositeFilter;
 import org.nuxeo.build.maven.filter.Filter;
+import org.nuxeo.build.maven.graph.DependencyUtils;
 import org.nuxeo.build.maven.graph.Graph;
 import org.nuxeo.build.maven.graph.Node;
 
@@ -114,7 +115,7 @@ public class ArtifactDependencies extends DataType implements
 
     public List<Artifact> getArtifacts() {
         if (artifacts == null) {
-            Filter filter = null;
+            Filter filter = Filter.ANY;
             if (includes != null || excludes != null) {
                 AndFilter andf = new AndFilter();
                 if (includes != null) {
@@ -125,12 +126,16 @@ public class ArtifactDependencies extends DataType implements
                 }
                 filter = CompositeFilter.compact(andf);
             }
-            DependencyResult result = graph.resolveDependencies(getNode(),
-                    filter, depth);
+            DependencyResult result = DependencyUtils.resolveDependencies(
+                    getNode(), filter, depth);
             List<ArtifactResult> results = result.getArtifactResults();
             artifacts = new ArrayList<>();
             for (ArtifactResult artifactResult : results) {
                 artifacts.add(artifactResult.getArtifact());
+            }
+            if (!filter.accept(result.getRoot(), null)) {
+                Artifact root = result.getRoot().getArtifact();
+                artifacts.remove(root);
             }
         }
         return artifacts;

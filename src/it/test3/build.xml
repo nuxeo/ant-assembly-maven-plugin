@@ -30,11 +30,12 @@
       <artifact:resolveFile key="log4j:log4j:1.2.16" />
     </copy>
     <copy todir="${outdir}/test" overwrite="true">
-      <artifact:dependencies artifactId="nuxeo-platform-test">
-        <includes>
-          <artifact scope="test" />
-        </includes>
-      </artifact:dependencies>
+      <artifact:dependencies artifactId="nuxeo-platform-test" />
+    </copy>
+    <copy todir="${outdir}/test2" overwrite="true">
+      <artifact:set>
+        <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-test" />
+      </artifact:set>
     </copy>
 
     <nx:zipdiff file1="${outdir}/lib/log4j-1.2.17.jar"
@@ -65,6 +66,16 @@
         <include name="*.jar" />
       </fileset>
     </resourcecount>
+    <resourcecount property="count.test">
+      <fileset dir="${outdir}/test">
+        <include name="*.jar" />
+      </fileset>
+    </resourcecount>
+    <resourcecount property="count.test2">
+      <fileset dir="${outdir}/test2">
+        <include name="*.jar" />
+      </fileset>
+    </resourcecount>
     <fail>
       <condition>
         <not>
@@ -84,15 +95,13 @@
               </or>
             </not>
             <equals arg1="${count.bundles}" arg2="87" />
-            <equals arg1="${count.libs}" arg2="155" />
+            <equals arg1="${count.libs}" arg2="149" />
             <available file="${outdir}/bin/nuxeoctl" />
             <available file="${outdir}/includes" />
             <filesmatch file1="${outdir}/includes" file2="includes.expected" />
-            <available file="${outdir}/test/hsqldb-1.8.0.1.jar" />
-            <available file="${outdir}/test/nuxeo-runtime-scripting-5.9.1.jar" />
-            <available file="${outdir}/test/nuxeo-runtime-remoting-5.9.1.jar" />
-            <available file="${outdir}/test/backport-util-concurrent-3.1.jar" />
-            <equals arg1="${count.test}" arg2="95" />
+            <available file="${outdir}/test/opencsv-2.1.jar" />
+            <equals arg1="${count.test}" arg2="5" />
+            <equals arg1="${count.test2}" arg2="237" />
           </and>
         </not>
       </condition>

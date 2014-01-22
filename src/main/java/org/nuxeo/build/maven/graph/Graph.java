@@ -35,8 +35,6 @@ import org.eclipse.aether.collection.CollectResult;
 import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.DependencyNode;
-import org.eclipse.aether.resolution.DependencyRequest;
-import org.eclipse.aether.resolution.DependencyResolutionException;
 import org.eclipse.aether.resolution.DependencyResult;
 import org.eclipse.aether.util.artifact.JavaScopes;
 import org.eclipse.aether.util.artifact.SubArtifact;
@@ -92,6 +90,7 @@ public class Graph {
 
     /**
      * Add a root node given a Maven Project POM. This can be used to initialize
+     * the graph.
      */
     public Node addRootNode(MavenProject pom) {
         Artifact artifact = pom.getArtifact();
@@ -103,12 +102,6 @@ public class Graph {
             Dependency dependency = new Dependency(pomArtifact,
                     artifact.getScope());
             node = collectRootNode(dependency);
-            // Add the POM direct dependencies as root nodes instead
-            // DependencyNode node = collectDependencies(dependency);
-            // for (DependencyNode child : node.getChildren()) {
-            // addRootNode(new Node(this, child));
-            // }
-            // return null;
         }
         return addRootNode(node);
     }
@@ -127,9 +120,9 @@ public class Graph {
             node = collectRootNode(dependency);
         } else {
             roots.add(node);
+            AntClient.getInstance().log("Added root node: " + node,
+                    Project.MSG_DEBUG);
         }
-        AntClient.getInstance().log("Added root node: " + node,
-                Project.MSG_DEBUG);
         return node;
     }
 
@@ -139,11 +132,11 @@ public class Graph {
     public Node addRootNode(Node node) {
         if (!nodes.containsKey(node.id)) {
             node = collectRootNode(node.getDependency());
-        } else {
+        } else if (!roots.contains(node)) {
             roots.add(node);
+            AntClient.getInstance().log("Added root node: " + node,
+                    Project.MSG_DEBUG);
         }
-        AntClient.getInstance().log("Added root node: " + node,
-                Project.MSG_DEBUG);
         return nodes.get(node.id);
     }
 
@@ -151,6 +144,8 @@ public class Graph {
         DependencyNode root = collectDependencies(dependency);
         Node node = new Node(this, root);
         roots.add(node);
+        AntClient.getInstance().log("Added root node: " + node,
+                Project.MSG_DEBUG);
         addNode(node);
         return node;
     }
@@ -159,12 +154,13 @@ public class Graph {
         if (!filter.accept(root, null)) {
             return null;
         }
-        DependencyResult result = resolveDependencies(root, filter, depth);
+        DependencyResult result = DependencyUtils.resolveDependencies(root,
+                filter, depth);
         Node node = new Node(this, result.getRoot());
         roots.add(node);
-        addNode(node);
         AntClient.getInstance().log("Added resolved root node: " + node,
                 Project.MSG_DEBUG);
+        addNode(node);
         return node;
     }
 
@@ -187,7 +183,7 @@ public class Graph {
                             && JavaScopes.TEST.equals(childScope))) {
                 AntClient.getInstance().log(
                         "Unexpected child node: " + child + " for " + node,
-                        Project.MSG_ERR);
+                        Project.MSG_WARN);
                 removes.add(child);
                 continue;
             }
@@ -275,31 +271,6 @@ public class Graph {
     }
 
     /**
-     * TODO NXBT-696 manage depth limit
-     */
-    public DependencyResult resolveDependencies(DependencyNode node,
-            Filter filter, int depth) {
-        AntClient.getInstance().log(
-                String.format("Resolving %s with filter %s and depth %d", node,
-                        filter, depth), Project.MSG_DEBUG);
-        DependencyRequest dependencyRequest = new DependencyRequest(node,
-                filter);
-        try {
-            DependencyResult result = mojo.getSystem().resolveDependencies(
-                    mojo.getSession(), dependencyRequest);
-            AntClient.getInstance().log("Dependency result: " + result,
-                    Project.MSG_DEBUG);
-            AntClient.getInstance().log(
-                    "Dependency exceptions: " + result.getCollectExceptions(),
-                    Project.MSG_DEBUG);
-            return result;
-        } catch (DependencyResolutionException e) {
-            throw new BuildException("Cannot resolve dependency tree for "
-                    + node, e);
-        }
-    }
-
-    /**
      * Resolve graph starting from its root nodes.
      *
      * @since 2.0
@@ -309,11 +280,7 @@ public class Graph {
         roots.clear();
         nodes.clear();
         for (Node root : oldRoots) {
-            try {
-                resolveRootNode(root, filter, depth);
-            } catch (BuildException e) {
-                AntClient.getInstance().log(e.getMessage(), e, Project.MSG_ERR);
-            }
+            resolveRootNode(root, filter, depth);
         }
     }
 
