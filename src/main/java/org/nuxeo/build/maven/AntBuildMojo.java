@@ -189,8 +189,19 @@ public class AntBuildMojo extends AbstractMojo {
     /**
      * The character encoding scheme to be applied.
      */
-    @Parameter(property = "project.build.sourceEncoding")
+    @Parameter(defaultValue = "${project.build.sourceEncoding}")
     protected String encoding;
+
+    public String getEncoding() {
+        if (StringUtils.isEmpty(encoding)) {
+            getLog().warn(
+                    "File encoding has not been set, using platform encoding "
+                            + ReaderFactory.FILE_ENCODING
+                            + ", i.e. build is platform dependent!");
+            encoding = ReaderFactory.FILE_ENCODING;
+        }
+        return encoding;
+    }
 
     @Parameter(property = "settings")
     protected Settings settings;
@@ -203,17 +214,6 @@ public class AntBuildMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "true")
     protected boolean failOnError;
-
-    public String getEncoding() {
-        if (StringUtils.isEmpty(encoding)) {
-            getLog().warn(
-                    "File encoding has not been set, using platform encoding "
-                            + ReaderFactory.FILE_ENCODING
-                            + ", i.e. build is platform dependent!");
-            encoding = ReaderFactory.FILE_ENCODING;
-        }
-        return encoding;
-    }
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
