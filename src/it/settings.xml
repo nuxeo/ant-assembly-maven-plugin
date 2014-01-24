@@ -12,9 +12,13 @@
           <url>@localRepositoryUrl@</url>
           <releases>
             <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+            <checksumPolicy>warn</checksumPolicy>
           </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+            <checksumPolicy>warn</checksumPolicy>
           </snapshots>
         </repository>
       </repositories>
@@ -24,9 +28,13 @@
           <url>@localRepositoryUrl@</url>
           <releases>
             <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+            <checksumPolicy>warn</checksumPolicy>
           </releases>
           <snapshots>
             <enabled>true</enabled>
+            <updatePolicy>always</updatePolicy>
+            <checksumPolicy>warn</checksumPolicy>
           </snapshots>
         </pluginRepository>
       </pluginRepositories>
