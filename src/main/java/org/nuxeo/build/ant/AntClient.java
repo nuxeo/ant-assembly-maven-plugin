@@ -182,6 +182,9 @@ public class AntClient {
             @Override
             protected void printMessage(String message, PrintStream stream,
                     int priority) {
+                if (priority > msgOutputLevel) {
+                    return;
+                }
                 String prefix;
                 switch (priority) {
                 case Project.MSG_ERR:
@@ -218,8 +221,8 @@ public class AntClient {
             logger.setMessageOutputLevel(Project.MSG_WARN);
         } else if (mavenLog.isErrorEnabled()) {
             logger.setMessageOutputLevel(Project.MSG_ERR);
-        } else { // TRACE logs
-            logger.setMessageOutputLevel(Project.MSG_VERBOSE);
+        } else { // TRACE
+            logger.setMessageOutputLevel(Project.MSG_DEBUG);
         }
         return logger;
     }

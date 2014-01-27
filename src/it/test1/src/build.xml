@@ -19,7 +19,8 @@ maven.project.build.outputDirectory,maven.project.build.finalName,maven.offline"
          param="property">
       <sequential>
         <fail message="Missing property '@{property}'" unless="@{property}" />
-        <echo message="Checked property '@{property}': ${@{property}}" />
+        <echo message="Checked property '@{property}': ${@{property}}"
+              level="verbose" />
       </sequential>
     </for>
 
