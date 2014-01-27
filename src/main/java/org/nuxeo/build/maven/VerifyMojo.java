@@ -50,7 +50,7 @@ public class VerifyMojo extends AntBuildMojo implements
      * The summary file to read integration test results from.
      */
     @Parameter(defaultValue = "${project.build.directory}/nxtools-reports/nxtools-summary.xml", required = true)
-    private File summaryFile;
+    protected File summaryFile;
 
     /**
      * Additional summary files to read integration test results from.
@@ -58,7 +58,7 @@ public class VerifyMojo extends AntBuildMojo implements
      * @since 2.0
      */
     @Parameter
-    private File[] summaryFiles;
+    protected File[] summaryFiles;
 
     /**
      * Set this to {@code true} to skip running integration tests.
@@ -66,7 +66,7 @@ public class VerifyMojo extends AntBuildMojo implements
      * @since 2.0
      */
     @Parameter(property = "skipITs")
-    private boolean skipITs;
+    protected boolean skipITs;
 
     /**
      * The character encoding scheme to be applied.
@@ -74,7 +74,7 @@ public class VerifyMojo extends AntBuildMojo implements
      * @since 2.0
      */
     @Parameter(defaultValue = "${project.reporting.outputEncoding}")
-    private String reportingEncoding;
+    protected String reportingEncoding;
 
     @Override
     public String getEncoding() {
@@ -91,7 +91,7 @@ public class VerifyMojo extends AntBuildMojo implements
      * @since 2.0
      */
     @Parameter(property = "maven.test.failure.ignore", defaultValue = "false")
-    private boolean testFailureIgnore;
+    protected boolean testFailureIgnore;
 
     /**
      * Set this to "true" to cause a failure if there are no tests to run.
@@ -99,7 +99,7 @@ public class VerifyMojo extends AntBuildMojo implements
      * @since 2.0
      */
     @Parameter(property = "failIfNoTests")
-    private Boolean failIfNoTests;
+    protected Boolean failIfNoTests;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {

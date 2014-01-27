@@ -53,13 +53,13 @@ public class IntegrationTestMojo extends AntBuildMojo {
      */
     @Deprecated
     @Parameter(defaultValue = "true", property = "maven.test.failure.ignore")
-    private boolean testFailureIgnore;
+    protected boolean testFailureIgnore;
 
     /**
      * The summary file to write integration test results to.
      */
     @Parameter(defaultValue = "${project.build.directory}/nxtools-reports/nxtools-summary.xml", required = true)
-    private File summaryFile;
+    protected File summaryFile;
 
     /**
      * Set this to {@code true} to skip running integration tests.
@@ -67,7 +67,7 @@ public class IntegrationTestMojo extends AntBuildMojo {
      * @since 2.0
      */
     @Parameter(property = "skipITs")
-    private boolean skipITs;
+    protected boolean skipITs;
 
     /**
      * The character encoding scheme to be applied. Defaults to
@@ -77,7 +77,7 @@ public class IntegrationTestMojo extends AntBuildMojo {
      * @see AntBuildMojo#encoding
      */
     @Parameter(defaultValue = "${project.reporting.outputEncoding}")
-    private String reportingEncoding;
+    protected String reportingEncoding;
 
     @Override
     public String getEncoding() {

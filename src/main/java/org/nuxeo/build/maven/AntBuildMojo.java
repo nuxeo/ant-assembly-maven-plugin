@@ -113,9 +113,9 @@ public class AntBuildMojo extends AbstractMojo {
     }
 
     @Parameter(property = "repositorySystemSession", readonly = true)
-    private RepositorySystemSession repositorySystemSession;
+    protected RepositorySystemSession repositorySystemSession;
 
-    private DefaultRepositorySystemSession session;
+    protected DefaultRepositorySystemSession session;
 
     public DefaultRepositorySystemSession getSession() {
         if (session == null) {
