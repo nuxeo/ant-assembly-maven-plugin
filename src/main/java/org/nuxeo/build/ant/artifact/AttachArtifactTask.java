@@ -26,7 +26,6 @@ import org.apache.maven.project.MavenProjectHelper;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
-import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 
 /**
@@ -64,8 +63,7 @@ public class AttachArtifactTask extends Task {
      */
     @Deprecated
     public void setTarget(String artifactKey) {
-        AntClient.getInstance().log(
-                "The target parameter is deprecated and ignored. The attach task now only applies to the current project.",
+        log("The target parameter is deprecated and ignored. The attach task now only applies to the current project.",
                 Project.MSG_WARN);
     }
 
