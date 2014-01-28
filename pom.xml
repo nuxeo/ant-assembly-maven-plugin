@@ -424,6 +424,9 @@
             <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
             <settingsFile>src/it/settings.xml</settingsFile>
             <localRepositoryPath>${project.build.directory}/it-local-repo</localRepositoryPath>
+            <extraArtifacts>
+              <artifact>org.nuxeo.ecm.distribution:nuxeo-distribution-coreserver:5.9.1:pom</artifact>
+            </extraArtifacts>
             <addTestClassPath>true</addTestClassPath>
             <mavenExecutable>mvn</mavenExecutable>
             <parallelThreads>5</parallelThreads>
