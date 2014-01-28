@@ -88,8 +88,8 @@ public class NuxeoExpandTask extends ExpandTask {
                     return false;
                 }
                 if ("".equals(node.getDependency().getScope())) {
-                    log("Missing scope, node accepted: " + node,
-                            Project.MSG_WARN);
+                    log("Node with no scope accepted (root node?): " + node,
+                            Project.MSG_DEBUG);
                     return true;
                 }
                 return getIncludedScopes().get(node.getDependency().getScope());
