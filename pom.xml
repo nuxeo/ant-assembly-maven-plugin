@@ -461,6 +461,27 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-enforcer-plugin</artifactId>
           <version>1.3.1</version>
+          <configuration>
+            <rules>
+              <requirePluginVersions>
+                <message>Set plugin versions in pluginManagement section.</message>
+                <banLatest>true</banLatest>
+                <banRelease>true</banRelease>
+                <banSnapshots>true</banSnapshots>
+              </requirePluginVersions>
+              <requireReleaseDeps>
+                <message>No Snapshots Allowed!</message>
+                <onlyWhenRelease>true</onlyWhenRelease>
+              </requireReleaseDeps>
+              <requireMavenVersion>
+                <version>[3.1.1,)</version>
+              </requireMavenVersion>
+              <requireJavaVersion>
+                <version>[1.7,)</version>
+              </requireJavaVersion>
+            </rules>
+            <skip>false</skip>
+          </configuration>
         </plugin>
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
