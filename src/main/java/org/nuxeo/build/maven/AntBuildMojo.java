@@ -76,19 +76,19 @@ public class AntBuildMojo extends AbstractMojo {
     /**
      * Location of the build file, if unique
      */
-    @Parameter
+    @Parameter(property = "buildFile")
     protected File buildFile;
 
     /**
      * Location of the build files.
      */
-    @Parameter
+    @Parameter(property = "buildFiles")
     protected File[] buildFiles;
 
     /**
      * Ant target to call on build file(s).
      */
-    @Parameter
+    @Parameter(property = "target")
     protected String target;
 
     /**
@@ -96,13 +96,13 @@ public class AntBuildMojo extends AbstractMojo {
      *
      * @since 1.6
      */
-    @Parameter
+    @Parameter(property = "targets")
     protected String[] targets;
 
     /**
      * How many levels the graph must be expanded before running Ant.
      */
-    @Parameter(defaultValue = "0")
+    @Parameter(defaultValue = "0", property = "expand")
     protected String expand;
 
     @Component
@@ -112,7 +112,7 @@ public class AntBuildMojo extends AbstractMojo {
         return system;
     }
 
-    @Parameter(property = "repositorySystemSession", readonly = true)
+    @Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
     protected RepositorySystemSession repositorySystemSession;
 
     protected DefaultRepositorySystemSession session;
@@ -157,10 +157,10 @@ public class AntBuildMojo extends AbstractMojo {
      *
      * @since 2.0
      */
-    @Parameter(defaultValue = "maven.")
+    @Parameter(defaultValue = "maven.", property = "aamp.propertyPrefix")
     protected String propertyPrefix;
 
-    @Parameter(property = "localRepository")
+    @Parameter(defaultValue = "${localRepository}")
     protected ArtifactRepository localRepository;
 
     /**
@@ -168,7 +168,7 @@ public class AntBuildMojo extends AbstractMojo {
      *
      * @since 2.0
      */
-    @Parameter(defaultValue = "false")
+    @Parameter(defaultValue = "false", property = "aamp.exportAntProperties")
     protected boolean exportAntProperties;
 
     /**
@@ -176,10 +176,10 @@ public class AntBuildMojo extends AbstractMojo {
      *
      * @since 2.0
      */
-    @Parameter
+    @Parameter(property = "aamp.exportedAntProperties")
     protected Set<String> exportedAntProperties;
 
-    @Parameter(property = "project.remoteProjectRepositories")
+    @Parameter(defaultValue = "${project.remoteProjectRepositories}")
     protected List<RemoteRepository> remoteRepositories;
 
     public List<RemoteRepository> getRemoteRepositories() {
@@ -189,7 +189,7 @@ public class AntBuildMojo extends AbstractMojo {
     /**
      * The character encoding scheme to be applied.
      */
-    @Parameter(defaultValue = "${project.build.sourceEncoding}")
+    @Parameter(defaultValue = "${project.build.sourceEncoding}", property = "aamp.encoding")
     protected String encoding;
 
     public String getEncoding() {
@@ -203,7 +203,7 @@ public class AntBuildMojo extends AbstractMojo {
         return encoding;
     }
 
-    @Parameter(property = "settings")
+    @Parameter(defaultValue = "${settings}")
     protected Settings settings;
 
     /**
@@ -212,7 +212,7 @@ public class AntBuildMojo extends AbstractMojo {
      *
      * @since 2.0
      */
-    @Parameter(defaultValue = "true")
+    @Parameter(defaultValue = "true", property = "failOnError", alias = "aamp.failOnError")
     protected boolean failOnError;
 
     @Override
