@@ -34,12 +34,10 @@ import org.apache.maven.surefire.suite.RunResult;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
- *
  * Verify if a summary file exists (created by integration tests). If the file
  * exists and contains errors, then throw a {@link MojoFailureException}.
  *
  * @see IntegrationTestMojo
- *
  */
 @Mojo(name = "verify", defaultPhase = LifecyclePhase.VERIFY, threadSafe = true, //
 requiresProject = true, requiresDependencyResolution = ResolutionScope.TEST)
@@ -107,13 +105,7 @@ public class VerifyMojo extends AntBuildMojo implements
             getLog().info("Tests are skipped.");
             return;
         }
-        if (!getTestClassesDirectory().exists()) {
-            if (getFailIfNoTests() != null && getFailIfNoTests()) {
-                throw new MojoFailureException("No tests to run!");
-            }
-            getLog().info("No tests to run.");
-            return;
-        }
+
         RunResult summary;
         try {
             if (!summaryFile.isFile() && summaryFiles != null) {
@@ -129,8 +121,16 @@ public class VerifyMojo extends AntBuildMojo implements
         } catch (IOException e) {
             throw new MojoExecutionException(e.getMessage(), e);
         }
-
         SurefireHelper.reportExecution(this, summary, getLog());
+
+        getLog().info("tests" + getTestClassesDirectory().getAbsolutePath());
+        if (!getTestClassesDirectory().exists()) {
+            if (getFailIfNoTests() != null && getFailIfNoTests()) {
+                throw new MojoFailureException("No tests to run!");
+            }
+            getLog().info("No tests to run.");
+            return;
+        }
     }
 
     private RunResult readSummary(String sumEncoding, File sumFile)

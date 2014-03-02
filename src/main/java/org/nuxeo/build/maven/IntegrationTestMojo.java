@@ -32,12 +32,10 @@ import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
- *
  * Store a summary file in case of issue during execution and testFailureIgnore
  * is false.
  *
  * @see VerifyMojo
- *
  */
 @Mojo(name = "integration-test", defaultPhase = LifecyclePhase.INTEGRATION_TEST, threadSafe = true, //
 requiresProject = true, requiresDependencyResolution = ResolutionScope.TEST)
@@ -48,8 +46,8 @@ public class IntegrationTestMojo extends AntBuildMojo {
     /**
      * That property is ignored.
      *
-     * @deprecated Since 2.0. Now never fail during integration-test and rely on
-     *             verify for exception raise.
+     * @deprecated Since 2.0. Now never fail during integration-test and rely
+     *             on verify for exception raise.
      */
     @Deprecated
     @Parameter(defaultValue = "true", property = "maven.test.failure.ignore")
@@ -101,7 +99,7 @@ public class IntegrationTestMojo extends AntBuildMojo {
             result.aggregate(new RunResult(buildFiles.length, 0, 0, 0));
         } catch (MojoExecutionException e) {
             getLog().error(e.getMessage(), e);
-            result = RunResult.failure(result, e);
+            result = new RunResult(buildFiles.length, 0, 1, 0);
         }
         writeSummary(result);
     }
