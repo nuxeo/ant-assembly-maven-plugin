@@ -6,7 +6,9 @@
   <artifactId>test-fail</artifactId>
   <version>@pom.version@</version>
   <packaging>pom</packaging>
-  <name>TEST fail: Test failure in case of failure</name>
+  <name>TEST verify failure: verify phase must raise failure happened while integration-test</name>
+  <description>See https://jira.nuxeo.com/browse/NXBT-704
+Test success means the expected failure happened (invoker.buildResult=failure)</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -18,9 +20,6 @@
         <groupId>org.nuxeo.build</groupId>
         <artifactId>ant-assembly-maven-plugin</artifactId>
         <version>@pom.version@</version>
-        <configuration>
-          <buildFile>test-it-fail.xml</buildFile>
-        </configuration>
         <executions>
           <execution>
             <id>integration-test</id>
@@ -29,6 +28,15 @@
               <goal>verify</goal>
             </goals>
             <phase>package</phase>
+            <configuration>
+              <buildFiles>
+                <buildFile>success-build.xml</buildFile>
+                <buildFile>fail-build.xml</buildFile>
+                <buildFile>fail-build.xml</buildFile>
+                <buildFile>success-build.xml</buildFile>
+              </buildFiles>
+              <failOnError>false</failOnError>
+            </configuration>
           </execution>
         </executions>
       </plugin>

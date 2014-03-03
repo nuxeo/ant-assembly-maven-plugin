@@ -217,6 +217,9 @@ Results are in target/it/* sub-folders.
 
 Add `-DdebugITs=true` on the command line
 
+## Use mvnDebug (start the JVM in debug attach mode)
 
+Use `-Pdebug` profile
 
+Default listening for transport dt_socket at address: 8000
 

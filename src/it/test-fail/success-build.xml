@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<project name="test-it-fail" default="run-tests">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <target name="run-tests" description="Fail">
+    <echo level="info" message="Success" />
+  </target>
+
+</project>

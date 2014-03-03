@@ -85,6 +85,20 @@ public class AntBuildMojo extends AbstractMojo {
     @Parameter(property = "buildFiles")
     protected File[] buildFiles;
 
+    public File[] getBuildFiles() throws MojoExecutionException {
+        if (buildFile != null && buildFiles != null && buildFiles.length > 0) {
+            throw new MojoExecutionException(
+                    "The configuration parameters 'buildFile' and 'buildFiles' cannot both be used.");
+        }
+        if (buildFiles == null || buildFiles.length == 0) {
+            if (buildFile == null) {
+                buildFile = new File("build.xml");
+            }
+            buildFiles = new File[] { buildFile };
+        }
+        return buildFiles;
+    }
+
     /**
      * Ant target to call on build file(s).
      */
@@ -227,16 +241,6 @@ public class AntBuildMojo extends AbstractMojo {
             throw new MojoExecutionException(e.getMessage(), e);
         }
         setAntPropertiesFromMaven(ant.getProject());
-        if (buildFile != null && buildFiles != null && buildFiles.length > 0) {
-            throw new MojoExecutionException(
-                    "The configuration parameters 'buildFile' and 'buildFiles' cannot both be used.");
-        }
-        if (buildFiles == null || buildFiles.length == 0) {
-            if (buildFile == null) {
-                buildFile = new File("build.xml");
-            }
-            buildFiles = new File[] { buildFile };
-        }
 
         if (target != null && targets != null && targets.length > 0) {
             throw new MojoExecutionException(
@@ -245,7 +249,7 @@ public class AntBuildMojo extends AbstractMojo {
         if ((targets == null || targets.length == 0) && target != null) {
             targets = new String[] { target };
         }
-        for (File file : buildFiles) {
+        for (File file : getBuildFiles()) {
             try {
                 if (targets != null && targets.length > 0) {
                     ant.run(file, Arrays.asList(targets));

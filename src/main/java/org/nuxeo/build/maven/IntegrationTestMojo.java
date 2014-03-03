@@ -92,14 +92,24 @@ public class IntegrationTestMojo extends AntBuildMojo {
             return;
         }
         RunResult result = RunResult.noTestsRun();
+        boolean failFast = failOnError;
         // Ensure exception raise from AntBuildMojo#execute
         failOnError = true;
-        try {
-            super.execute();
-            result.aggregate(new RunResult(buildFiles.length, 0, 0, 0));
-        } catch (MojoExecutionException e) {
-            getLog().error(e.getMessage(), e);
-            result = new RunResult(buildFiles.length, 0, 1, 0);
+        File[] testBuildFiles = getBuildFiles();
+        for (File file : testBuildFiles) {
+            buildFiles = null;
+            buildFile = file;
+            try {
+                super.execute();
+                result = result.aggregate(new RunResult(1, 0, 0, 0));
+            } catch (MojoExecutionException e) {
+                getLog().error(e.getMessage(), e);
+                result = result.aggregate(new RunResult(0, 0, 1, 0,
+                        e.getMessage(), false));
+                if (failFast) {
+                    break;
+                }
+            }
         }
         writeSummary(result);
     }
