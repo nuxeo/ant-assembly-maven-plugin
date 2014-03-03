@@ -16,8 +16,6 @@
  */
 package org.nuxeo.build.ant;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.apache.tools.ant.BuildException;
@@ -28,30 +26,22 @@ import org.junit.Test;
  */
 public class TestAntClientErrorOnFailure {
 
-    protected void checkErrorOnFailure(String filepath,
-            Class<?> exceptionClass, String message) throws Exception {
+    protected void checkErrorOnFailure(String filepath, String message)
+            throws BuildException {
         AntClient client = new AntClient(null);
-        try {
-            client.run(Thread.currentThread().getContextClassLoader().getResource(
-                    filepath));
-            fail(String.format("Should have failed with error '%s' ", message));
-        } catch (Exception e) {
-            assertTrue(String.format("Error %s should be an instance of %s", e,
-                    exceptionClass), exceptionClass.isInstance(e));
-            assertEquals(message, e.getMessage());
-        }
+        client.run(Thread.currentThread().getContextClassLoader().getResource(
+                filepath));
+        fail(String.format("Should have failed with error '%s' ", message));
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testErrorOnEmpty() throws Exception {
-        checkErrorOnFailure("test-it-empty.xml", BuildException.class,
-                "Premature end of file.");
+        checkErrorOnFailure("test-it-empty.xml", "Premature end of file.");
     }
 
-    @Test
+    @Test(expected = BuildException.class)
     public void testErrorOnFailure() throws Exception {
-        checkErrorOnFailure("test-it-fail.xml", BuildException.class,
-                "I'm failing");
+        checkErrorOnFailure("test-it-fail.xml", "I'm failing");
     }
 
 }
