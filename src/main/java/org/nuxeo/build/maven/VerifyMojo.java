@@ -122,15 +122,6 @@ public class VerifyMojo extends AntBuildMojo implements
             throw new MojoExecutionException(e.getMessage(), e);
         }
         SurefireHelper.reportExecution(this, summary, getLog());
-
-        getLog().info("tests" + getTestClassesDirectory().getAbsolutePath());
-        if (!getTestClassesDirectory().exists()) {
-            if (getFailIfNoTests() != null && getFailIfNoTests()) {
-                throw new MojoFailureException("No tests to run!");
-            }
-            getLog().info("No tests to run.");
-            return;
-        }
     }
 
     private RunResult readSummary(String sumEncoding, File sumFile)
