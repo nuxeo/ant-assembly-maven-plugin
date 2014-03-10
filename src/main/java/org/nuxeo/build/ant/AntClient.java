@@ -151,6 +151,9 @@ public class AntClient {
             newErr = new PrintStream(new DemuxOutputStream(project, true));
             System.setErr(newErr);
 
+            if (!buildFile.isAbsolute()) {
+                buildFile = new File(project.getBaseDir(), buildFile.getPath());
+            }
             project.setUserProperty("ant.file", buildFile.getPath());
             ProjectHelper.configureProject(project, buildFile);
 

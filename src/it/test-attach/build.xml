@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project name="attach"
+         default="all-tests"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <target name="all-tests" description="Test attach from Mojo">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <mkdir dir="${outdir}" />
+    <artifact:attach file="artifact.test" type="test" classifier="test" />
+    <copy todir="${outdir}">
+      <artifact:resolveFile key="${maven.project.groupId}:${maven.project.artifactId}:${maven.project.version}:test:test" />
+    </copy>
+  </target>
+
+</project>

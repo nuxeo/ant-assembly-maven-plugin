@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<project name="attach"
+         default="all-tests"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <target name="all-tests" description="Test attach from Mojo">
+    <artifact:attach file="artifact.test" type="test" classifier="test" />
+  </target>
+
+</project>
