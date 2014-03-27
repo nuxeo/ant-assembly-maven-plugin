@@ -90,6 +90,17 @@ public abstract class CompositeFilter extends AbstractFilter {
         if (ad.classifier != null && !ad.classifier.equals("*")) {
             addFilter(ClassifierFilter.class, ad.classifier);
         }
+
+        // Exclude test and provided scopes by default
+        boolean scopeTest = "test".equals(ad.scope) || "*".equals(ad.scope);
+        boolean scopeProvided = "provided".equals(ad.scope)
+                || "*".equals(ad.scope);
+        if (!scopeTest) {
+            addFilter(new NotFilter(new ScopeFilter("test")));
+        }
+        if (!scopeProvided) {
+            addFilter(new NotFilter(new ScopeFilter("provided")));
+        }
         if (ad.scope != null && !ad.scope.equals("*")) {
             addFilter(ScopeFilter.class, ad.scope);
         }

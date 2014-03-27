@@ -24,6 +24,7 @@ import org.nuxeo.build.maven.filter.ClassifierFilter;
 import org.nuxeo.build.maven.filter.GroupIdFilter;
 import org.nuxeo.build.maven.filter.IsOptionalFilter;
 import org.nuxeo.build.maven.filter.ManifestBundleCategoryFilter;
+import org.nuxeo.build.maven.filter.NotFilter;
 import org.nuxeo.build.maven.filter.ScopeFilter;
 import org.nuxeo.build.maven.filter.TypeFilter;
 import org.nuxeo.build.maven.filter.VersionFilter;
@@ -92,6 +93,15 @@ public class ArtifactPattern extends DataType {
 
     public void setScope(String scope) {
         this.scope = scope;
+        // Exclude test and provided scopes by default
+        boolean scopeTest = "test".equals(scope) || "*".equals(scope);
+        boolean scopeProvided = "provided".equals(scope) || "*".equals(scope);
+        if (!scopeTest) {
+            filter.addFilter(new NotFilter(new ScopeFilter("test")));
+        }
+        if (!scopeProvided) {
+            filter.addFilter(new NotFilter(new ScopeFilter("provided")));
+        }
         filter.addFilter(ScopeFilter.class, scope);
     }
 

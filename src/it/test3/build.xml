@@ -101,7 +101,7 @@
             <filesmatch file1="${outdir}/includes" file2="includes.expected" />
             <available file="${outdir}/test/opencsv-2.1.jar" />
             <equals arg1="${count.test}" arg2="5" />
-            <equals arg1="${count.test2}" arg2="237" />
+            <equals arg1="${count.test2}" arg2="246" />
           </and>
         </not>
       </condition>
