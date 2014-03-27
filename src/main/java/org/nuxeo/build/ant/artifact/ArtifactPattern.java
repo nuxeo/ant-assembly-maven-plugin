@@ -62,7 +62,19 @@ public class ArtifactPattern extends DataType {
     @Deprecated
     private ManifestBundleCategoryFilter categoryFilter = null;
 
+    private boolean scopeTest = false;
+
+    private boolean scopeProvided = false;
+
     public AndFilter getFilter() {
+        if (!scopeTest) {
+            filter.addFilter(new NotFilter(new ScopeFilter("test")));
+            scopeTest = true; // to avoid loop
+        }
+        if (!scopeProvided) {
+            filter.addFilter(new NotFilter(new ScopeFilter("provided")));
+            scopeProvided = true; // to avoid loop
+        }
         return filter;
     }
 
@@ -94,14 +106,8 @@ public class ArtifactPattern extends DataType {
     public void setScope(String scope) {
         this.scope = scope;
         // Exclude test and provided scopes by default
-        boolean scopeTest = "test".equals(scope) || "*".equals(scope);
-        boolean scopeProvided = "provided".equals(scope) || "*".equals(scope);
-        if (!scopeTest) {
-            filter.addFilter(new NotFilter(new ScopeFilter("test")));
-        }
-        if (!scopeProvided) {
-            filter.addFilter(new NotFilter(new ScopeFilter("provided")));
-        }
+        scopeTest = "test".equals(scope) || "*".equals(scope);
+        scopeProvided = "provided".equals(scope) || "*".equals(scope);
         filter.addFilter(ScopeFilter.class, scope);
     }
 

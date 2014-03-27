@@ -73,6 +73,10 @@ public class ArtifactSet extends DataType implements ResourceCollection {
 
     protected Collection<Artifact> artifacts;
 
+    private boolean scopeTest = false;
+
+    private boolean scopeProvided = false;
+
     public void setGroupId(String groupId) {
         if (isReference()) {
             throw tooManyAttributes();
@@ -113,14 +117,8 @@ public class ArtifactSet extends DataType implements ResourceCollection {
             throw tooManyAttributes();
         }
         // Exclude test and provided scopes by default
-        boolean scopeTest = "test".equals(scope) || "*".equals(scope);
-        boolean scopeProvided = "provided".equals(scope) || "*".equals(scope);
-        if (!scopeTest) {
-            filter.addFilter(new NotFilter(new ScopeFilter("test")));
-        }
-        if (!scopeProvided) {
-            filter.addFilter(new NotFilter(new ScopeFilter("provided")));
-        }
+        scopeTest = "test".equals(scope) || "*".equals(scope);
+        scopeProvided = "provided".equals(scope) || "*".equals(scope);
         filter.addFilter(new ScopeFilter(scope));
     }
 
@@ -217,6 +215,12 @@ public class ArtifactSet extends DataType implements ResourceCollection {
     protected Filter buildFilter() {
         AndFilter f = new AndFilter();
         if (!filter.isEmpty()) {
+            if (!scopeTest) {
+                filter.addFilter(new NotFilter(new ScopeFilter("test")));
+            }
+            if (!scopeProvided) {
+                filter.addFilter(new NotFilter(new ScopeFilter("provided")));
+            }
             f.addFilters(filter.getFilters());
         }
         if (includes != null) {

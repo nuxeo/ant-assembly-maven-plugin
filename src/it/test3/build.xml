@@ -24,7 +24,7 @@
     <copy todir="${outdir}/lib" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="!org.nuxeo*" scope="!test" type="!pom" />
+          <artifact groupId="!org.nuxeo*" type="!pom" />
         </includes>
       </artifact:set>
       <artifact:resolveFile key="log4j:log4j:1.2.16" />
