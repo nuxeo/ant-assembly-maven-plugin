@@ -19,7 +19,9 @@ package org.nuxeo.build.maven.filter;
 import java.util.List;
 
 import org.apache.maven.artifact.Artifact;
+import org.apache.tools.ant.Project;
 import org.eclipse.aether.graph.DependencyNode;
+import org.nuxeo.build.ant.AntClient;
 
 /**
  * TODO NXBT-258
@@ -45,16 +47,13 @@ public class AndFilter extends CompositeFilter {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        sb.append("" + getClass());
-        for (Filter filter : filters) {
-            sb.append(System.getProperty("line.separator") + filter);
-        }
-        return sb.toString();
+        return super.toString() + " => ";
     }
 
     @Override
     public boolean accept(DependencyNode node, List<DependencyNode> parents) {
+        AntClient.getInstance().log("Filtering - " + super.toString() + "...",
+                Project.MSG_DEBUG);
         for (Filter filter : filters) {
             if (!filter.accept(node, parents)) {
                 return result(false, node.toString());

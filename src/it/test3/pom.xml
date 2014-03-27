@@ -57,6 +57,11 @@
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.opensocial</groupId>
+      <artifactId>nuxeo-opensocial-server</artifactId>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>

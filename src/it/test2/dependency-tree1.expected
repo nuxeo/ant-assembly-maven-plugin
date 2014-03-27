@@ -37,7 +37,7 @@ org.nuxeo.build:test2:2.0.1-SNAPSHOT:pom::
  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
  |--  |-- org.codehaus.plexus:plexus-interpolation:1.11:jar::compile
  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
- |--  |--  |-- org.codehaus.plexus:plexus-interpolation:1.11:jar::provided
+ |--  |--  |-- org.codehaus.plexus:plexus-interpolation:1.11:jar::compile (scope managed from provided)
  |--  |-- org.apache.maven:maven-artifact:2.2.1:jar::compile
  |--  |--  |-- org.codehaus.plexus:plexus-utils:1.5.15:jar::compile
  |-- junit:junit:4.8.1:jar::test

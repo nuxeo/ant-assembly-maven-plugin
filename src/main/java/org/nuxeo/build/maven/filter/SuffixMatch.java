@@ -34,7 +34,7 @@ public class SuffixMatch extends SegmentMatch {
 
     @Override
     public String toString() {
-        return "" + getClass() + " (" + suffix + ")";
+        return getClass().toString() + " (" + suffix + ")";
     }
 
 }

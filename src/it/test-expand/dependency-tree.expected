@@ -159,7 +159,7 @@ org.nuxeo.build:test-expand:2.0.1-SNAPSHOT:pom::
  |--  |--  |-- commons-httpclient:commons-httpclient:3.1:jar::compile
  |--  |--  |-- javax.resource:connector-api:1.5:jar::compile
  |--  |--  |-- net.sf.ehcache:ehcache-core:2.5.2:jar::compile
- |--  |--  |--  |-- javax.transaction:jta:1.1:jar::provided
+ |--  |--  |--  |-- javax.transaction:jta:1.1:jar::compile (scope managed from provided)
  |--  |--  |-- org.apache.lucene:lucene-core:2.3.2:jar::compile
  |--  |--  |-- org.apache.lucene:lucene-analyzers:2.3.2:jar::compile
  |--  |--  |--  |-- org.apache.lucene:lucene-core:2.3.2:jar::compile
@@ -195,46 +195,46 @@ org.nuxeo.build:test-expand:2.0.1-SNAPSHOT:pom::
  |--  |--  |-- commons-logging:commons-logging:1.1:jar::compile
  |--  |-- org.nuxeo.ecm.core:nuxeo-core-storage-sql-ra:5.9.1:jar::compile
  |--  |--  |-- xpp3:xpp3:1.1.4c:jar:clean:compile
- |--  |--  |-- com.sun.xml:relaxngDatatype:1.0:jar::provided
- |--  |--  |-- com.sun.xsom:xsom:20081112:jar::provided
- |--  |--  |-- com.thoughtworks.xstream:xstream:1.3.1:jar::provided
- |--  |--  |-- commons-beanutils:commons-beanutils:1.6:jar::provided
- |--  |--  |-- commons-codec:commons-codec:1.4:jar::provided
- |--  |--  |-- commons-collections:commons-collections:3.2:jar::provided
- |--  |--  |-- commons-httpclient:commons-httpclient:3.1:jar::provided
- |--  |--  |-- commons-io:commons-io:1.4:jar::provided
- |--  |--  |-- commons-lang:commons-lang:2.6:jar::provided
- |--  |--  |-- commons-logging:commons-logging:1.1:jar::provided
- |--  |--  |-- cup:java-cup:0.11a:jar::provided
- |--  |--  |-- dom4j:dom4j:1.6.1:jar::provided
- |--  |--  |-- javax.resource:connector-api:1.5:jar::provided
- |--  |--  |-- javax.transaction:jta:1.1:jar::provided
- |--  |--  |-- joda-time:joda-time:1.6:jar::provided
- |--  |--  |-- log4j:log4j:1.2.17:jar::provided
- |--  |--  |-- org.apache.geronimo.components:geronimo-connector:2.2.1-NX1:jar::provided
- |--  |--  |-- org.apache.geronimo.components:geronimo-transaction:2.2.1:jar::provided
- |--  |--  |-- org.freemarker:freemarker:2.3.11:jar::provided
- |--  |--  |-- org.javasimon:javasimon-core:2.5.0:jar::provided
- |--  |--  |-- org.javasimon:javasimon-jdbc3:2.5.0:jar::provided
- |--  |--  |-- org.javasimon:javasimon-jmx:2.5.0:jar::provided
- |--  |--  |-- org.mortbay.jetty:jetty:6.1.26:jar::provided
- |--  |--  |-- org.mortbay.jetty:jetty-util:6.1.26:jar::provided
- |--  |--  |-- org.mvel:mvel2:2.1.7.Final:jar::provided
- |--  |--  |-- org.nuxeo.common:nuxeo-common:5.9.1:jar::provided
- |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core:5.9.1:jar::provided
- |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.9.1:jar::provided
- |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-convert-api:5.9.1:jar::provided
- |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-event:5.9.1:jar::provided
- |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-query:5.9.1:jar::provided
- |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-schema:5.9.1:jar::provided
- |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-storage-sql:5.9.1:jar::provided
- |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.9.1:jar::provided
- |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime-management:5.9.1:jar::provided
- |--  |--  |-- org.objectweb.howl:howl:1.0.1-1:jar::provided
- |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::provided
- |--  |--  |-- org.slf4j:slf4j-api:1.7.5:jar::provided
- |--  |--  |-- org.slf4j:slf4j-log4j12:1.7.5:jar::provided
- |--  |--  |-- xerces:xercesImpl:2.9.1:jar::provided
+ |--  |--  |-- com.sun.xml:relaxngDatatype:1.0:jar::compile (scope managed from provided)
+ |--  |--  |-- com.sun.xsom:xsom:20081112:jar::compile (scope managed from provided)
+ |--  |--  |-- com.thoughtworks.xstream:xstream:1.3.1:jar::compile (scope managed from provided)
+ |--  |--  |-- commons-beanutils:commons-beanutils:1.6:jar::compile (scope managed from provided)
+ |--  |--  |-- commons-codec:commons-codec:1.4:jar::compile (scope managed from provided)
+ |--  |--  |-- commons-collections:commons-collections:3.2:jar::compile (scope managed from provided)
+ |--  |--  |-- commons-httpclient:commons-httpclient:3.1:jar::compile (scope managed from provided)
+ |--  |--  |-- commons-io:commons-io:1.4:jar::compile (scope managed from provided)
+ |--  |--  |-- commons-lang:commons-lang:2.6:jar::compile (scope managed from provided)
+ |--  |--  |-- commons-logging:commons-logging:1.1:jar::compile (scope managed from provided)
+ |--  |--  |-- cup:java-cup:0.11a:jar::compile (scope managed from provided)
+ |--  |--  |-- dom4j:dom4j:1.6.1:jar::compile (scope managed from provided)
+ |--  |--  |-- javax.resource:connector-api:1.5:jar::compile (scope managed from provided)
+ |--  |--  |-- javax.transaction:jta:1.1:jar::compile (scope managed from provided)
+ |--  |--  |-- joda-time:joda-time:1.6:jar::compile (scope managed from provided)
+ |--  |--  |-- log4j:log4j:1.2.17:jar::compile (scope managed from provided)
+ |--  |--  |-- org.apache.geronimo.components:geronimo-connector:2.2.1-NX1:jar::compile (scope managed from provided)
+ |--  |--  |-- org.apache.geronimo.components:geronimo-transaction:2.2.1:jar::compile (scope managed from provided)
+ |--  |--  |-- org.freemarker:freemarker:2.3.11:jar::compile (scope managed from provided)
+ |--  |--  |-- org.javasimon:javasimon-core:2.5.0:jar::compile (scope managed from provided)
+ |--  |--  |-- org.javasimon:javasimon-jdbc3:2.5.0:jar::compile (scope managed from provided)
+ |--  |--  |-- org.javasimon:javasimon-jmx:2.5.0:jar::compile (scope managed from provided)
+ |--  |--  |-- org.mortbay.jetty:jetty:6.1.26:jar::compile (scope managed from provided)
+ |--  |--  |-- org.mortbay.jetty:jetty-util:6.1.26:jar::compile (scope managed from provided)
+ |--  |--  |-- org.mvel:mvel2:2.1.7.Final:jar::compile (scope managed from provided)
+ |--  |--  |-- org.nuxeo.common:nuxeo-common:5.9.1:jar::compile (scope managed from provided)
+ |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core:5.9.1:jar::compile (scope managed from provided)
+ |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.9.1:jar::compile (scope managed from provided)
+ |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-convert-api:5.9.1:jar::compile (scope managed from provided)
+ |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-event:5.9.1:jar::compile (scope managed from provided)
+ |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-query:5.9.1:jar::compile (scope managed from provided)
+ |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-schema:5.9.1:jar::compile (scope managed from provided)
+ |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-storage-sql:5.9.1:jar::compile (scope managed from provided)
+ |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.9.1:jar::compile (scope managed from provided)
+ |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime-management:5.9.1:jar::compile (scope managed from provided)
+ |--  |--  |-- org.objectweb.howl:howl:1.0.1-1:jar::compile (scope managed from provided)
+ |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile (scope managed from provided)
+ |--  |--  |-- org.slf4j:slf4j-api:1.7.5:jar::compile (scope managed from provided)
+ |--  |--  |-- org.slf4j:slf4j-log4j12:1.7.5:jar::compile (scope managed from provided)
+ |--  |--  |-- xerces:xercesImpl:2.9.1:jar::compile (scope managed from provided)
  |--  |-- org.nuxeo.ecm.core:nuxeo-core-storage-sql-extensions:5.9.1:jar::compile
  |--  |--  |-- org.apache.lucene:lucene-core:2.3.2:jar::compile
  |--  |--  |-- commons-logging:commons-logging:1.1:jar::compile
@@ -295,9 +295,9 @@ org.nuxeo.build:test-expand:2.0.1-SNAPSHOT:pom::
  |--  |--  |-- org.bouncycastle:bcprov-jdk15:1.45:jar::compile
  |--  |--  |-- org.apache.poi:poi-scratchpad:3.5-beta6:jar::compile
  |--  |--  |--  |-- org.apache.poi:poi:3.5-beta6:jar::compile
- |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar::runtime
+ |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar::compile (scope managed from runtime)
  |--  |--  |-- org.apache.poi:poi:3.5-beta6:jar::compile
- |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar::runtime
+ |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar::compile (scope managed from runtime)
  |--  |--  |-- org.apache.poi:poi-ooxml:3.5-beta6:jar::compile
  |--  |--  |--  |-- org.apache.poi:ooxml-schemas:1.0:jar::compile
  |--  |--  |--  |--  |-- org.apache.xmlbeans:xmlbeans:2.3.0:jar::compile
@@ -497,7 +497,7 @@ org.nuxeo.build:test-expand:2.0.1-SNAPSHOT:pom::
  |--  |--  |-- org.nuxeo.common:nuxeo-common:5.9.1:jar::compile
  |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime:5.9.1:jar::compile
  |--  |--  |-- javax.resource:connector-api:1.5:jar::compile
- |--  |--  |-- commons-lang:commons-lang:2.6:jar::provided
+ |--  |--  |-- commons-lang:commons-lang:2.6:jar::compile (scope managed from provided)
  |--  |--  |-- com.codahale.metrics:metrics-core:3.0.0:jar::compile
  |--  |--  |-- commons-logging:commons-logging:1.1:jar::compile
  |--  |--  |-- javax.transaction:jta:1.1:jar::compile
@@ -702,13 +702,13 @@ org.nuxeo.build:test-expand:2.0.1-SNAPSHOT:pom::
  |--  |-- org.nuxeo.ecm.webengine:nuxeo-webengine-core:5.9.1:jar::compile
  |--  |--  |-- com.sun.jersey:jersey-server:1.17.1:jar::compile
  |--  |--  |--  |-- asm:asm:3.1:jar::compile
- |--  |--  |--  |-- javax.annotation:jsr250-api:1.0:jar::provided
+ |--  |--  |--  |-- javax.annotation:jsr250-api:1.0:jar::compile (scope managed from provided)
  |--  |--  |-- com.sun.jersey:jersey-servlet:1.17.1:jar::compile
- |--  |--  |--  |-- javax.persistence:persistence-api:1.0:jar::provided
+ |--  |--  |--  |-- javax.persistence:persistence-api:1.0:jar::compile (scope managed from provided)
  |--  |--  |--  |-- com.sun.jersey:jersey-server:1.17.1:jar::compile
  |--  |--  |-- com.sun.jersey:jersey-core:1.17.1:jar:minimal:compile
- |--  |--  |--  |-- javax.ws.rs:jsr311-api:1.1.1:jar::provided
- |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::provided
+ |--  |--  |--  |-- javax.ws.rs:jsr311-api:1.1.1:jar::compile (scope managed from provided)
+ |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile (scope managed from provided)
  |--  |--  |-- javax.ws.rs:jsr311-api:1.1.1:jar::compile
  |--  |--  |-- net.sf.json-lib:json-lib:2.4:jar:jdk15:compile
  |--  |--  |--  |-- junit:junit:3.8.2:jar::compile
@@ -723,11 +723,11 @@ org.nuxeo.build:test-expand:2.0.1-SNAPSHOT:pom::
  |--  |--  |--  |--  |-- org.apache.ant:ant-launcher:1.7.0:jar::compile
  |--  |--  |--  |-- org.apache.ant:ant-launcher:1.7.0:jar::compile
  |--  |--  |--  |-- jline:jline:0.9.94:jar::compile
- |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar::runtime
+ |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar::compile (scope managed from runtime)
  |--  |--  |-- org.nuxeo.build:nuxeo-apt-extensions:1.0:jar::compile
  |--  |--  |-- org.nuxeo.build:nuxeo-webengine-apt:1.2:jar::compile
  |--  |--  |--  |-- org.nuxeo.build:nuxeo-apt-extensions:1.0:jar::compile
- |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar::provided
+ |--  |--  |--  |-- commons-logging:commons-logging:1.1:jar::compile (scope managed from provided)
  |--  |--  |-- commons-fileupload:commons-fileupload:1.2.2:jar::compile
  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile
  |--  |--  |-- org.nuxeo.runtime:nuxeo-runtime-osgi:5.9.1:jar::compile
@@ -883,15 +883,15 @@ org.nuxeo.build:test-expand:2.0.1-SNAPSHOT:pom::
  |--  |--  |--  |-- org.apache.cxf:cxf-api:2.6.8:jar::compile
  |--  |--  |--  |--  |-- org.apache.ws.xmlschema:xmlschema-core:2.0.3:jar::compile
  |--  |--  |--  |--  |-- wsdl4j:wsdl4j:1.6.3:jar::compile
- |--  |--  |--  |--  |-- com.sun.xml.bind:jaxb-impl:2.2.5.1:jar::provided
+ |--  |--  |--  |--  |-- com.sun.xml.bind:jaxb-impl:2.2.5.1:jar::compile (scope managed from provided)
  |--  |--  |--  |--  |-- log4j:log4j:1.2.17:jar::compile
  |--  |--  |--  |--  |-- org.slf4j:slf4j-api:1.7.5:jar::compile
  |--  |--  |--  |--  |-- org.codehaus.woodstox:woodstox-core-asl:4.2.0:jar::compile
- |--  |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::provided
+ |--  |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile (scope managed from provided)
  |--  |--  |--  |-- org.apache.cxf:cxf-rt-core:2.6.8:jar::compile
  |--  |--  |--  |--  |-- com.sun.xml.bind:jaxb-impl:2.2.5.1:jar::compile
- |--  |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::provided
- |--  |--  |--  |--  |-- org.osgi:org.osgi.compendium:4.2.0:jar::provided
+ |--  |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile (scope managed from provided)
+ |--  |--  |--  |--  |-- org.osgi:org.osgi.compendium:4.2.0:jar::compile (scope managed from provided)
  |--  |--  |--  |--  |-- org.apache.cxf:cxf-api:2.6.8:jar::compile
  |--  |--  |--  |--  |-- org.apache.ws.xmlschema:xmlschema-core:2.0.3:jar::compile
  |--  |--  |--  |--  |-- xml-resolver:xml-resolver:1.2:jar::compile
@@ -901,32 +901,32 @@ org.nuxeo.build:test-expand:2.0.1-SNAPSHOT:pom::
  |--  |--  |--  |--  |--  |-- org.apache.cxf:cxf-api:2.6.8:jar::compile
  |--  |--  |--  |--  |--  |-- org.apache.cxf:cxf-rt-core:2.6.8:jar::compile
  |--  |--  |--  |--  |--  |-- com.sun.xml.bind:jaxb-impl:2.2.5.1:jar::compile
- |--  |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::provided
+ |--  |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile (scope managed from provided)
  |--  |--  |--  |--  |-- org.apache.cxf:cxf-api:2.6.8:jar::compile
  |--  |--  |--  |-- org.apache.cxf:cxf-rt-bindings-xml:2.6.8:jar::compile
  |--  |--  |--  |--  |-- org.apache.cxf:cxf-api:2.6.8:jar::compile
  |--  |--  |--  |-- org.apache.cxf:cxf-rt-frontend-simple:2.6.8:jar::compile
- |--  |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::provided
+ |--  |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile (scope managed from provided)
  |--  |--  |--  |--  |-- org.apache.cxf:cxf-api:2.6.8:jar::compile
  |--  |--  |--  |--  |-- org.apache.cxf:cxf-rt-core:2.6.8:jar::compile
  |--  |--  |--  |--  |-- org.apache.cxf:cxf-rt-bindings-soap:2.6.8:jar::compile
  |--  |--  |--  |-- org.apache.cxf:cxf-rt-ws-addr:2.6.8:jar::compile
  |--  |--  |--  |--  |-- org.apache.cxf:cxf-rt-ws-policy:2.6.8:jar::compile
  |--  |--  |--  |--  |--  |-- org.apache.neethi:neethi:3.0.2:jar::compile
- |--  |--  |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::provided
+ |--  |--  |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile (scope managed from provided)
  |--  |--  |--  |--  |--  |-- org.apache.cxf:cxf-api:2.6.8:jar::compile
  |--  |--  |--  |--  |--  |-- org.apache.cxf:cxf-rt-core:2.6.8:jar::compile
- |--  |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::provided
+ |--  |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile (scope managed from provided)
  |--  |--  |--  |--  |-- org.apache.cxf:cxf-api:2.6.8:jar::compile
  |--  |--  |--  |--  |-- org.apache.cxf:cxf-rt-bindings-soap:2.6.8:jar::compile
- |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::provided
+ |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile (scope managed from provided)
  |--  |--  |--  |-- org.apache.cxf:cxf-rt-transports-http:2.6.8:jar::compile
  |--  |--  |-- org.apache.cxf:cxf-rt-transports-http:2.6.8:jar::compile
- |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::provided
- |--  |--  |--  |-- org.osgi:org.osgi.compendium:4.2.0:jar::provided
+ |--  |--  |--  |-- org.osgi:org.osgi.core:4.2.0:jar::compile (scope managed from provided)
+ |--  |--  |--  |-- org.osgi:org.osgi.compendium:4.2.0:jar::compile (scope managed from provided)
  |--  |--  |--  |-- org.apache.cxf:cxf-api:2.6.8:jar::compile
  |--  |--  |--  |-- org.apache.cxf:cxf-rt-core:2.6.8:jar::compile
- |--  |--  |--  |-- org.apache.cxf:cxf-rt-ws-policy:2.6.8:jar::provided
+ |--  |--  |--  |-- org.apache.cxf:cxf-rt-ws-policy:2.6.8:jar::compile (scope managed from provided)
  |--  |--  |-- org.nuxeo.ecm.core:nuxeo-core-api:5.9.1:jar::compile
  |--  |--  |-- org.nuxeo.ecm.platform:nuxeo-platform-usermanager-api:5.9.1:jar::compile
  |--  |--  |-- org.nuxeo.ecm.platform:nuxeo-platform-api:5.9.1:jar::compile
@@ -974,7 +974,7 @@ org.nuxeo.build:test-expand:2.0.1-SNAPSHOT:pom::
  |--  |--  |-- org.nuxeo.ecm.platform:nuxeo-platform-filemanager-api:5.9.1:jar::compile
  |--  |--  |-- org.nuxeo.ecm.platform:nuxeo-platform-mimetype-api:5.9.1:jar::compile
  |--  |--  |-- org.nuxeo.ecm.platform:nuxeo-platform-mimetype-core:5.9.1:jar::compile
- |--  |--  |-- javax.resource:connector-api:1.5:jar::provided
+ |--  |--  |-- javax.resource:connector-api:1.5:jar::compile (scope managed from provided)
  |--  |--  |-- commons-logging:commons-logging:1.1:jar::compile
  |--  |-- org.nuxeo.ecm.core:nuxeo-opencmis-bindings:5.9.1:jar::compile
  |--  |--  |-- org.apache.chemistry.opencmis:chemistry-opencmis-server-bindings:0.10.0:jar::compile
@@ -998,8 +998,8 @@ org.nuxeo.build:test-expand:2.0.1-SNAPSHOT:pom::
  |--  |--  |-- org.nuxeo.ecm.platform:nuxeo-platform-dublincore:5.9.1:jar::compile
  |--  |--  |-- org.nuxeo.ecm.platform:nuxeo-platform-filemanager-api:5.9.1:jar::compile
  |--  |--  |-- org.nuxeo.ecm.platform:nuxeo-platform-filemanager-core:5.9.1:jar::compile
- |--  |--  |-- org.nuxeo.ecm.webengine:nuxeo-webengine-core:5.9.1:jar::provided
- |--  |--  |-- org.nuxeo.ecm.webengine:nuxeo-webengine-base:5.9.1:jar::provided
+ |--  |--  |-- org.nuxeo.ecm.webengine:nuxeo-webengine-core:5.9.1:jar::compile (scope managed from provided)
+ |--  |--  |-- org.nuxeo.ecm.webengine:nuxeo-webengine-base:5.9.1:jar::compile (scope managed from provided)
  |--  |--  |-- javax.resource:connector-api:1.5:jar::compile
  |--  |--  |-- javax.transaction:jta:1.1:jar::compile
  |--  |--  |-- commons-beanutils:commons-beanutils:1.6:jar::compile
@@ -1019,6 +1019,6 @@ org.nuxeo.build:test-expand:2.0.1-SNAPSHOT:pom::
  |--  |--  |-- org.nuxeo.ecm.webengine:nuxeo-webengine-core:5.9.1:jar::compile
  |--  |--  |-- org.nuxeo.ecm.webengine:nuxeo-webengine-base:5.9.1:jar::compile
  |--  |--  |-- org.freemarker:freemarker:2.3.11:jar::compile
- |--  |--  |-- commons-lang:commons-lang:2.6:jar::provided
- |--  |--  |-- commons-logging:commons-logging:1.1:jar::provided
+ |--  |--  |-- commons-lang:commons-lang:2.6:jar::compile (scope managed from provided)
+ |--  |--  |-- commons-logging:commons-logging:1.1:jar::compile (scope managed from provided)
  |--  |-- commons-logging:commons-logging:1.1:jar::compile

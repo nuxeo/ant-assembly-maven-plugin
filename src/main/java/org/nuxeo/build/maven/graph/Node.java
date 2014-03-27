@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.tools.ant.Project;
+import org.eclipse.aether.graph.DefaultDependencyNode;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.graph.DependencyVisitor;
@@ -283,5 +284,12 @@ public class Node implements DependencyNode {
     @Override
     public org.eclipse.aether.artifact.Artifact getArtifact() {
         return dependencyNode.getArtifact();
+    }
+
+    /**
+     * @since 2.0.1
+     */
+    public void setManagedBits(int managedBits) {
+        ((DefaultDependencyNode) dependencyNode).setManagedBits(managedBits);
     }
 }

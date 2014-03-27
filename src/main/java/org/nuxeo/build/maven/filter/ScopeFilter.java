@@ -28,7 +28,7 @@ public class ScopeFilter extends AbstractFilter {
 
     @Override
     public String toString() {
-        return "" + getClass() + " [" + matcher + "]";
+        return super.toString() + " [" + matcher + "]";
     }
 
     protected SegmentMatch matcher;

@@ -54,7 +54,4 @@ public abstract class SegmentMatch {
                 pattern.substring(p + 1));
     }
 
-    @Override
-    public abstract String toString();
-
 }

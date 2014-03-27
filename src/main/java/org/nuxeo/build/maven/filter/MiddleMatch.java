@@ -41,7 +41,7 @@ public class MiddleMatch extends SegmentMatch {
 
     @Override
     public String toString() {
-        return "" + getClass() + " (" + prefix + "," + suffix + ")";
+        return getClass().toString() + " (" + prefix + "," + suffix + ")";
     }
 
 }

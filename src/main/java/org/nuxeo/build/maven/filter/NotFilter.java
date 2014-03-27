@@ -45,4 +45,9 @@ public class NotFilter extends AbstractFilter {
     public boolean accept(DependencyNode node, List<DependencyNode> parents) {
         return result(!filter.accept(node, parents), node.toString());
     }
+
+    @Override
+    public String toString() {
+        return super.toString() + " => ";
+    }
 }

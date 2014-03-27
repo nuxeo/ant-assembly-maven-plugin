@@ -285,7 +285,7 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
 
     @Override
     public String toString() {
-        return "" + getClass() + " patterns[" + patternsStr + "]";
+        return super.toString() + " patterns[" + patternsStr + "]";
     }
 
     public void setDependsOnCategory(boolean isDependsOnCategory) {

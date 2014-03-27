@@ -140,15 +140,15 @@ public class TreePrinterDependencyVisitor extends AbstractDependencyVisitor {
                     } else {
                         int managedBits = 0;
                         childNode = new DefaultDependencyNode(childNode);
-                        childNode.setScope(dependency.getScope());
-                        // String managedScope = dependency.getScope();
-                        // String scope = childNode.getDependency().getScope();
-                        // if (!managedScope.equals(scope)) {
-                        // managedBits |= DependencyNode.MANAGED_SCOPE;
-                        // childNode.setData(
-                        // DependencyManagerUtils.NODE_DATA_PREMANAGED_SCOPE,
-                        // managedScope);
-                        // }
+                        childNode.setScope(childNode.getDependency().getScope());
+                        String managedScope = dependency.getScope();
+                        String scope = childNode.getDependency().getScope();
+                        if (!managedScope.equals(scope)) {
+                            managedBits |= DependencyNode.MANAGED_SCOPE;
+                            childNode.setData(
+                                    DependencyManagerUtils.NODE_DATA_PREMANAGED_SCOPE,
+                                    managedScope);
+                        }
                         String managedVersion = dependency.getArtifact().getBaseVersion();
                         String version = childNode.getArtifact().getBaseVersion();
                         if (!managedVersion.equals(version)) {

@@ -34,7 +34,7 @@ public class ExactMatch extends SegmentMatch {
 
     @Override
     public String toString() {
-        return "" + getClass() + " (" + segment + ")";
+        return getClass().toString() + " (" + segment + ")";
     }
 
 }

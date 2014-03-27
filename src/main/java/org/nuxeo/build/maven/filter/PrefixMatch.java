@@ -34,7 +34,7 @@ public class PrefixMatch extends SegmentMatch {
 
     @Override
     public String toString() {
-        return "" + getClass() + " (" + prefix + ")";
+        return getClass().toString() + " (" + prefix + ")";
     }
 
 }
