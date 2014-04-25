@@ -3,7 +3,7 @@
 This plugins provides an advanced Ant integration within Maven, in the manner of 
 [nuxeo-distribution-tools](https://github.com/nuxeo/nuxeo-distribution-tools) itself inspired from
 [maven-antrun-extended-plugin](https://java.net/projects/maven-antrun-extended-plugin).  
-It extends [maven-antrun-plugin] with Maven related tasks for managing artifacts.
+It extends [maven-antrun-plugin](http://maven.apache.org/plugins/maven-antrun-plugin) with Maven related tasks for managing artifacts.
 
 The main functionality is the management of Maven artifacts graph.
 
