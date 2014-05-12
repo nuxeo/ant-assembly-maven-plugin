@@ -70,9 +70,8 @@ public class ArtifactDescriptor {
 
     /**
      * @param key Key for an artifact or a dependency with pattern
-     *            &lt;groupId&gt
-     *            ;:&lt;artifactId&gt;[:&lt;version&gt;[:&lt;type&gt
-     *            ;[:&lt;classifier&gt;[:&lt;scope&gt;]]]]
+     *            &lt;groupId&gt;:&lt;artifactId&gt;[:&lt;version&gt;[:&lt;type
+     *            &gt;[:&lt;classifier&gt;[:&lt;scope&gt;]]]]
      * @see #KEY_PATTERN
      */
     public ArtifactDescriptor(String key) {
