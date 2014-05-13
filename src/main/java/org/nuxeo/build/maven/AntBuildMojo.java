@@ -39,6 +39,7 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.project.MavenProjectHelper;
 import org.apache.maven.settings.Settings;
 import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.ExitStatusException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.Path;
 import org.codehaus.plexus.util.ReaderFactory;
@@ -265,7 +266,11 @@ public class AntBuildMojo extends AbstractMojo {
                         file.getPath(), e.getLocation().getLineNumber(),
                         e.getLocation().getColumnNumber(), e.getMessage());
                 if (failOnError) {
-                    throw new MojoExecutionException(errMsg, e);
+                    if (e instanceof ExitStatusException) {
+                        throw new MojoFailureException(errMsg, e);
+                    } else {
+                        throw new MojoExecutionException(errMsg, e);
+                    }
                 } else {
                     getLog().error(errMsg, e);
                 }

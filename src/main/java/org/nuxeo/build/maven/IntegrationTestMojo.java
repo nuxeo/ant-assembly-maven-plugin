@@ -28,6 +28,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.surefire.suite.RunResult;
+import org.apache.tools.ant.ExitStatusException;
+import org.apache.tools.ant.taskdefs.optional.testing.BuildTimeoutException;
 import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -102,10 +104,22 @@ public class IntegrationTestMojo extends AntBuildMojo {
             try {
                 super.execute();
                 result = result.aggregate(new RunResult(1, 0, 0, 0));
-            } catch (MojoExecutionException e) {
-                getLog().error(e.getMessage(), e);
-                result = result.aggregate(new RunResult(0, 0, 1, 0,
-                        e.getMessage(), false));
+            } catch (MojoFailureException | MojoExecutionException e) {
+                if (e.getCause() instanceof ExitStatusException) {
+                    ExitStatusException exit = (ExitStatusException) e.getCause();
+                    getLog().debug("Result: " + exit.getStatus());
+                    getLog().debug(exit.getMessage());
+                    result = result.aggregate(new RunResult(1, 1, 0, 0));
+                } else {
+                    Throwable cause = e.getCause();
+                    if (cause == null) {
+                        cause = e;
+                    }
+                    getLog().error(cause.getMessage(), cause);
+                    result = result.aggregate(new RunResult(1, 0, 1, 0,
+                            cause.getMessage(),
+                            cause instanceof BuildTimeoutException));
+                }
                 if (failFast) {
                     break;
                 }
