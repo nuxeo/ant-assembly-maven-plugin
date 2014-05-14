@@ -223,3 +223,26 @@ Use `-Pdebug` profile
 
 Default listening for transport dt_socket at address: 8000
 
+# How to contribute
+
+See this page for practical information:
+[NXDOC/Contributing+to+Nuxeo](http://doc.nuxeo.com/x/VIZH)
+
+This presentation will give you more insight about "the Nuxeo way":
+<http://www.slideshare.net/nuxeo/nuxeo-world-session-becoming-a-contributor-how-to-get-started>
+
+
+# About Nuxeo
+
+Nuxeo provides a modular, extensible Java-based
+[open source software platform for enterprise content management](http://www.nuxeo.com/en/products/ep),
+and packaged applications for [document management](http://www.nuxeo.com/en/products/document-management),
+[digital asset management](http://www.nuxeo.com/en/products/dam) and
+[case management](http://www.nuxeo.com/en/products/case-management).
+
+Designed by developers for developers, the Nuxeo platform offers a modern
+architecture, a powerful plug-in model and extensive packaging
+capabilities for building content applications.
+
+More information on: <http://www.nuxeo.com/>
+
