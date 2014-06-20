@@ -9,4 +9,5 @@
   <typedef name="dependencies" classname="org.nuxeo.build.ant.artifact.ArtifactDependencies" />
   <typedef name="print" classname="org.nuxeo.build.ant.artifact.PrintGraphTask" />
   <typedef name="resolveFiles" classname="org.nuxeo.build.ant.artifact.ResolveFiles" />
+  <typedef name="printMgt" classname="org.nuxeo.build.ant.artifact.PrintDependencyManagementTask" />
 </antlib>

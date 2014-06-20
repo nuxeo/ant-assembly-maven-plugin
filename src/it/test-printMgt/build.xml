@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<project name="test-printMgt"
+         default="all-tests"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <target name="all-tests" description="Test printMgt">
+    <property name="outdir" value="${maven.project.build.directory}" />
+    <mkdir dir="${outdir}" />
+    <artifact:printMgt output="${outdir}/current.properties"
+                       format="GAV"
+                       check="true" />
+    <artifact:printMgt output="${outdir}/artifacts.properties"
+                       key="org.nuxeo:nuxeo-addons-parent:5.9.4:pom" />
+    <fail message="Dependency tree error">
+      <condition>
+        <not>
+          <and>
+            <available file="${outdir}/artifacts.properties" />
+            <available file="${outdir}/current.properties" />
+            <filesmatch file1="${outdir}/artifacts.properties"
+                        file2="artifacts.expected" />
+            <filesmatch file1="${outdir}/current.properties"
+                        file2="current.expected" />
+          </and>
+        </not>
+      </condition>
+    </fail>
+  </target>
+
+</project>
