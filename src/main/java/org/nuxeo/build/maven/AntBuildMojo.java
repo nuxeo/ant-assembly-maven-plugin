@@ -232,8 +232,7 @@ public class AntBuildMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        instance.set(this);
-        settings.setInteractiveMode(false);
+        setInstance();
         AntClient ant = new AntClient(getLog());
         ant.getProject().setBaseDir(project.getBasedir());
         try {
@@ -276,6 +275,11 @@ public class AntBuildMojo extends AbstractMojo {
                 }
             }
         }
+    }
+
+    protected void setInstance() {
+        instance.set(this);
+        settings.setInteractiveMode(false);
     }
 
     /**

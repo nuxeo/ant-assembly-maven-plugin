@@ -49,7 +49,7 @@ import org.codehaus.plexus.logging.console.ConsoleLogger;
  */
 public class Version implements Comparable<Version> {
 
-    private static final Logger log = new ConsoleLogger();
+    private static final Logger log = new  ConsoleLogger( Logger.LEVEL_DEBUG, "console" );
 
     /**
      * @since 1.4
@@ -175,7 +175,6 @@ public class Version implements Comparable<Version> {
 
     @Override
     public int compareTo(Version o) {
-        log.debug("Comparing " + this + " with " + o);
         int d = major - o.major;
         if (d != 0) {
             return d;

@@ -78,6 +78,20 @@ public class DependencyUtils {
                         dependency.getArtifact().getExtension()));
     }
 
+    public static org.apache.maven.model.Dependency aetherToMaven(Dependency dependency) {
+        org.apache.maven.artifact.Artifact artifact = toMavenArtifact(dependency);
+        org.apache.maven.model.Dependency mvnDep = new org.apache.maven.model.Dependency();
+        mvnDep.setArtifactId(artifact.getArtifactId());
+        mvnDep.setGroupId(artifact.getGroupId());
+        mvnDep.setVersion(artifact.getVersion());
+        mvnDep.setScope(artifact.getScope());
+        mvnDep.setClassifier(artifact.getClassifier());
+//        mvnDep.setExclusions(dependency.getExclusions());
+        mvnDep.setType(artifact.getType());
+        mvnDep.setOptional(dependency.getOptional());
+        return mvnDep;
+    }
+
     public static org.apache.maven.artifact.Artifact aetherToMaven(
             Artifact aetherArtifact, String scope) {
         return aetherToMaven(

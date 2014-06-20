@@ -32,7 +32,7 @@ import org.junit.Test;
  */
 public class TestVersions {
 
-    private static final Logger log = new ConsoleLogger();
+    private static final Logger log = new ConsoleLogger( Logger.LEVEL_DEBUG, "console" );
 
     @Test
     public void testVersionString() throws Exception {
