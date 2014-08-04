@@ -1,8 +1,8 @@
 # Introduction
 
-This plugins provides an advanced Ant integration within Maven, in the manner of 
+This plugins provides an advanced Ant integration within Maven, in the manner of
 [nuxeo-distribution-tools](https://github.com/nuxeo/nuxeo-distribution-tools) itself inspired from
-[maven-antrun-extended-plugin](https://java.net/projects/maven-antrun-extended-plugin).  
+[maven-antrun-extended-plugin](https://java.net/projects/maven-antrun-extended-plugin).
 It extends [maven-antrun-plugin](http://maven.apache.org/plugins/maven-antrun-plugin) with Maven related tasks for managing artifacts.
 
 The main functionality is the management of Maven artifacts graph.
@@ -11,11 +11,11 @@ The main functionality is the management of Maven artifacts graph.
 
 ## Available Ant tasks
 
-[All standard Ant tasks](http://ant.apache.org/manual/tasklist.html) are available. 
+[All standard Ant tasks](http://ant.apache.org/manual/tasklist.html) are available.
 
 [Ant contrib tasks](http://ant-contrib.sourceforge.net/) are also included.
 
-All the Nuxeo Ant tasks are listed in [src/main/resources/org/nuxeo/build/antlib.xml](src/main/resources/org/nuxeo/build/antlib.xml) and 
+All the Nuxeo Ant tasks are listed in [src/main/resources/org/nuxeo/build/antlib.xml](src/main/resources/org/nuxeo/build/antlib.xml) and
 [src/main/resources/org/nuxeo/build/artifact/antlib.xml](src/main/resources/org/nuxeo/build/artifact/antlib.xml). Here's quick listing:
 
 - nx:templates (org.nuxeo.build.ant.ftl.ProcessTemplateTask)
@@ -44,15 +44,15 @@ All the Nuxeo Ant tasks are listed in [src/main/resources/org/nuxeo/build/antlib
 
 ### Graph tasks
 
- - `<artifact:graph src="" resolves="" />`  
- `src`: file containing a list of artifact keys (GAV)  
- `resolves`: comma-separated list of artifact keys (GAV)  
- Nested elements: `org.nuxeo.build.ant.artifact.Expand`  
+ - `<artifact:graph src="" resolves="" />`
+ `src`: file containing a list of artifact keys (GAV)
+ `resolves`: comma-separated list of artifact keys (GAV)
+ Nested elements: `org.nuxeo.build.ant.artifact.Expand`
  Build an expanded graph with the given artifacts as root nodes.
- - `<artifact:expand key="" depth="1" >`  
- `key`: the root node. The current graph is used if null.  
- `depth`: expansion depth (default="1"). Set "all" to expand at max. 
- Nested elements: `org.nuxeo.build.maven.filter.AndFilter`  
+ - `<artifact:expand key="" depth="1" >`
+ `key`: the root node. The current graph is used if null.
+ `depth`: expansion depth (default="1"). Set "all" to expand at max.
+ Nested elements: `org.nuxeo.build.maven.filter.AndFilter`
  Expand artifact nodes in the current graph if key is null or in the graph which key is root node.
 
 
@@ -165,7 +165,7 @@ nx:profile tasks to conditionally execute code. Example:
 The current Maven POM (project) is put as a root into the artifact graph.
 
 If expand > 0, then the project node will be expanded using a depth equals to the
-expand property. Example: if you use expand=1, then the direct dependencies of 
+expand property. Example: if you use expand=1, then the direct dependencies of
 the project are added to the graph.
 
 ## Thread safety
@@ -179,8 +179,8 @@ use the Mojo bound to the current thread).
 
     mvn clean package [-o] [-DskipTests] [-DskipITs] [-DdebugITs=true] [-Dinvoker.test=...] [-Pdebug]
 
-See:  
-- [maven-invoker-plugin](http://maven.apache.org/plugins/maven-invoker-plugin/)  
+See:
+- [maven-invoker-plugin](http://maven.apache.org/plugins/maven-invoker-plugin/)
 - [maven-surefire-plugin](http://maven.apache.org/surefire/maven-surefire-plugin/)
 
 ## Build and run all Unit and integration tests
@@ -194,7 +194,7 @@ See:
 ## Build and run Unit tests only (default)
 
     mvn clean package -DskipITs
-    
+
 ## Build and run integration tests only
 
     mvn clean integration-test -DskipTests
@@ -202,12 +202,12 @@ See:
 ## Run only some integration tests
 
     mvn invoker:run -Dinvoker.test=test1
-    
+
 or (if you want the code being compiled again):
-    
+
     mvn clean integration-test -Dinvoker.test=test1
 
-Use comma separator. Wildcards are accepted. 
+Use comma separator. Wildcards are accepted.
 
 ## Integration tests results
 
@@ -222,6 +222,11 @@ Add `-DdebugITs=true` on the command line
 Use `-Pdebug` profile
 
 Default listening for transport dt_socket at address: 8000
+
+# Release
+
+When releasing with [release.py](https://github.com/nuxeo/nuxeo/blob/master/scripts/release.py),
+it is required to pass parameter `OTHER_VERSION_TO_REPLACE=.*\.expected::`
 
 # How to contribute
 
