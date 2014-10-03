@@ -5,4 +5,5 @@
   <typedef name="rename" classname="org.nuxeo.build.ant.RenameTask" />
   <typedef name="rmdups" classname="org.nuxeo.build.ant.RemoveDuplicateTask" />
   <typedef name="zipdiff" classname="org.nuxeo.build.ant.ZipDiffTask" />
+  <typedef name="exit" classname="org.nuxeo.build.ant.ExitTask" />
 </antlib>

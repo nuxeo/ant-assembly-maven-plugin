@@ -44,4 +44,11 @@ public class TestAntClientErrorOnFailure {
         checkErrorOnFailure("test-it-fail.xml", "I'm failing");
     }
 
+    @Test
+    public void testSuccessfulExit() {
+        AntClient client = new AntClient(null);
+        client.run(Thread.currentThread().getContextClassLoader().getResource(
+                "test-it-exit.xml"));
+    }
+
 }
