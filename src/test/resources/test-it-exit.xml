@@ -8,7 +8,7 @@
            uri="urn:nuxeo-artifact" />
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
-  <target name="run-tests" description="Test Exit">
+  <target name="init">
     <property name="status" value="0" />
     <property name="errStatus" value="1" />
     <property name="exitMsg" value="Expected successful exit" />
@@ -21,7 +21,9 @@
              unless="noexit"
              status="${status}"
              message="${exitMsg}" />
+  </target>
 
+  <target name="run-tests" description="Test Exit" depends="init">
     <fail status="${errStatus}" message="${failMsg}" />
   </target>
 

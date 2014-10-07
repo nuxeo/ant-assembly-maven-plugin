@@ -18,12 +18,16 @@
 
 package org.nuxeo.build.ant;
 
+import java.util.Hashtable;
+
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.ExitStatusException;
 import org.apache.tools.ant.Project;
+import org.apache.tools.ant.Target;
 import org.apache.tools.ant.Task;
 import org.apache.tools.ant.UnknownElement;
 import org.apache.tools.ant.taskdefs.Exit;
+import org.apache.tools.ant.taskdefs.condition.Condition;
 
 /**
  * Similar to {@link Exit} but allows to successfully end the build
@@ -51,6 +55,15 @@ import org.apache.tools.ant.taskdefs.Exit;
  * @since 2.0.3
  */
 public class ExitTask extends Exit {
+
+    private final class False implements Condition {
+        @Override
+        public boolean eval() throws BuildException {
+            return false;
+        }
+    }
+
+    private False falseCondition = new False();
 
     @Override
     /**
@@ -88,24 +101,34 @@ public class ExitTask extends Exit {
         Task doNothing = new Task() {
         };
         getProject().log(message, Project.MSG_INFO);
-        for (Task task : getOwningTarget().getTasks()) {
-            try {
-                if (task instanceof UnknownElement) {
-                    UnknownElement currentTask = (UnknownElement) task;
-                    if (currentTask.getRealThing() == this) {
-                        continue;
+        Target owningTarget = getOwningTarget();
+        Hashtable<String, Target> targets = getProject().getTargets();
+        for (Target eachTarget : targets.values()) {
+            eachTarget.setIf(falseCondition);
+            if (eachTarget == owningTarget) {
+                for (Task task : eachTarget.getTasks()) {
+                    getProject().log("Invalidating tasks from " + eachTarget,
+                            Project.MSG_DEBUG);
+                    try {
+                        if (task instanceof UnknownElement) {
+                            UnknownElement currentTask = (UnknownElement) task;
+                            if (currentTask.getRealThing() == this) {
+                                continue;
+                            }
+                            getProject().log(
+                                    "Invalidated " + currentTask.getTaskName(),
+                                    Project.MSG_DEBUG);
+                            currentTask.setRealThing(doNothing);
+                        } else {
+                            getProject().log(
+                                    "Not an UnknownElement: "
+                                            + task.getTaskName(),
+                                    Project.MSG_DEBUG);
+                        }
+                    } catch (SecurityException | IllegalArgumentException e) {
+                        throw new BuildException(e);
                     }
-                    currentTask.setRealThing(doNothing);
-                    getProject().log(
-                            "Invalidated " + currentTask.getTaskName(),
-                            Project.MSG_DEBUG);
-                } else {
-                    getProject().log(
-                            "Not an UnknownElement: " + task.getTaskName(),
-                            Project.MSG_DEBUG);
                 }
-            } catch (SecurityException | IllegalArgumentException e) {
-                throw new BuildException(e);
             }
         }
     }
