@@ -67,6 +67,14 @@ public class VerifyMojo extends AntBuildMojo implements
     protected boolean skipITs;
 
     /**
+     * Set this to {@code true} to skip running tests.
+     *
+     * @since 2.0.3
+     */
+    @Parameter(property = "skipTests")
+    protected boolean skipTests;
+
+    /**
      * The character encoding scheme to be applied.
      *
      * @since 2.0
@@ -101,7 +109,7 @@ public class VerifyMojo extends AntBuildMojo implements
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        if (isSkip() || isSkipTests() || isSkipExec()) {
+        if (isSkipITs() || isSkipTests()) {
             getLog().info("Tests are skipped.");
             return;
         }
@@ -132,32 +140,66 @@ public class VerifyMojo extends AntBuildMojo implements
         }
     }
 
+    /**
+     * @since 2.0.3
+     */
+    public boolean isSkipITs() {
+        return skipITs;
+    }
+
+    /**
+     * @since 2.0.3
+     */
+    public void setSkipITs(boolean skipITs) {
+        this.skipITs = skipITs;
+    }
+
     @Override
     public boolean isSkipTests() {
-        return skipITs;
+        return skipTests;
     }
 
     @Override
     public void setSkipTests(boolean skipTests) {
-        throw new UnsupportedOperationException();
+        this.skipTests = skipTests;
     }
 
+    /**
+     * @deprecated Since 2.0.3. Use {@link #isSkipITs()} or
+     *             {@link #isSkipTests()}
+     */
     @Override
+    @Deprecated
     public boolean isSkipExec() {
-        return skipITs;
+        return isSkipITs() || isSkipTests();
     }
 
+    /**
+     * @deprecated Since 2.0.3. Use {@link #setSkipITs(boolean)} or
+     *             {@link #setSkipTests(boolean)}
+     */
     @Override
+    @Deprecated
     public void setSkipExec(boolean skipExec) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @deprecated Since 2.0.3. Use {@link #isSkipITs()} or
+     *             {@link #isSkipTests()}
+     */
     @Override
+    @Deprecated
     public boolean isSkip() {
-        return skipITs;
+        return isSkipITs() || isSkipTests();
     }
 
+    /**
+     * @deprecated Since 2.0.3. Use {@link #setSkipITs(boolean)} or
+     *             {@link #setSkipTests(boolean)}
+     */
     @Override
+    @Deprecated
     public void setSkip(boolean skip) {
         throw new UnsupportedOperationException();
     }
@@ -169,7 +211,7 @@ public class VerifyMojo extends AntBuildMojo implements
 
     @Override
     public void setTestFailureIgnore(boolean testFailureIgnore) {
-        throw new UnsupportedOperationException();
+        this.testFailureIgnore = testFailureIgnore;
     }
 
     @Override
