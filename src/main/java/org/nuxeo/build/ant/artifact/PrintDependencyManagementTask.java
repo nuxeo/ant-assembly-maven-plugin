@@ -64,18 +64,21 @@ public class PrintDependencyManagementTask extends Task {
 
     private List<String> scopes = null;
 
-    /**
-     *
-     */
+    private String checkOutput;
+
     private boolean check;
 
     @Override
     public void execute() throws BuildException {
         AntBuildMojo mojo = AntBuildMojo.getInstance();
         OutputStream out = System.out;
+        OutputStream err = System.err;
         try {
             if (output != null) {
                 out = new FileOutputStream(output, append);
+            }
+            if (checkOutput != null) {
+                err = new FileOutputStream(checkOutput, append);
             }
             Artifact artifact;
             if (key == null) {
@@ -102,6 +105,13 @@ public class PrintDependencyManagementTask extends Task {
                         DependencyUtils.resolve(dependency.getArtifact());
                     } catch (ArtifactResolutionException e) {
                         checks.addSuppressed(e);
+                        String msg = "";
+                        if (checkOutput == null) {
+                            msg = "Cannot resolve ";
+                        }
+                        err.write((msg + toString(dependency)).getBytes(
+                                AntBuildMojo.getInstance().getEncoding()));
+                        continue;
                     }
                 }
                 String scope = dependency.getScope();
@@ -120,7 +130,9 @@ public class PrintDependencyManagementTask extends Task {
             throw new BuildException(e);
         } finally {
             IOUtils.closeQuietly(out);
+            IOUtils.closeQuietly(err);
         }
+
     }
 
     public String toString(Dependency dependency) {
@@ -216,6 +228,16 @@ public class PrintDependencyManagementTask extends Task {
      */
     public void setCheck(boolean check) {
         this.check = check;
+    }
+
+    /**
+     * Output file for check errors. If null, the sdterr is used.
+     *
+     * @param checkOutput
+     * @since 2.0.3
+     */
+    public void setCheckOutput(String checkOutput) {
+        this.checkOutput = checkOutput;
     }
 
 }

@@ -13,14 +13,18 @@
     <mkdir dir="${outdir}" />
     <artifact:printMgt output="${outdir}/current.properties"
                        format="GAV"
-                       check="true" />
+                       check="true"
+                       checkOutput="${outdir}/current-errors.log" />
     <fail message="Check failure on current POM">
       <condition>
         <not>
           <and>
             <available file="${outdir}/current.properties" />
+            <available file="${outdir}/current-errors.log" />
             <filesmatch file1="${outdir}/current.properties"
                         file2="current.expected" />
+            <filesmatch file1="${outdir}/current-errors.log"
+                        file2="current-errors.expected" />
           </and>
         </not>
       </condition>
