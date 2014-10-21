@@ -16,10 +16,6 @@
  */
 package org.nuxeo.build.ant.artifact;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
@@ -31,9 +27,17 @@ import org.eclipse.aether.resolution.ArtifactDescriptorRequest;
 import org.eclipse.aether.resolution.ArtifactDescriptorResult;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.util.StringUtils;
+import org.eclipse.aether.util.artifact.JavaScopes;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.graph.DependencyUtils;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Print the dependency management of a POM
@@ -58,6 +62,11 @@ public class PrintDependencyManagementTask extends Task {
 
     private String key;
 
+    private List<String> scopes = null;
+
+    /**
+     *
+     */
     private boolean check;
 
     @Override
@@ -95,8 +104,14 @@ public class PrintDependencyManagementTask extends Task {
                         checks.addSuppressed(e);
                     }
                 }
-                out.write(toString(dependency).getBytes(
-                        AntBuildMojo.getInstance().getEncoding()));
+                String scope = dependency.getScope();
+                if ("".equals(scope)) {
+                    scope = JavaScopes.COMPILE;
+                }
+                if (scopes == null || scopes.contains(scope)) {
+                    out.write(toString(dependency).getBytes(
+                            AntBuildMojo.getInstance().getEncoding()));
+                }
             }
             for (Throwable t : checks.getSuppressed()) {
                 log(t.getMessage(), Project.MSG_WARN);
@@ -170,6 +185,20 @@ public class PrintDependencyManagementTask extends Task {
     }
 
     /**
+     * If set, filter on the {@code scopes}.
+     *
+     * @param scopes
+     * @since 2.0.3
+     */
+    public void setScopes(String scopes) {
+        StringTokenizer st = new StringTokenizer(scopes, ",");
+        this.scopes = new ArrayList<>();
+        while (st.hasMoreTokens()) {
+            this.scopes.add(st.nextToken());
+        }
+    }
+
+    /**
      * GAV of artifact to analyze. If null, the current project is used.
      *
      * @param key
@@ -180,7 +209,7 @@ public class PrintDependencyManagementTask extends Task {
     }
 
     /**
-     * Whether to check the artifact availability (using resolve)
+     * Whether to check the artifact availability (using resolve).
      *
      * @param check
      *

@@ -14,18 +14,40 @@
     <artifact:printMgt output="${outdir}/current.properties"
                        format="GAV"
                        check="true" />
+    <fail message="Check failure on current POM">
+      <condition>
+        <not>
+          <and>
+            <available file="${outdir}/current.properties" />
+            <filesmatch file1="${outdir}/current.properties"
+                        file2="current.expected" />
+          </and>
+        </not>
+      </condition>
+    </fail>
     <artifact:printMgt output="${outdir}/artifacts.properties"
                        key="org.nuxeo:nuxeo-addons-parent:5.9.4:pom" />
-    <fail message="Dependency tree error">
+    <fail message="Failure on provided POM">
       <condition>
         <not>
           <and>
             <available file="${outdir}/artifacts.properties" />
-            <available file="${outdir}/current.properties" />
             <filesmatch file1="${outdir}/artifacts.properties"
                         file2="artifacts.expected" />
-            <filesmatch file1="${outdir}/current.properties"
-                        file2="current.expected" />
+          </and>
+        </not>
+      </condition>
+    </fail>
+    <artifact:printMgt output="${outdir}/test-artifacts.properties"
+                       key="org.nuxeo:nuxeo-addons-parent:5.9.4:pom"
+                       scopes="test"/>
+    <fail message="Scopes failure">
+      <condition>
+        <not>
+          <and>
+            <available file="${outdir}/test-artifacts.properties" />
+            <filesmatch file1="${outdir}/test-artifacts.properties"
+                        file2="test-artifacts.expected" />
           </and>
         </not>
       </condition>
