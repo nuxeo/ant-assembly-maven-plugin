@@ -32,8 +32,6 @@ org.nuxeo.ecm.platform:nuxeo-platform-wiki-webengine:5.9.4:jar::
 javax.servlet:servlet-api:3.0.1:jar::provided
 jboss:jgroups:4.2.2.GA:jar::
 org.jboss.jbossas:jboss-as-aspects:5.1.0.GA:jar:jboss-aspects-jdk50-client:
-com.oracle:ojdbc14:10.2.0.5:jar::provided
-com.oracle:ojdbc6:11.2.0.2:jar::provided
 com.google.gwt:gwt-gadgets:1.2.0:jar::compile
 org.apache.tomcat:tomcat:7.0.42:jar::
 org.apache.tomcat:tomcat:7.0.42:jar:light:
