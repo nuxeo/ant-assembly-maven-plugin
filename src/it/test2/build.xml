@@ -19,6 +19,11 @@
     <artifact:print output="${outdir}/test-artifacts1.properties"
                     mode="sdk"
                     scopes="test" />
+    <copy file="dependency-tree1.template" tofile="dependency-tree1.expected">
+      <filterset>
+        <filter token="pom.version" value="${maven.project.version}" />
+      </filterset>
+    </copy>
     <fail>
       <condition>
         <not>
@@ -48,6 +53,11 @@
     <artifact:print output="${outdir}/test-artifacts2.properties"
                     mode="sdk"
                     scopes="test" />
+    <copy file="dependency-tree2.template" tofile="dependency-tree2.expected">
+      <filterset>
+        <filter token="pom.version" value="${maven.project.version}" />
+      </filterset>
+    </copy>
     <fail>
       <condition>
         <not>

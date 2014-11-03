@@ -13,6 +13,11 @@
     <mkdir dir="${outdir}" />
     <artifact:print output="${outdir}/dependency-tree.log" />
     <artifact:print output="${outdir}/artifacts.properties" mode="sdk" />
+    <copy file="dependency-tree.template" tofile="dependency-tree.expected">
+      <filterset>
+        <filter token="pom.version" value="${maven.project.version}" />
+      </filterset>
+    </copy>
     <fail message="Dependency tree error">
       <condition>
         <not>
