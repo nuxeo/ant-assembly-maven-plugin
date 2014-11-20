@@ -11,10 +11,29 @@
   <target name="all-tests" description="Test printMgt">
     <property name="outdir" value="${maven.project.build.directory}" />
     <mkdir dir="${outdir}" />
-    <artifact:printMgt output="${outdir}/current.properties"
+    <artifact:printMgt output="${outdir}/current.properties.tmp"
                        format="GAV"
                        check="true"
-                       checkOutput="${outdir}/current-errors.log" />
+                       checkOutput="${outdir}/current-errors.log.tmp" />
+
+    <!-- Filter out specific case of com.oracle artifacts -->
+    <copy file="${outdir}/current.properties.tmp"
+          tofile="${outdir}/current.properties">
+      <filterchain>
+        <linecontains negate="true">
+          <contains value="com.oracle" />
+        </linecontains>
+      </filterchain>
+    </copy>
+    <copy file="${outdir}/current-errors.log.tmp"
+          tofile="${outdir}/current-errors.log">
+      <filterchain>
+        <linecontains negate="true">
+          <contains value="com.oracle" />
+        </linecontains>
+      </filterchain>
+    </copy>
+
     <fail message="Check failure on current POM">
       <condition>
         <not>
@@ -29,8 +48,16 @@
         </not>
       </condition>
     </fail>
-    <artifact:printMgt output="${outdir}/artifacts.properties"
+    <artifact:printMgt output="${outdir}/artifacts.properties.tmp"
                        key="org.nuxeo:nuxeo-addons-parent:5.9.4:pom" />
+    <copy file="${outdir}/artifacts.properties.tmp"
+          tofile="${outdir}/artifacts.properties">
+      <filterchain>
+        <linecontains negate="true">
+          <contains value="com.oracle" />
+        </linecontains>
+      </filterchain>
+    </copy>
     <fail message="Failure on provided POM">
       <condition>
         <not>
@@ -44,7 +71,7 @@
     </fail>
     <artifact:printMgt output="${outdir}/test-artifacts.properties"
                        key="org.nuxeo:nuxeo-addons-parent:5.9.4:pom"
-                       scopes="test"/>
+                       scopes="test" />
     <fail message="Scopes failure">
       <condition>
         <not>
