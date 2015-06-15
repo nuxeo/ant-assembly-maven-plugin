@@ -18,11 +18,19 @@
 package org.nuxeo.build.maven;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.artifact.handler.manager.ArtifactHandlerManager;
 import org.apache.maven.artifact.repository.ArtifactRepository;
@@ -54,6 +62,7 @@ import org.eclipse.aether.util.graph.selector.AndDependencySelector;
 import org.eclipse.aether.util.graph.selector.ExclusionDependencySelector;
 import org.eclipse.aether.util.graph.selector.OptionalDependencySelector;
 import org.eclipse.aether.util.graph.transformer.ConflictResolver;
+
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.ant.artifact.Expand;
 import org.nuxeo.build.ant.profile.AntProfileManager;
@@ -84,9 +93,10 @@ public class AntBuildMojo extends AbstractMojo {
      * Location of the build files.
      */
     @Parameter(property = "buildFiles")
-    protected File[] buildFiles;
+    protected String[] buildFiles;
 
-    public File[] getBuildFiles() throws MojoExecutionException {
+    public List<File> getBuildFiles() throws MojoExecutionException {
+        List<File> buildFilesList = new ArrayList<>();
         if (buildFile != null && buildFiles != null && buildFiles.length > 0) {
             throw new MojoExecutionException(
                     "The configuration parameters 'buildFile' and 'buildFiles' cannot both be used.");
@@ -95,9 +105,86 @@ public class AntBuildMojo extends AbstractMojo {
             if (buildFile == null) {
                 buildFile = new File("build.xml");
             }
-            buildFiles = new File[] { buildFile };
+            buildFilesList.add(buildFile);
         }
-        return buildFiles;
+        for (int i = 0; i < buildFiles.length; i++) {
+            try {
+                buildFilesList.add(getFileFromString(buildFiles[i]));
+            } catch (MojoExecutionException | IOException e) {
+                getLog().error(e);
+            }
+        }
+
+        return buildFilesList;
+    }
+
+    /**
+     * @throws MojoExecutionException
+     * @throws IOException
+     * @since 2.0.4
+     */
+    protected File getFileFromString(String fileStr) throws MojoExecutionException, IOException {
+        getLog().debug("BuildFile: " + fileStr);
+
+        // Shortcut if a file path is provided
+        File file = new File(fileStr);
+        if (!file.isAbsolute()) {
+            file = new File(project.getBasedir(), fileStr);
+        }
+        if (file.exists()) {
+            return file;
+        }
+
+        // Assume an URI is provided
+        URI uri = URI.create(fileStr).normalize();
+        System.out.println("URI: " + uri.toString());
+        if (!uri.isAbsolute()) {
+            uri = project.getBasedir().toURI().resolve(uri);
+            System.out.println("URI: " + uri.toString());
+        }
+        String scheme = uri.getScheme();
+        System.out.println("scheme:" + scheme);
+
+        try {
+            URL url;
+            if ("classpath".equals(scheme)) {
+                ClassLoader cl = null;
+                try {
+                    cl = Thread.currentThread().getContextClassLoader();
+                } catch (SecurityException ex) {
+                    // Cannot access thread context ClassLoader - falling back to system class loader...
+                    cl = this.getClass().getClassLoader();
+                }
+                if (cl == null) {
+                    cl = ClassLoader.getSystemClassLoader();
+                }
+                String path = uri.getPath().substring(1);
+                getLog().debug("Lookup: " + path);
+                url = cl.getResource(path);
+                if (url == null) {
+                    throw new MojoExecutionException("Not found in classpath: " + path);
+                }
+            } else if ("artifact".equals(scheme)) {
+                String artifact = uri.getSchemeSpecificPart();
+
+                // TODO NXBT-925 resolve artifact
+                throw new MojoExecutionException("NXBT-925 Not implemented");
+            } else {
+                url = uri.toURL();
+            }
+            getLog().debug("URL: " + url);
+            if (!"file".equals(url.getProtocol())) {
+                File temp = File.createTempFile(url.getFile(), ".tmp");
+                FileUtils.copyInputStreamToFile(url.openStream(), temp);
+                temp.deleteOnExit();
+                return temp;
+            } else {
+                return new File(url.toURI());
+            }
+        } catch (MalformedURLException | FileNotFoundException | URISyntaxException e) {
+            getLog().debug(e.getMessage(), e);
+        }
+        return new File(uri);
     }
 
     /**
