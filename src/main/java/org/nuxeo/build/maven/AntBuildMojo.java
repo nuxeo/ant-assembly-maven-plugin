@@ -134,20 +134,15 @@ public class AntBuildMojo extends AbstractMojo {
 
     public DefaultRepositorySystemSession getSession() {
         if (session == null) {
-            session = new DefaultRepositorySystemSession(
-                    repositorySystemSession);
+            session = new DefaultRepositorySystemSession(repositorySystemSession);
             DependencySelector depSelector = session.getDependencySelector();
             getLog().debug("Replace DependencySelector " + depSelector);
             DependencySelector depFilter = new AndDependencySelector(
-                    new org.nuxeo.build.maven.graph.ScopeDependencySelector(
-                            "provided", "test"),
-                    new OptionalDependencySelector(),
-                    new ExclusionDependencySelector());
+                    new org.nuxeo.build.maven.graph.ScopeDependencySelector("provided", "test"),
+                    new OptionalDependencySelector(), new ExclusionDependencySelector());
             session.setDependencySelector(depFilter);
-            session.setConfigProperty(ConflictResolver.CONFIG_PROP_VERBOSE,
-                    false);
-            session.setConfigProperty(
-                    DependencyManagerUtils.CONFIG_PROP_VERBOSE, true);
+            session.setConfigProperty(ConflictResolver.CONFIG_PROP_VERBOSE, false);
+            session.setConfigProperty(DependencyManagerUtils.CONFIG_PROP_VERBOSE, true);
             session.setReadOnly();
             repositorySystemSession = session;
         }
@@ -210,8 +205,7 @@ public class AntBuildMojo extends AbstractMojo {
     public String getEncoding() {
         if (StringUtils.isEmpty(encoding)) {
             getLog().warn(
-                    "File encoding has not been set, using platform encoding "
-                            + ReaderFactory.FILE_ENCODING
+                    "File encoding has not been set, using platform encoding " + ReaderFactory.FILE_ENCODING
                             + ", i.e. build is platform dependent!");
             encoding = ReaderFactory.FILE_ENCODING;
         }
@@ -222,8 +216,7 @@ public class AntBuildMojo extends AbstractMojo {
     protected Settings settings;
 
     /**
-     * If 'false', the Maven build will proceed even if the Ant build fails.
-     * Default is 'true'.
+     * If 'false', the Maven build will proceed even if the Ant build fails. Default is 'true'.
      *
      * @since 2.0
      */
@@ -244,8 +237,7 @@ public class AntBuildMojo extends AbstractMojo {
         setAntPropertiesFromMaven(ant.getProject());
 
         if (target != null && targets != null && targets.length > 0) {
-            throw new MojoExecutionException(
-                    "The configuration parameters 'target' and 'targets' cannot both be used.");
+            throw new MojoExecutionException("The configuration parameters 'target' and 'targets' cannot both be used.");
         }
         if ((targets == null || targets.length == 0) && target != null) {
             targets = new String[] { target };
@@ -261,10 +253,8 @@ public class AntBuildMojo extends AbstractMojo {
                     setMavenPropertiesFromAnt(ant);
                 }
             } catch (BuildException e) {
-                String errMsg = String.format(
-                        "Error occurred while running %s@%d:%d\n%s",
-                        file.getPath(), e.getLocation().getLineNumber(),
-                        e.getLocation().getColumnNumber(), e.getMessage());
+                String errMsg = String.format("Error occurred while running %s@%d:%d\n%s", file.getPath(),
+                        e.getLocation().getLineNumber(), e.getLocation().getColumnNumber(), e.getMessage());
                 if (failOnError) {
                     if (e instanceof ExitStatusException) {
                         throw new MojoFailureException(errMsg, e);
@@ -291,7 +281,6 @@ public class AntBuildMojo extends AbstractMojo {
     /**
      * @param key artifact GAV
      * @return a {@link Graph} which root is artifact resolved from {@code key}
-     *
      * @since 2.0
      */
     public Graph newGraph(String key) {
@@ -332,31 +321,23 @@ public class AntBuildMojo extends AbstractMojo {
      * @throws BuildException
      * @since 2.0
      */
-    protected void setAntReferencesFromMaven(Project antProject)
-            throws BuildException, DependencyResolutionRequiredException {
+    protected void setAntReferencesFromMaven(Project antProject) throws BuildException,
+            DependencyResolutionRequiredException {
         Path p = new Path(antProject);
-        p.setPath(StringUtils.join(
-                project.getCompileClasspathElements().iterator(),
-                File.pathSeparator));
+        p.setPath(StringUtils.join(project.getCompileClasspathElements().iterator(), File.pathSeparator));
         antProject.addReference(propertyPrefix + "compile.classpath", p);
 
         p = new Path(antProject);
-        p.setPath(StringUtils.join(
-                project.getRuntimeClasspathElements().iterator(),
-                File.pathSeparator));
+        p.setPath(StringUtils.join(project.getRuntimeClasspathElements().iterator(), File.pathSeparator));
         antProject.addReference(propertyPrefix + "runtime.classpath", p);
 
         p = new Path(antProject);
-        p.setPath(StringUtils.join(
-                project.getTestClasspathElements().iterator(),
-                File.pathSeparator));
+        p.setPath(StringUtils.join(project.getTestClasspathElements().iterator(), File.pathSeparator));
         antProject.addReference(propertyPrefix + "test.classpath", p);
 
         antProject.addReference(propertyPrefix + "project", project);
-        antProject.addReference(propertyPrefix + "project.helper",
-                projectHelper);
-        antProject.addReference(propertyPrefix + "local.repository",
-                localRepository);
+        antProject.addReference(propertyPrefix + "project.helper", projectHelper);
+        antProject.addReference(propertyPrefix + "local.repository", localRepository);
     }
 
     /**
@@ -364,46 +345,29 @@ public class AntBuildMojo extends AbstractMojo {
      */
     protected void setAntPropertiesFromMaven(Project antProject) {
         for (String key : project.getProperties().stringPropertyNames()) {
-            antProject.setUserProperty(key,
-                    project.getProperties().getProperty(key));
+            antProject.setUserProperty(key, project.getProperties().getProperty(key));
         }
-        antProject.setProperty(propertyPrefix + "basedir",
-                project.getBasedir().getPath());
-        antProject.setProperty(propertyPrefix + "project.groupId",
-                project.getGroupId());
-        antProject.setProperty(propertyPrefix + "project.artifactId",
-                project.getArtifactId());
-        antProject.setProperty(propertyPrefix + "project.version",
-                project.getVersion());
-        antProject.setProperty(propertyPrefix + "project.name",
-                project.getName());
-        antProject.setProperty(propertyPrefix + "project.description",
-                project.getDescription());
-        antProject.setProperty(propertyPrefix + "project.packaging",
-                project.getPackaging());
+        antProject.setProperty(propertyPrefix + "basedir", project.getBasedir().getPath());
+        antProject.setProperty(propertyPrefix + "project.groupId", project.getGroupId());
+        antProject.setProperty(propertyPrefix + "project.artifactId", project.getArtifactId());
+        antProject.setProperty(propertyPrefix + "project.version", project.getVersion());
+        antProject.setProperty(propertyPrefix + "project.name", project.getName());
+        antProject.setProperty(propertyPrefix + "project.description", project.getDescription());
+        antProject.setProperty(propertyPrefix + "project.packaging", project.getPackaging());
         antProject.setProperty(propertyPrefix + "project.id", project.getId());
-        antProject.setProperty(propertyPrefix + "project.build.directory",
-                project.getBuild().getDirectory());
-        antProject.setProperty(
-                propertyPrefix + "project.build.outputDirectory",
-                project.getBuild().getOutputDirectory());
-        antProject.setProperty(
-                (propertyPrefix + "project.build.testOutputDirectory"),
-                project.getBuild().getTestOutputDirectory());
-        antProject.setProperty(
-                (propertyPrefix + "project.build.sourceDirectory"),
-                project.getBuild().getSourceDirectory());
-        antProject.setProperty(
-                (propertyPrefix + "project.build.testSourceDirectory"),
-                project.getBuild().getTestSourceDirectory());
-        antProject.setProperty((propertyPrefix + "localRepository"),
-                localRepository.toString());
-        antProject.setProperty((propertyPrefix + "settings.localRepository"),
-                localRepository.getBasedir());
-        antProject.setProperty(propertyPrefix + "project.build.finalName",
-                project.getBuild().getFinalName());
-        antProject.setProperty(propertyPrefix + "offline",
-                settings.isOffline() ? "-o" : "");
+        antProject.setProperty(propertyPrefix + "project.build.directory", project.getBuild().getDirectory());
+        antProject.setProperty(propertyPrefix + "project.build.outputDirectory", project.getBuild()
+                                                                                        .getOutputDirectory());
+        antProject.setProperty((propertyPrefix + "project.build.testOutputDirectory"), project.getBuild()
+                                                                                              .getTestOutputDirectory());
+        antProject.setProperty((propertyPrefix + "project.build.sourceDirectory"), project.getBuild()
+                                                                                          .getSourceDirectory());
+        antProject.setProperty((propertyPrefix + "project.build.testSourceDirectory"), project.getBuild()
+                                                                                              .getTestSourceDirectory());
+        antProject.setProperty((propertyPrefix + "localRepository"), localRepository.toString());
+        antProject.setProperty((propertyPrefix + "settings.localRepository"), localRepository.getBasedir());
+        antProject.setProperty(propertyPrefix + "project.build.finalName", project.getBuild().getFinalName());
+        antProject.setProperty(propertyPrefix + "offline", settings.isOffline() ? "-o" : "");
 
         // add active Maven profiles to Ant
         antProfileManager = new AntProfileManager();
@@ -411,12 +375,10 @@ public class AntBuildMojo extends AbstractMojo {
         for (Profile profile : profiles) {
             antProfileManager.activateProfile(profile.getId(), true);
             // define a property for each activated profile
-            antProject.setProperty(
-                    propertyPrefix + "profile." + profile.getId(), "true");
+            antProject.setProperty(propertyPrefix + "profile." + profile.getId(), "true");
             // add profile properties (overriding project ones)
             for (String key : profile.getProperties().stringPropertyNames()) {
-                antProject.setUserProperty(key,
-                        profile.getProperties().getProperty(key));
+                antProject.setUserProperty(key, profile.getProperties().getProperty(key));
             }
         }
         // Finally add System properties (overriding project and profile ones)
