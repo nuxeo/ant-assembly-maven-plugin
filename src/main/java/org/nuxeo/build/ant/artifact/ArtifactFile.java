@@ -43,28 +43,30 @@ public class ArtifactFile extends FileResource {
     }
 
     public void setArtifactId(String artifactId) {
-        this.ad.artifactId = artifactId;
+        ad.artifactId = artifactId;
     }
 
     public void setGroupId(String groupId) {
-        this.ad.groupId = groupId;
+        ad.groupId = groupId;
     }
 
     public void setType(String type) {
-        this.ad.type = type;
+        ad.type = type;
     }
 
     public void setVersion(String version) {
-        this.ad.version = version;
+        ad.version = version;
     }
 
     public void setClassifier(String classifier) {
-        this.ad.classifier = classifier;
+        ad.classifier = classifier;
     }
 
     public Node getNode() {
         if (node == null) {
             if (key != null) {
+                // TODO NXBT-935 parse key
+                // groupId:artifactId[:[baseVersion][:extension[:[classifier]:scope]]]
                 node = graph.findFirst(key);
             } else {
                 node = graph.findNode(ad);

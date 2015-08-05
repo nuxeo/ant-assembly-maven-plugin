@@ -78,7 +78,8 @@ There are four artifact file resource types:
   - version
   - type
   - classifier
-  - key
+  - key = `groupId:artifactId[:[baseVersion][:extension[:[classifier]:scope]]]`
+
 
 You must specify at least the 'key' attribute or one or more of the other
 attributes.
