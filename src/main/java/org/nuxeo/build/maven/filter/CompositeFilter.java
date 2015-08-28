@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -49,11 +49,11 @@ public abstract class CompositeFilter extends AbstractFilter {
     }
 
     public void addFilters(List<Filter> filtersToAdd) {
-        this.filters.addAll(filtersToAdd);
+        filters.addAll(filtersToAdd);
     }
 
     public void addFilters(Filter... filtersToAdd) {
-        this.filters.addAll(Arrays.asList(filtersToAdd));
+        filters.addAll(Arrays.asList(filtersToAdd));
     }
 
     public void removeFilters(@SuppressWarnings("hiding") List<Filter> filters) {
@@ -132,35 +132,22 @@ public abstract class CompositeFilter extends AbstractFilter {
         try {
             filterConstructor = filterClass.getConstructor(String.class);
             if (pattern.startsWith("!")) {
-                addFilter(new NotFilter(
-                        filterConstructor.newInstance(pattern.substring(1))));
+                addFilter(new NotFilter(filterConstructor.newInstance(pattern.substring(1))));
             } else {
                 addFilter(filterConstructor.newInstance(pattern));
             }
         } catch (SecurityException e) {
-            AntClient.getInstance().log(
-                    "Couldn't get constructor for " + filterClass, e,
-                    Project.MSG_ERR);
+            AntClient.getInstance().log("Couldn't get constructor for " + filterClass, e, Project.MSG_ERR);
         } catch (NoSuchMethodException e) {
-            AntClient.getInstance().log(
-                    "Couldn't get constructor for " + filterClass, e,
-                    Project.MSG_ERR);
+            AntClient.getInstance().log("Couldn't get constructor for " + filterClass, e, Project.MSG_ERR);
         } catch (IllegalArgumentException e) {
-            AntClient.getInstance().log(
-                    "Couldn't call constructor for " + filterClass, e,
-                    Project.MSG_ERR);
+            AntClient.getInstance().log("Couldn't call constructor for " + filterClass, e, Project.MSG_ERR);
         } catch (InstantiationException e) {
-            AntClient.getInstance().log(
-                    "Couldn't call constructor for " + filterClass, e,
-                    Project.MSG_ERR);
+            AntClient.getInstance().log("Couldn't call constructor for " + filterClass, e, Project.MSG_ERR);
         } catch (IllegalAccessException e) {
-            AntClient.getInstance().log(
-                    "Couldn't call constructor for " + filterClass, e,
-                    Project.MSG_ERR);
+            AntClient.getInstance().log("Couldn't call constructor for " + filterClass, e, Project.MSG_ERR);
         } catch (InvocationTargetException e) {
-            AntClient.getInstance().log(
-                    "Couldn't call constructor for " + filterClass, e,
-                    Project.MSG_ERR);
+            AntClient.getInstance().log("Couldn't call constructor for " + filterClass, e, Project.MSG_ERR);
         }
 
     }

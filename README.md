@@ -213,13 +213,13 @@ Use comma separator. Wildcards are accepted.
 
 Results are in target/it/* sub-folders.
 
-## Integration tests debug
+## Integration tests debug logs
 
-Add `-DdebugITs=true` on the command line
+Add `-DdebugITs=true` on the command line to get debug logs in the build.log file.
 
-## Use mvnDebug (start the JVM in debug attach mode)
+## Integration tests debug code (mvnDebug)
 
-Use `-Pdebug` profile
+Use `-Pdebug` profile which will make the invoker call mvnDebug (starting the JVM in debug attach mode).
 
 Default listening for transport dt_socket at address: 8000
 

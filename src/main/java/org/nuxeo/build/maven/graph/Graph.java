@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -38,6 +38,7 @@ import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.resolution.DependencyResult;
 import org.eclipse.aether.util.artifact.JavaScopes;
 import org.eclipse.aether.util.artifact.SubArtifact;
+
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
@@ -67,40 +68,34 @@ public class Graph {
     }
 
     public Node findFirst(String pattern, boolean stopIfNotUnique) {
-        SortedMap<String, Node> map = nodes.subMap(pattern + ':', pattern
-                + ((char) (':' + 1)));
+        SortedMap<String, Node> map = nodes.subMap(pattern + ':', pattern + ((char) (':' + 1)));
         int size = map.size();
         if (size == 0) {
             return null;
         }
         if (stopIfNotUnique && size > 1) {
-            throw new BuildException(
-                    String.format(
-                            "Pattern '%s' cannot be resolved to a unique node. Matching nodes are: %s",
-                            pattern, map.values()));
+            throw new BuildException(String.format(
+                    "Pattern '%s' cannot be resolved to a unique node. Matching nodes are: %s", pattern, map.values()));
         }
         return map.get(map.firstKey());
     }
 
     public Collection<Node> find(String pattern) {
-        SortedMap<String, Node> map = nodes.subMap(pattern + ':', pattern
-                + ((char) (':' + 1)));
+        SortedMap<String, Node> map = nodes.subMap(pattern + ':', pattern + ((char) (':' + 1)));
         return map.values();
     }
 
     /**
-     * Add a root node given a Maven Project POM. This can be used to initialize
-     * the graph.
+     * Add a root node given a Maven Project POM. This can be used to initialize the graph.
      */
     public Node addRootNode(MavenProject pom) {
         Artifact artifact = pom.getArtifact();
         Node node = nodes.get(Node.genNodeId(artifact));
         if (node == null) {
             org.eclipse.aether.artifact.Artifact aetherArtifact = DependencyUtils.mavenToAether(artifact);
-            org.eclipse.aether.artifact.Artifact pomArtifact = new SubArtifact(
-                    aetherArtifact, null, "pom", pom.getFile());
-            Dependency dependency = new Dependency(pomArtifact,
-                    artifact.getScope());
+            org.eclipse.aether.artifact.Artifact pomArtifact = new SubArtifact(aetherArtifact, null, "pom",
+                    pom.getFile());
+            Dependency dependency = new Dependency(pomArtifact, artifact.getScope());
             node = collectRootNode(dependency);
         }
         return addRootNode(node);
@@ -120,8 +115,7 @@ public class Graph {
             node = collectRootNode(dependency);
         } else {
             roots.add(node);
-            AntClient.getInstance().log("Added root node: " + node,
-                    Project.MSG_DEBUG);
+            AntClient.getInstance().log("Added root node: " + node, Project.MSG_DEBUG);
         }
         return node;
     }
@@ -134,8 +128,7 @@ public class Graph {
             node = collectRootNode(node.getDependency());
         } else if (!roots.contains(node)) {
             roots.add(node);
-            AntClient.getInstance().log("Added root node: " + node,
-                    Project.MSG_DEBUG);
+            AntClient.getInstance().log("Added root node: " + node, Project.MSG_DEBUG);
         }
         return nodes.get(node.id);
     }
@@ -144,8 +137,7 @@ public class Graph {
         DependencyNode root = collectDependencies(dependency);
         Node node = new Node(this, root);
         roots.add(node);
-        AntClient.getInstance().log("Added root node: " + node,
-                Project.MSG_DEBUG);
+        AntClient.getInstance().log("Added root node: " + node, Project.MSG_DEBUG);
         addNode(node);
         return node;
     }
@@ -154,12 +146,10 @@ public class Graph {
         if (!filter.accept(root, null)) {
             return null;
         }
-        DependencyResult result = DependencyUtils.resolveDependencies(root,
-                filter, depth);
+        DependencyResult result = DependencyUtils.resolveDependencies(root, filter, depth);
         Node node = new Node(this, result.getRoot());
         roots.add(node);
-        AntClient.getInstance().log("Added resolved root node: " + node,
-                Project.MSG_DEBUG);
+        AntClient.getInstance().log("Added resolved root node: " + node, Project.MSG_DEBUG);
         addNode(node);
         return node;
     }
@@ -177,13 +167,10 @@ public class Graph {
             Node childNode = new Node(this, child);
             if (!roots.contains(node)
                     && !nodes.containsKey(childNode.getId())
-                    && (JavaScopes.TEST.equals(scope)
-                            && !JavaScopes.COMPILE.equals(childScope)
+                    && (JavaScopes.TEST.equals(scope) && !JavaScopes.COMPILE.equals(childScope)
                             && !JavaScopes.RUNTIME.equals(childScope) || !JavaScopes.TEST.equals(scope)
                             && JavaScopes.TEST.equals(childScope))) {
-                AntClient.getInstance().log(
-                        "Unexpected child node: " + child + " for " + node,
-                        Project.MSG_WARN);
+                AntClient.getInstance().log("Unexpected child node: " + child + " for " + node, Project.MSG_WARN);
                 removes.add(child);
                 continue;
             }
@@ -219,13 +206,11 @@ public class Graph {
             }
             try {
                 if (returnNode != null
-                        && artifact.getSelectedVersion().compareTo(
-                                returnNode.getMavenArtifact().getSelectedVersion()) < 0) {
+                        && artifact.getSelectedVersion().compareTo(returnNode.getMavenArtifact().getSelectedVersion()) < 0) {
                     continue;
                 }
             } catch (OverConstrainedVersionException e) {
-                mojo.getLog().error(
-                        "Versions comparison failed on " + artifact, e);
+                mojo.getLog().error("Versions comparison failed on " + artifact, e);
             }
             returnNode = node;
         }
@@ -233,8 +218,7 @@ public class Graph {
     }
 
     public DependencyNode collectDependencies(Dependency dependency) {
-        AntClient.getInstance().log(String.format("Collecting " + dependency),
-                Project.MSG_DEBUG);
+        AntClient.getInstance().log(String.format("Collecting " + dependency), Project.MSG_DEBUG);
         try {
             // ArtifactDescriptorRequest descriptorRequest = new
             // ArtifactDescriptorRequest(
@@ -249,24 +233,16 @@ public class Graph {
             // collectRequest.setManagedDependencies(descriptorResult.getManagedDependencies());
             // collectRequest.setRepositories(mojo.getRemoteRepositories());
 
-            CollectRequest collectRequest = new CollectRequest(dependency,
-                    mojo.getRemoteRepositories());
-            CollectResult result = mojo.getSystem().collectDependencies(
-                    mojo.getSession(), collectRequest);
+            CollectRequest collectRequest = new CollectRequest(dependency, mojo.getRemoteRepositories());
+            CollectResult result = mojo.getSystem().collectDependencies(mojo.getSession(), collectRequest);
             DependencyNode node = result.getRoot();
-            AntClient.getInstance().log("Collect result: " + result,
-                    Project.MSG_DEBUG);
-            AntClient.getInstance().log(
-                    "Collect exceptions: " + result.getExceptions(),
-                    Project.MSG_DEBUG);
-            AntClient.getInstance().log(
-                    "Direct dependencies: "
-                            + String.valueOf(node.getChildren()),
-                    Project.MSG_DEBUG);
+            AntClient.getInstance().log("Collect result: " + result, Project.MSG_DEBUG);
+            AntClient.getInstance().log("Collect exceptions: " + result.getExceptions(), Project.MSG_DEBUG);
+            AntClient.getInstance()
+                     .log("Direct dependencies: " + String.valueOf(node.getChildren()), Project.MSG_DEBUG);
             return node;
         } catch (DependencyCollectionException e) {
-            throw new BuildException("Cannot collect dependency tree for "
-                    + dependency, e);
+            throw new BuildException("Cannot collect dependency tree for " + dependency, e);
         }
     }
 
@@ -293,17 +269,14 @@ public class Graph {
      * @throws ArtifactNotFoundException If alternate resolution failed.
      * @see Artifact#getBaseVersion()
      */
-    protected void tryResolutionOnLocalBaseVersion(Artifact artifact,
-            ArtifactNotFoundException e) throws ArtifactNotFoundException {
+    protected void tryResolutionOnLocalBaseVersion(Artifact artifact, ArtifactNotFoundException e)
+            throws ArtifactNotFoundException {
         String resolvedVersion = artifact.getVersion();
-        artifact.updateVersion(artifact.getBaseVersion(),
-                mojo.getLocalRepository());
-        File localFile = new File(mojo.getLocalRepository().getBasedir(),
-                mojo.getLocalRepository().pathOf(artifact));
+        artifact.updateVersion(artifact.getBaseVersion(), mojo.getLocalRepository());
+        File localFile = new File(mojo.getLocalRepository().getBasedir(), mojo.getLocalRepository().pathOf(artifact));
         if (localFile.exists()) {
             mojo.getLog().warn(
-                    String.format(
-                            "Couldn't resolve %s, fallback on local install of unique version %s.",
+                    String.format("Couldn't resolve %s, fallback on local install of unique version %s.",
                             resolvedVersion, artifact.getBaseVersion()));
             artifact.setResolved(true);
         } else {

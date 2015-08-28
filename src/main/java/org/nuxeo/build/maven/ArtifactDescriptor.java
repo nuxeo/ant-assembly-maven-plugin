@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,11 +23,11 @@ import org.apache.maven.artifact.Artifact;
 import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.util.artifact.JavaScopes;
+
 import org.nuxeo.build.maven.graph.DependencyUtils;
 
 /**
- * @see org.eclipse.aether.util.artifact.ArtifactIdUtils
- *      org.eclipse.aether.artifact.DefaultArtifact
+ * @see org.eclipse.aether.util.artifact.ArtifactIdUtils org.eclipse.aether.artifact.DefaultArtifact
  *      org.eclipse.aether.graph.Dependency
  */
 public class ArtifactDescriptor {
@@ -59,8 +59,7 @@ public class ArtifactDescriptor {
     private ArtifactDescriptor() {
     }
 
-    public ArtifactDescriptor(String groupId, String artifactId,
-            String version, String type, String classifier) {
+    public ArtifactDescriptor(String groupId, String artifactId, String version, String type, String classifier) {
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
@@ -77,10 +76,8 @@ public class ArtifactDescriptor {
     public ArtifactDescriptor(String key) {
         Matcher m = adPattern.matcher(key);
         if (!m.matches()) {
-            throw new IllegalArgumentException(
-                    String.format("Invalid key '%s', expected format is '%s'",
-                            key,
-                            "<groupId>:<artifactId>[:<version>[:<type>[:<classifier>[:<scope>]]]]"));
+            throw new IllegalArgumentException(String.format("Invalid key '%s', expected format is '%s'", key,
+                    "<groupId>:<artifactId>[:<version>[:<type>[:<classifier>[:<scope>]]]]"));
         }
         groupId = m.group("groupId");
         artifactId = m.group("artifactId");
@@ -152,7 +149,6 @@ public class ArtifactDescriptor {
      * @since 2.0
      */
     public Dependency getDependency() {
-        return new Dependency(new DefaultArtifact(groupId, artifactId,
-                classifier, type, version), scope);
+        return new Dependency(new DefaultArtifact(groupId, artifactId, classifier, type, version), scope);
     }
 }

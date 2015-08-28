@@ -72,7 +72,7 @@ public class TreePrinterDependencyVisitor extends AbstractDependencyVisitor {
      * @param output
      * @param format 0 = standard GAV ; 1 = File + GAV
      * @param scopes
-     * @param list
+     * @param roots
      */
     public TreePrinterDependencyVisitor(OutputStream output, int format,
             List<String> scopes, List<Node> roots) {

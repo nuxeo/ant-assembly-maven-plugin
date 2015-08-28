@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2011-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2011-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -59,12 +59,10 @@ public class ResolveFiles extends DataType implements ResourceCollection {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public void setSource(String source) throws FileNotFoundException,
-            IOException {
+    public void setSource(String source) throws FileNotFoundException, IOException {
         this.source = new Properties();
         File sourceFile = new File(source);
-        File[] files = sourceFile.getParentFile().listFiles(
-                (FileFilter) new WildcardFileFilter(sourceFile.getName()));
+        File[] files = sourceFile.getParentFile().listFiles((FileFilter) new WildcardFileFilter(sourceFile.getName()));
         for (File file : files) {
             log("Loading " + file, Project.MSG_DEBUG);
             this.source.load(new FileInputStream(file));
@@ -104,8 +102,7 @@ public class ResolveFiles extends DataType implements ResourceCollection {
         return artifacts.iterator();
     }
 
-    private FileResource resolveFile(String artifactKey)
-            throws ArtifactResolutionException {
+    private FileResource resolveFile(String artifactKey) throws ArtifactResolutionException {
         ArtifactDescriptor ad = new ArtifactDescriptor(artifactKey);
         if (classifier != null) {
             ad.classifier = classifier;

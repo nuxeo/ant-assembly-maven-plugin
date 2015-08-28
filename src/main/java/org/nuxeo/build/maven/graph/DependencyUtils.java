@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2013-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2013-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -46,8 +46,7 @@ import org.nuxeo.build.maven.filter.Filter;
 
 /**
  * Utility class for dealing with {@link org.apache.maven.artifact.Artifact},
- * {@link org.eclipse.aether.artifact.Artifact} and
- * {@link org.eclipse.aether.graph.Dependency}
+ * {@link org.eclipse.aether.artifact.Artifact} and {@link org.eclipse.aether.graph.Dependency}
  *
  * @since 2.0
  */
@@ -56,49 +55,40 @@ public class DependencyUtils {
     private DependencyUtils() {
     }
 
-    public static org.apache.maven.artifact.Artifact aetherToMaven(
-            Artifact aetherArtifact, String scope,
+    public static org.apache.maven.artifact.Artifact aetherToMaven(Artifact aetherArtifact, String scope,
             ArtifactHandler artifactHandler) {
         org.apache.maven.artifact.Artifact mavenArtifact = new org.apache.maven.artifact.DefaultArtifact(
-                aetherArtifact.getGroupId(), aetherArtifact.getArtifactId(),
-                aetherArtifact.getVersion(), scope,
-                aetherArtifact.getExtension(), aetherArtifact.getClassifier(),
-                artifactHandler);
+                aetherArtifact.getGroupId(), aetherArtifact.getArtifactId(), aetherArtifact.getVersion(), scope,
+                aetherArtifact.getExtension(), aetherArtifact.getClassifier(), artifactHandler);
         mavenArtifact.setFile(aetherArtifact.getFile());
         mavenArtifact.setResolved(aetherArtifact.getFile() != null);
         return mavenArtifact;
     }
 
-    public static org.apache.maven.artifact.Artifact toMavenArtifact(
-            Dependency dependency) {
+    public static org.apache.maven.artifact.Artifact toMavenArtifact(Dependency dependency) {
         return aetherToMaven(
                 dependency.getArtifact(),
                 dependency.getScope(),
-                AntBuildMojo.getInstance().getArtifactHandlerManager().getArtifactHandler(
-                        dependency.getArtifact().getExtension()));
+                AntBuildMojo.getInstance()
+                            .getArtifactHandlerManager()
+                            .getArtifactHandler(dependency.getArtifact().getExtension()));
     }
 
-    public static org.apache.maven.artifact.Artifact aetherToMaven(
-            Artifact aetherArtifact, String scope) {
-        return aetherToMaven(
-                aetherArtifact,
-                scope,
-                AntBuildMojo.getInstance().getArtifactHandlerManager().getArtifactHandler(
-                        aetherArtifact.getExtension()));
+    public static org.apache.maven.artifact.Artifact aetherToMaven(Artifact aetherArtifact, String scope) {
+        return aetherToMaven(aetherArtifact, scope, AntBuildMojo.getInstance()
+                                                                .getArtifactHandlerManager()
+                                                                .getArtifactHandler(aetherArtifact.getExtension()));
     }
 
-    public static Artifact mavenToAether(
-            org.apache.maven.artifact.Artifact artifact) {
-        return new DefaultArtifact(artifact.getGroupId(),
-                artifact.getArtifactId(), artifact.getClassifier(),
+    public static Artifact mavenToAether(org.apache.maven.artifact.Artifact artifact) {
+        return new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier(),
                 artifact.getType(), artifact.getVersion());
     }
 
     /**
      * @throws org.eclipse.aether.resolution.ArtifactResolutionException
      */
-    public static Artifact resolve(Artifact artifact)
-            throws org.eclipse.aether.resolution.ArtifactResolutionException {
+    public static Artifact resolve(Artifact artifact) throws org.eclipse.aether.resolution.ArtifactResolutionException {
         AntBuildMojo mojo = AntBuildMojo.getInstance();
         return resolve(artifact, mojo.getRemoteRepositories());
     }
@@ -106,50 +96,40 @@ public class DependencyUtils {
     /**
      * @throws org.eclipse.aether.resolution.ArtifactResolutionException
      */
-    public static Artifact resolve(Artifact artifact,
-            List<RemoteRepository> remoteRepositories)
+    public static Artifact resolve(Artifact artifact, List<RemoteRepository> remoteRepositories)
             throws org.eclipse.aether.resolution.ArtifactResolutionException {
         AntBuildMojo mojo = AntBuildMojo.getInstance();
-        ArtifactResult result = mojo.getSystem().resolveArtifact(
-                mojo.getSession(),
+        ArtifactResult result = mojo.getSystem().resolveArtifact(mojo.getSession(),
                 new ArtifactRequest(artifact, remoteRepositories, null));
         artifact = result.getArtifact();
-        AntClient.getInstance().log(
-                artifact + " resolved to  " + artifact.getFile(),
-                Project.MSG_DEBUG);
+        AntClient.getInstance().log(artifact + " resolved to  " + artifact.getFile(), Project.MSG_DEBUG);
         return artifact;
     }
 
     /**
      * @throws ArtifactResolutionException
-     * @deprecated Prefer use of
-     *             {@link #resolve(org.eclipse.aether.artifact.Artifact)}
-     * @see #mavenToAether(Artifact)
+     * @deprecated Prefer use of {@link #resolve(org.eclipse.aether.artifact.Artifact)}
+     * @see #mavenToAether(org.apache.maven.artifact.Artifact)
      */
     @Deprecated
-    public static void resolve(org.apache.maven.artifact.Artifact artifact)
-            throws ArtifactResolutionException {
+    public static void resolve(org.apache.maven.artifact.Artifact artifact) throws ArtifactResolutionException {
         resolve(mavenToAether(artifact));
     }
 
-    public static Dependency mavenToDependency(
-            org.apache.maven.artifact.Artifact artifact) {
+    public static Dependency mavenToDependency(org.apache.maven.artifact.Artifact artifact) {
         // String scope = artifact.getScope() != null ? artifact.getScope()
         // : JavaScopes.COMPILE;
         return new Dependency(mavenToAether(artifact), artifact.getScope());
     }
 
     /**
-     * FIXME JC doesn't work because of depth < 2 in
-     * org.eclipse.aether.collection.DependencyManager
+     * FIXME JC doesn't work because of depth < 2 in org.eclipse.aether.collection.DependencyManager
      *
-     * @return The dependency on which the dependencyManagement has been
-     *         applied.
+     * @return The dependency on which the dependencyManagement has been applied.
      */
     public static Dependency getManagedDependency(Dependency dependency) {
         AntBuildMojo mojo = AntBuildMojo.getInstance();
-        DependencyManagement depMgt = mojo.getSession().getDependencyManager().manageDependency(
-                dependency);
+        DependencyManagement depMgt = mojo.getSession().getDependencyManager().manageDependency(dependency);
         if (depMgt != null) {
             if (depMgt.getVersion() != null) {
                 Artifact artifact = dependency.getArtifact();
@@ -173,21 +153,22 @@ public class DependencyUtils {
     }
 
     /**
-     * Look for a version in the project dependencyManagement for the given
-     * artifact and set it.
+     * Look for a version in the project dependencyManagement for the given artifact and set it.
      *
      * @return The new artifact if the version changed, else the original one
      */
     public static Artifact setManagedVersion(Artifact artifact) {
         AntBuildMojo mojo = AntBuildMojo.getInstance();
-        List<org.apache.maven.model.Dependency> managedDeps = AntBuildMojo.getInstance().getProject().getDependencyManagement().getDependencies();
+        List<org.apache.maven.model.Dependency> managedDeps = AntBuildMojo.getInstance()
+                                                                          .getProject()
+                                                                          .getDependencyManagement()
+                                                                          .getDependencies();
         for (org.apache.maven.model.Dependency dependency : managedDeps) {
             Artifact managedArtifact = RepositoryUtils.toDependency(dependency,
                     mojo.getSession().getArtifactTypeRegistry()).getArtifact();
             if (ArtifactIdUtils.equalsVersionlessId(managedArtifact, artifact)) {
                 artifact = artifact.setVersion(managedArtifact.getVersion());
-                AntClient.getInstance().log(
-                        "Managed version set on " + artifact);
+                AntClient.getInstance().log("Managed version set on " + artifact);
                 break;
             }
         }
@@ -202,17 +183,14 @@ public class DependencyUtils {
     public static Artifact setNewestVersion(Artifact artifact) {
         AntBuildMojo mojo = AntBuildMojo.getInstance();
         artifact = artifact.setVersion("[0,)");
-        VersionRangeRequest rangeRequest = new VersionRangeRequest(artifact,
-                AntBuildMojo.getInstance().getRemoteRepositories(), null);
+        VersionRangeRequest rangeRequest = new VersionRangeRequest(artifact, AntBuildMojo.getInstance()
+                                                                                         .getRemoteRepositories(), null);
         try {
-            VersionRangeResult rangeResult = mojo.getSystem().resolveVersionRange(
-                    mojo.getSession(), rangeRequest);
+            VersionRangeResult rangeResult = mojo.getSystem().resolveVersionRange(mojo.getSession(), rangeRequest);
             AntClient.getInstance().log(
-                    String.format("Versions found for %s: %s", artifact,
-                            rangeResult.getVersions()), Project.MSG_DEBUG);
+                    String.format("Versions found for %s: %s", artifact, rangeResult.getVersions()), Project.MSG_DEBUG);
             artifact = artifact.setVersion(rangeResult.getHighestVersion().toString());
-            AntClient.getInstance().log(
-                    "Highest version found set on " + artifact);
+            AntClient.getInstance().log("Highest version found set on " + artifact);
         } catch (VersionRangeResolutionException e) {
             AntClient.getInstance().log(e.getMessage(), e, Project.MSG_ERR);
         }
@@ -222,26 +200,18 @@ public class DependencyUtils {
     /**
      * TODO NXBT-696 manage depth limit
      */
-    public static DependencyResult resolveDependencies(DependencyNode node,
-            Filter filter, int depth) {
+    public static DependencyResult resolveDependencies(DependencyNode node, Filter filter, int depth) {
         AntBuildMojo mojo = AntBuildMojo.getInstance();
-        AntClient.getInstance().log(
-                String.format("Resolving %s with filter %s and depth %d", node,
-                        filter, depth), Project.MSG_DEBUG);
-        DependencyRequest dependencyRequest = new DependencyRequest(node,
-                filter);
+        AntClient.getInstance().log(String.format("Resolving %s with filter %s and depth %d", node, filter, depth),
+                Project.MSG_DEBUG);
+        DependencyRequest dependencyRequest = new DependencyRequest(node, filter);
         try {
-            DependencyResult result = mojo.getSystem().resolveDependencies(
-                    mojo.getSession(), dependencyRequest);
-            AntClient.getInstance().log("Dependency result: " + result,
-                    new Error(), Project.MSG_DEBUG);
-            AntClient.getInstance().log(
-                    "Dependency exceptions: " + result.getCollectExceptions(),
-                    Project.MSG_DEBUG);
+            DependencyResult result = mojo.getSystem().resolveDependencies(mojo.getSession(), dependencyRequest);
+            AntClient.getInstance().log("Dependency result: " + result, new Error(), Project.MSG_DEBUG);
+            AntClient.getInstance().log("Dependency exceptions: " + result.getCollectExceptions(), Project.MSG_DEBUG);
             return result;
         } catch (DependencyResolutionException e) {
-            throw new BuildException("Cannot resolve dependency tree for "
-                    + node, e);
+            throw new BuildException("Cannot resolve dependency tree for " + node, e);
         }
     }
 

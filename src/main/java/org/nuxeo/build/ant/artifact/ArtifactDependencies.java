@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -39,8 +39,7 @@ import org.nuxeo.build.maven.graph.Node;
 /**
  * TODO NXBT-258
  */
-public class ArtifactDependencies extends DataType implements
-        ResourceCollection {
+public class ArtifactDependencies extends DataType implements ResourceCollection {
 
     protected Graph graph = AntBuildMojo.getInstance().getGraph();
 
@@ -64,16 +63,14 @@ public class ArtifactDependencies extends DataType implements
 
     public void addExcludes(@SuppressWarnings("hiding") Excludes excludes) {
         if (this.excludes != null) {
-            throw new BuildException(
-                    "Found an Excludes that is defined more than once in an artifact dependencies");
+            throw new BuildException("Found an Excludes that is defined more than once in an artifact dependencies");
         }
         this.excludes = excludes;
     }
 
     public void addIncludes(@SuppressWarnings("hiding") Includes includes) {
         if (this.includes != null) {
-            throw new BuildException(
-                    "Found an Includes that is defined more than once in an artifact dependencies");
+            throw new BuildException("Found an Includes that is defined more than once in an artifact dependencies");
         }
         this.includes = includes;
     }
@@ -126,8 +123,7 @@ public class ArtifactDependencies extends DataType implements
                 }
                 filter = CompositeFilter.compact(andf);
             }
-            DependencyResult result = DependencyUtils.resolveDependencies(
-                    getNode(), filter, depth);
+            DependencyResult result = DependencyUtils.resolveDependencies(getNode(), filter, depth);
             List<ArtifactResult> results = result.getArtifactResults();
             artifacts = new ArrayList<>();
             for (ArtifactResult artifactResult : results) {

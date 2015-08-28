@@ -48,14 +48,12 @@ public class ResolveFile extends FileResource {
     }
 
     /**
-     * @deprecated since 1.8; put classifier in the key
-     *             ("groupId:artifactId:version:type:classifier:scope")
+     * @deprecated since 1.8; put classifier in the key ("groupId:artifactId:version:type:classifier:scope")
      * @param classifier
      */
     @Deprecated
     public void setClassifier(String classifier) {
-        log("The classifier parameter is deprecated, put it in the key.",
-                Project.MSG_WARN);
+        log("The classifier parameter is deprecated, put it in the key.", Project.MSG_WARN);
         this.classifier = classifier;
     }
 
@@ -86,8 +84,7 @@ public class ResolveFile extends FileResource {
             file = artifact.getFile();
             return file;
         } catch (ArtifactResolutionException e) {
-            throw new BuildException(String.format(
-                    "Cannot resolve file with key '%s'", ad), e);
+            throw new BuildException(String.format("Cannot resolve file with key '%s'", ad), e);
         }
     }
 
@@ -101,8 +98,7 @@ public class ResolveFile extends FileResource {
 
     @Override
     public File getBaseDir() {
-        return isReference() ? ((FileResource) getCheckedRef()).getBaseDir()
-                : getFile().getParentFile();
+        return isReference() ? ((FileResource) getCheckedRef()).getBaseDir() : getFile().getParentFile();
     }
 
 }

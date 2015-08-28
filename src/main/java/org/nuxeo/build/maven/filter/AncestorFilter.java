@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -62,8 +62,7 @@ public class AncestorFilter extends AbstractFilter {
 
     @Override
     public boolean accept(Artifact artifact) {
-        throw new UnsupportedOperationException(
-                "Ancestor folder cannot be applied on artifact objects");
+        throw new UnsupportedOperationException("Ancestor folder cannot be applied on artifact objects");
     }
 
     @Override
