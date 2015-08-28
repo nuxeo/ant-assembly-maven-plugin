@@ -105,7 +105,7 @@ public class ResolveFiles extends DataType implements ResourceCollection {
     private FileResource resolveFile(String artifactKey) throws ArtifactResolutionException {
         ArtifactDescriptor ad = new ArtifactDescriptor(artifactKey);
         if (classifier != null) {
-            ad.classifier = classifier;
+            ad.setClassifier(classifier);
         }
         Artifact artifact = ad.getAetherArtifact();
         File file;

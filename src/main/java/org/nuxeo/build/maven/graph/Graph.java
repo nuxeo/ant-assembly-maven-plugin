@@ -68,6 +68,10 @@ public class Graph {
     }
 
     public Node findFirst(String pattern, boolean stopIfNotUnique) {
+        if (pattern.contains("::")) {
+            // Pattern requiring completion: #findNode(ArtifactDescriptor) must be used instead
+            return null;
+        }
         SortedMap<String, Node> map = nodes.subMap(pattern + ':', pattern + ((char) (':' + 1)));
         int size = map.size();
         if (size == 0) {
@@ -191,17 +195,16 @@ public class Graph {
         Node returnNode = null;
         for (Node node : nodesToParse) {
             Artifact artifact = node.getMavenArtifact();
-            if (ad.artifactId != null
-                    && !ad.artifactId.equals(artifact.getArtifactId())) {
+            if (ad.getArtifactId() != null && !ad.getArtifactId().equals(artifact.getArtifactId())) {
                 continue;
             }
-            if (ad.groupId != null && !ad.groupId.equals(artifact.getGroupId())) {
+            if (ad.getGroupId() != null && !ad.getGroupId().equals(artifact.getGroupId())) {
                 continue;
             }
-            if (ad.version != null && !ad.version.equals(artifact.getVersion())) {
+            if (ad.getVersion() != null && !ad.getVersion().equals(artifact.getVersion())) {
                 continue;
             }
-            if (ad.type != null && !ad.type.equals(artifact.getType())) {
+            if (ad.getType() != null && !ad.getType().equals(artifact.getType())) {
                 continue;
             }
             try {
@@ -292,6 +295,26 @@ public class Graph {
      */
     public Node getNode(Dependency dependency) {
         return nodes.get(Node.genNodeId(dependency));
+    }
+
+    /**
+     * @param key
+     * @param ad
+     * @throws BuildException
+     * @since 2.0.4
+     */
+    public Node findNode(String key, ArtifactDescriptor ad) throws BuildException {
+        Node node = null;
+        if (key != null) {
+            node = findFirst(key, true);
+        }
+        if (node == null && ad != null) {
+            node = findNode(ad);
+        }
+        if (node == null) {
+            throw new BuildException("Artifact with pattern " + (key != null ? key : ad) + " was not found in graph");
+        }
+        return node;
     }
 
 }

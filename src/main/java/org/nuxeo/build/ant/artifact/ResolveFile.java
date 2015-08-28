@@ -60,10 +60,10 @@ public class ResolveFile extends FileResource {
     protected File resolveFile() {
         ArtifactDescriptor ad = new ArtifactDescriptor(key);
         // Sync classifier set from key or from setClassifier()
-        if (ad.classifier != null) {
-            classifier = ad.classifier;
+        if (ad.getClassifier() != null) {
+            classifier = ad.getClassifier();
         } else if (classifier != null) {
-            ad.classifier = classifier;
+            ad.setClassifier(classifier);
         }
         try {
             if (file != null) {

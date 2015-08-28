@@ -7,15 +7,15 @@
   <target name="all-tests" description="Test assembly">
     <property name="outdir" value="${maven.project.build.directory}" />
     <mkdir dir="${outdir}" />
-    <copy todir="${outdir}/files" overwrite="true">
+    <copy todir="${outdir}/resolveFile" overwrite="true">
       <artifact:resolveFile key="log4j:log4j:1.2.16" />
       <artifact:resolveFile key="log4j:log4j" />
       <artifact:resolveFile key="org.nuxeo.common:nuxeo-common" />
       <artifact:resolveFiles source="${basedir}/artifacts.properties" />
     </copy>
     <!-- Checks -->
-    <resourcecount property="count">
-      <fileset dir="${outdir}/files">
+    <resourcecount property="count.resolved.files">
+      <fileset dir="${outdir}/resolveFile">
         <include name="*.jar" />
       </fileset>
     </resourcecount>
@@ -23,12 +23,40 @@
       <condition>
         <not>
           <and>
-            <available file="${outdir}/files/nuxeo-common-5.9.1.jar" />
-            <available file="${outdir}/files/log4j-1.2.16.jar" />
-            <available file="${outdir}/files/log4j-1.2.17.jar" />
-            <available file="${outdir}/files/nuxeo-runtime-5.9.1.jar" />
-            <available file="${outdir}/files/nuxeo-runtime-remoting-5.9.1.jar" />
-            <equals arg1="${count}" arg2="6" />
+            <available file="${outdir}/resolveFile/nuxeo-common-${nuxeo.distribution.version}.jar" />
+            <available file="${outdir}/resolveFile/log4j-1.2.16.jar" />
+            <available file="${outdir}/resolveFile/log4j-1.2.17.jar" />
+            <available file="${outdir}/resolveFile/nuxeo-runtime-${nuxeo.distribution.version}.jar" />
+            <available file="${outdir}/resolveFile/nuxeo-runtime-remoting-${nuxeo.distribution.version}.jar" />
+            <equals arg1="${count.resolved.files}" arg2="6" />
+          </and>
+        </not>
+      </condition>
+    </fail>
+
+    <copy todir="${outdir}/artifactFile" overwrite="true">
+      <artifact:file key="taglibs:standard" />
+      <artifact:file key="antlr:antlr" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip:bin" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources:${nuxeo.distribution.version}:zip:doc" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip:doc" />
+      <artifact:file key="org.nuxeo.ecm.distribution:nuxeo-distribution-resources::zip:bin" />
+    </copy>
+    <resourcecount property="count.resolved.artifactFile">
+      <fileset dir="${outdir}/artifactFile">
+        <include name="*.jar" />
+        <include name="*.zip" />
+      </fileset>
+    </resourcecount>
+    <fail>
+      <condition>
+        <not>
+          <and>
+            <available file="${outdir}/artifactFile/nuxeo-distribution-resources-${nuxeo.distribution.version}-doc.zip" />
+            <available file="${outdir}/artifactFile/nuxeo-distribution-resources-${nuxeo.distribution.version}-bin.zip" />
+            <available file="${outdir}/artifactFile/standard-1.1.2.jar" />
+            <available file="${outdir}/artifactFile/antlr-2.7.7.jar" />
+            <equals arg1="${count.resolved.artifactFile}" arg2="4" />
           </and>
         </not>
       </condition>

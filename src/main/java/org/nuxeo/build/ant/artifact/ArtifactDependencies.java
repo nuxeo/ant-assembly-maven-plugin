@@ -51,7 +51,7 @@ public class ArtifactDependencies extends DataType implements ResourceCollection
 
     public int depth = 1;
 
-    public ArtifactDescriptor ad = ArtifactDescriptor.emptyDescriptor();
+    public ArtifactDescriptor ad = new ArtifactDescriptor();
 
     public Includes includes;
 
@@ -77,35 +77,28 @@ public class ArtifactDependencies extends DataType implements ResourceCollection
 
     public void setKey(String pattern) {
         key = pattern;
+        ad = ArtifactDescriptor.parseQuietly(pattern);
     }
 
     public void setArtifactId(String artifactId) {
-        this.ad.artifactId = artifactId;
+        ad.setArtifactId(artifactId);
     }
 
     public void setGroupId(String groupId) {
-        this.ad.groupId = groupId;
+        ad.setGroupId(groupId);
     }
 
     public void setType(String type) {
-        this.ad.type = type;
+        ad.setType(type);
     }
 
     public void setVersion(String version) {
-        this.ad.version = version;
+        ad.setVersion(version);
     }
 
     public Node getNode() {
         if (node == null) {
-            if (key != null) {
-                node = graph.findFirst(key);
-            } else {
-                node = graph.findNode(ad);
-            }
-            if (node == null) {
-                throw new BuildException("Artifact with pattern "
-                        + (key != null ? key : ad) + " was not found in graph");
-            }
+            node = graph.findNode(key, ad);
         }
         return node;
     }

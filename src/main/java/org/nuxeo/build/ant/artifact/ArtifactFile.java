@@ -18,8 +18,8 @@ package org.nuxeo.build.ant.artifact;
 
 import java.io.File;
 
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.types.resources.FileResource;
+
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.graph.Graph;
@@ -36,43 +36,36 @@ public class ArtifactFile extends FileResource {
 
     public String key;
 
-    public ArtifactDescriptor ad = ArtifactDescriptor.emptyDescriptor();
+    public ArtifactDescriptor ad = new ArtifactDescriptor();
 
     public void setKey(String key) {
         this.key = key;
+        ad = ArtifactDescriptor.parseQuietly(key);
     }
 
     public void setArtifactId(String artifactId) {
-        this.ad.artifactId = artifactId;
+        ad.setArtifactId(artifactId);
     }
 
     public void setGroupId(String groupId) {
-        this.ad.groupId = groupId;
+        ad.setGroupId(groupId);
     }
 
     public void setType(String type) {
-        this.ad.type = type;
+        ad.setType(type);
     }
 
     public void setVersion(String version) {
-        this.ad.version = version;
+        ad.setVersion(version);
     }
 
     public void setClassifier(String classifier) {
-        this.ad.classifier = classifier;
+        ad.setClassifier(classifier);
     }
 
     public Node getNode() {
         if (node == null) {
-            if (key != null) {
-                node = graph.findFirst(key);
-            } else {
-                node = graph.findNode(ad);
-            }
-            if (node == null) {
-                throw new BuildException("Artifact with pattern "
-                        + (key != null ? key : ad) + " was not found in graph");
-            }
+            node = graph.findNode(key, ad);
         }
         return node;
     }

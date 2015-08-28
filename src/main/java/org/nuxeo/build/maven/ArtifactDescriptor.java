@@ -32,31 +32,22 @@ import org.nuxeo.build.maven.graph.DependencyUtils;
  */
 public class ArtifactDescriptor {
 
-    protected static final String KEY_PATTERN = "(?<groupId>[^: ]+):(?<artifactId>[^: ]+)"
-            + "(?::(?<version>[^: ]*)(?::(?<type>[^: ]*)(?::(?<classifier>[^: ]*)(?::(?<scope>[^: ]*))?)?)?)?";
+    public static final Pattern PATTERN = Pattern.compile("(?<groupId>[^: ]+):(?<artifactId>[^: ]+)"
+            + "(?::(?<version>[^: ]*)(?::(?<type>[^: ]*)(?::(?<classifier>[^: ]*)(?::(?<scope>[^: ]*))?)?)?)?");
 
-    public String groupId = null;
+    protected String groupId = null;
 
-    public String artifactId = null;
+    protected String artifactId = null;
 
-    public String version = null;
+    protected String version = null;
 
-    public String type = "jar";
+    protected String type = null;
 
-    public String classifier = null;
+    protected String classifier = null;
 
-    public String scope = JavaScopes.COMPILE;
+    protected String scope = null;
 
-    protected final Pattern adPattern = Pattern.compile(KEY_PATTERN);
-
-    public static ArtifactDescriptor emptyDescriptor() {
-        ArtifactDescriptor ad = new ArtifactDescriptor();
-        ad.scope = null;
-        ad.type = null;
-        return ad;
-    }
-
-    private ArtifactDescriptor() {
+    public ArtifactDescriptor() {
     }
 
     public ArtifactDescriptor(String groupId, String artifactId, String version, String type, String classifier) {
@@ -65,16 +56,17 @@ public class ArtifactDescriptor {
         this.version = version;
         this.type = type;
         this.classifier = classifier;
+        scope = JavaScopes.COMPILE;
     }
 
     /**
      * @param key Key for an artifact or a dependency with pattern
      *            &lt;groupId&gt;:&lt;artifactId&gt;[:&lt;version&gt;[:&lt;type
      *            &gt;[:&lt;classifier&gt;[:&lt;scope&gt;]]]]
-     * @see #KEY_PATTERN
+     * @see #PATTERN
      */
     public ArtifactDescriptor(String key) {
-        Matcher m = adPattern.matcher(key);
+        Matcher m = PATTERN.matcher(key);
         if (!m.matches()) {
             throw new IllegalArgumentException(String.format("Invalid key '%s', expected format is '%s'", key,
                     "<groupId>:<artifactId>[:<version>[:<type>[:<classifier>[:<scope>]]]]"));
@@ -86,12 +78,16 @@ public class ArtifactDescriptor {
         }
         if (m.group("type") != null && !m.group("type").isEmpty()) {
             type = m.group("type");
+        } else {
+            type = "jar";
         }
         if (m.group("classifier") != null && !m.group("classifier").isEmpty()) {
             classifier = m.group("classifier");
         }
         if (m.group("scope") != null && !m.group("scope").isEmpty()) {
             scope = m.group("scope");
+        } else {
+            scope = JavaScopes.COMPILE;
         }
     }
 
@@ -150,5 +146,75 @@ public class ArtifactDescriptor {
      */
     public Dependency getDependency() {
         return new Dependency(new DefaultArtifact(groupId, artifactId, classifier, type, version), scope);
+    }
+
+    /**
+     * @param key
+     * @return an ArtifactDescriptor corresponding to the key, or the EMPTY_DESCRIPTOR if the parsing failed.
+     * @since 2.0.4
+     */
+    public static ArtifactDescriptor parseQuietly(String key) {
+        try {
+            return new ArtifactDescriptor(key);
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            // Ignore parsing issues and return an empty ArtifactDescriptor
+            return new ArtifactDescriptor();
+        }
+    }
+
+    public String getGroupId() {
+        return groupId;
+    }
+
+    public void setGroupId(String groupId) {
+        this.groupId = groupId;
+    }
+
+    public String getArtifactId() {
+        return artifactId;
+    }
+
+    public void setArtifactId(String artifactId) {
+        this.artifactId = artifactId;
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getClassifier() {
+        return classifier;
+    }
+
+    public void setClassifier(String classifier) {
+        this.classifier = classifier;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public void setScope(String scope) {
+        this.scope = scope;
+    }
+
+    /**
+     * @since 2.0.4
+     */
+    public boolean isEmpty() {
+        return groupId == null && artifactId == null && groupId == null && scope == null && type == null
+                && classifier == null;
     }
 }

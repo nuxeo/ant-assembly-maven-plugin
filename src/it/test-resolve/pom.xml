@@ -10,14 +10,19 @@
   <description>Retrieve artifacts directly from repositories, using the dependencyManagement if needed. Covers:
   - artifact:resolveFile
   - artifact:resolveFiles
+  - artifact:file
 </description>
+
+  <properties>
+    <nuxeo.distribution.version>5.9.1</nuxeo.distribution.version>
+  </properties>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution</artifactId>
-        <version>5.9.1</version>
+        <version>${nuxeo.distribution.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -30,6 +35,30 @@
   </dependencyManagement>
 
   <dependencies>
+    <dependency>
+      <groupId>taglibs</groupId>
+      <artifactId>standard</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>antlr</groupId>
+      <artifactId>antlr</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-resources</artifactId>
+      <type>zip</type>
+      <classifier>bin</classifier>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-resources</artifactId>
+      <type>zip</type>
+      <classifier>doc</classifier>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>

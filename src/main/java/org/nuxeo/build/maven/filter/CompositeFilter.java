@@ -75,34 +75,33 @@ public abstract class CompositeFilter extends AbstractFilter {
     }
 
     public void addFiltersFromDescriptor(ArtifactDescriptor ad) {
-        if (ad.groupId != null && !ad.groupId.equals("*")) {
-            addFilter(GroupIdFilter.class, ad.groupId);
+        if (ad.getGroupId() != null && !ad.getGroupId().equals("*")) {
+            addFilter(GroupIdFilter.class, ad.getGroupId());
         }
-        if (ad.artifactId != null && !ad.artifactId.equals("*")) {
-            addFilter(ArtifactIdFilter.class, ad.artifactId);
+        if (ad.getArtifactId() != null && !ad.getArtifactId().equals("*")) {
+            addFilter(ArtifactIdFilter.class, ad.getArtifactId());
         }
-        if (ad.version != null && !ad.version.equals("*")) {
-            addFilter(VersionFilter.class, ad.version);
+        if (ad.getVersion() != null && !ad.getVersion().equals("*")) {
+            addFilter(VersionFilter.class, ad.getVersion());
         }
-        if (ad.type != null && !ad.type.equals("*")) {
-            addFilter(TypeFilter.class, ad.type);
+        if (ad.getType() != null && !ad.getType().equals("*")) {
+            addFilter(TypeFilter.class, ad.getType());
         }
-        if (ad.classifier != null && !ad.classifier.equals("*")) {
-            addFilter(ClassifierFilter.class, ad.classifier);
+        if (ad.getClassifier() != null && !ad.getClassifier().equals("*")) {
+            addFilter(ClassifierFilter.class, ad.getClassifier());
         }
 
         // Exclude test and provided scopes by default
-        boolean scopeTest = "test".equals(ad.scope) || "*".equals(ad.scope);
-        boolean scopeProvided = "provided".equals(ad.scope)
-                || "*".equals(ad.scope);
+        boolean scopeTest = "test".equals(ad.getScope()) || "*".equals(ad.getScope());
+        boolean scopeProvided = "provided".equals(ad.getScope()) || "*".equals(ad.getScope());
         if (!scopeTest) {
             addFilter(new NotFilter(new ScopeFilter("test")));
         }
         if (!scopeProvided) {
             addFilter(new NotFilter(new ScopeFilter("provided")));
         }
-        if (ad.scope != null && !ad.scope.equals("*")) {
-            addFilter(ScopeFilter.class, ad.scope);
+        if (ad.getScope() != null && !ad.getScope().equals("*")) {
+            addFilter(ScopeFilter.class, ad.getScope());
         }
     }
 

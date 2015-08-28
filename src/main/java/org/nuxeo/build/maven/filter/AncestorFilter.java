@@ -36,23 +36,23 @@ public class AncestorFilter extends AbstractFilter {
     public AncestorFilter(String pattern) {
         ad = new ArtifactDescriptor(pattern);
         filters = new ArrayList<>();
-        if (ad.groupId != null && !ad.groupId.equals("*")) {
-            addFilter(new GroupIdFilter(ad.groupId));
+        if (ad.getGroupId() != null && !ad.getGroupId().equals("*")) {
+            addFilter(new GroupIdFilter(ad.getGroupId()));
         }
-        if (ad.artifactId != null && !ad.artifactId.equals("*")) {
-            addFilter(new ArtifactIdFilter(ad.artifactId));
+        if (ad.getArtifactId() != null && !ad.getArtifactId().equals("*")) {
+            addFilter(new ArtifactIdFilter(ad.getArtifactId()));
         }
-        if (ad.version != null && !ad.version.equals("*")) {
-            addFilter(new VersionFilter(ad.version));
+        if (ad.getVersion() != null && !ad.getVersion().equals("*")) {
+            addFilter(new VersionFilter(ad.getVersion()));
         }
-        if (ad.type != null && !ad.type.equals("*")) {
-            addFilter(new TypeFilter(ad.type));
+        if (ad.getType() != null && !ad.getType().equals("*")) {
+            addFilter(new TypeFilter(ad.getType()));
         }
-        if (ad.classifier != null && !ad.classifier.equals("*")) {
-            addFilter(new ClassifierFilter(ad.classifier));
+        if (ad.getClassifier() != null && !ad.getClassifier().equals("*")) {
+            addFilter(new ClassifierFilter(ad.getClassifier()));
         }
-        if (ad.scope != null && !ad.scope.equals("*")) {
-            addFilter(new ScopeFilter(ad.scope));
+        if (ad.getScope() != null && !ad.getScope().equals("*")) {
+            addFilter(new ScopeFilter(ad.getScope()));
         }
     }
 
