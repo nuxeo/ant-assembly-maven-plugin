@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="test2"
+<project name="test-expand"
          default="all-tests"
          xmlns:nx="urn:nuxeo-build"
          xmlns:artifact="urn:nuxeo-artifact">
