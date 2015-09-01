@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.tools.ant.Project;
 import org.eclipse.aether.graph.DefaultDependencyNode;
@@ -63,7 +64,7 @@ public class Node implements DependencyNode {
     }
 
     public static String genNodeId(Artifact artifact) {
-        return genNodeId(DependencyUtils.mavenToDependency(artifact));
+        return genNodeId(RepositoryUtils.toDependency(artifact, null));
     }
 
     public static String genNodeId(Dependency dependency) {

@@ -11,6 +11,7 @@
 - artifact:expand
 - artifact:nuxeo-expand
 - artifact:print
+- dependency with exclusions
 </description>
 
   <dependencies>

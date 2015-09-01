@@ -17,6 +17,7 @@
 package org.nuxeo.build.ant.artifact;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.maven.RepositoryUtils;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
@@ -82,7 +83,7 @@ public class PrintDependencyManagementTask extends Task {
             }
             Artifact artifact;
             if (key == null) {
-                artifact = DependencyUtils.mavenToAether(mojo.getProject().getArtifact());
+                artifact = RepositoryUtils.toArtifact(mojo.getProject().getArtifact());
             } else {
                 ArtifactDescriptor ad = new ArtifactDescriptor(key);
                 artifact = ad.getAetherArtifact();

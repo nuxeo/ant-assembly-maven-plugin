@@ -25,7 +25,6 @@ import org.apache.maven.artifact.handler.ArtifactHandler;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.eclipse.aether.artifact.Artifact;
-import org.eclipse.aether.artifact.DefaultArtifact;
 import org.eclipse.aether.collection.DependencyManagement;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.DependencyNode;
@@ -80,9 +79,12 @@ public class DependencyUtils {
                                                                 .getArtifactHandler(aetherArtifact.getExtension()));
     }
 
+    /**
+     * @deprecated Since 2.0.4. Use {@link RepositoryUtils#toArtifact(Artifact)} instead.
+     */
+    @Deprecated
     public static Artifact mavenToAether(org.apache.maven.artifact.Artifact artifact) {
-        return new DefaultArtifact(artifact.getGroupId(), artifact.getArtifactId(), artifact.getClassifier(),
-                artifact.getType(), artifact.getVersion());
+        return RepositoryUtils.toArtifact(artifact);
     }
 
     /**
@@ -113,13 +115,22 @@ public class DependencyUtils {
      */
     @Deprecated
     public static void resolve(org.apache.maven.artifact.Artifact artifact) throws ArtifactResolutionException {
-        resolve(mavenToAether(artifact));
+        resolve(RepositoryUtils.toArtifact(artifact));
     }
 
+    /**
+     * The generated dependency has no exclusions.
+     *
+     * @deprecated Since 2.0.4. Use
+     *             {@link RepositoryUtils#toDependency(org.apache.maven.artifact.Artifact, java.util.Collection)} or
+     *             {@link RepositoryUtils#toDependency(org.apache.maven.model.Dependency, org.eclipse.aether.artifact.ArtifactTypeRegistry)}
+     *             instead
+     */
+    @Deprecated
     public static Dependency mavenToDependency(org.apache.maven.artifact.Artifact artifact) {
         // String scope = artifact.getScope() != null ? artifact.getScope()
         // : JavaScopes.COMPILE;
-        return new Dependency(mavenToAether(artifact), artifact.getScope());
+        return new Dependency(RepositoryUtils.toArtifact(artifact), artifact.getScope(), artifact.isOptional());
     }
 
     /**

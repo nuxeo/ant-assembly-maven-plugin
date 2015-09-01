@@ -11,6 +11,7 @@
   - artifact:resolveFile
   - artifact:resolveFiles
   - artifact:file
+  - profile with dependencies
 </description>
 
   <properties>
@@ -45,21 +46,40 @@
       <artifactId>antlr</artifactId>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-resources</artifactId>
-      <type>zip</type>
-      <classifier>bin</classifier>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-resources</artifactId>
-      <type>zip</type>
-      <classifier>doc</classifier>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>profile-with-dependencies</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-distribution-resources</artifactId>
+          <type>zip</type>
+          <classifier>bin</classifier>
+          <scope>compile</scope>
+        </dependency>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-distribution-resources</artifactId>
+          <type>zip</type>
+          <classifier>doc</classifier>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>not-activated-profile</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.nuxeo.ecm.distribution</groupId>
+          <artifactId>nuxeo-distribution-resources</artifactId>
+          <type>zip</type>
+          <classifier>root</classifier>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 
   <build>
     <plugins>

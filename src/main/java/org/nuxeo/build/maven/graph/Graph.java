@@ -19,26 +19,33 @@ package org.nuxeo.build.maven.graph;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.apache.maven.RepositoryUtils;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.versioning.OverConstrainedVersionException;
+import org.apache.maven.model.DependencyManagement;
+import org.apache.maven.model.Exclusion;
 import org.apache.maven.project.MavenProject;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
+import org.codehaus.plexus.util.StringUtils;
+import org.eclipse.aether.artifact.ArtifactType;
+import org.eclipse.aether.artifact.ArtifactTypeRegistry;
 import org.eclipse.aether.collection.CollectRequest;
 import org.eclipse.aether.collection.CollectResult;
 import org.eclipse.aether.collection.DependencyCollectionException;
 import org.eclipse.aether.graph.Dependency;
 import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.resolution.DependencyResult;
+import org.eclipse.aether.util.artifact.ArtifactIdUtils;
 import org.eclipse.aether.util.artifact.JavaScopes;
-import org.eclipse.aether.util.artifact.SubArtifact;
-
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
@@ -93,14 +100,9 @@ public class Graph {
      * Add a root node given a Maven Project POM. This can be used to initialize the graph.
      */
     public Node addRootNode(MavenProject pom) {
-        Artifact artifact = pom.getArtifact();
-        Node node = nodes.get(Node.genNodeId(artifact));
+        Node node = nodes.get(Node.genNodeId(pom.getArtifact()));
         if (node == null) {
-            org.eclipse.aether.artifact.Artifact aetherArtifact = DependencyUtils.mavenToAether(artifact);
-            org.eclipse.aether.artifact.Artifact pomArtifact = new SubArtifact(aetherArtifact, null, "pom",
-                    pom.getFile());
-            Dependency dependency = new Dependency(pomArtifact, artifact.getScope());
-            node = collectRootNode(dependency);
+            node = collectRootNode(pom);
         }
         return addRootNode(node);
     }
@@ -137,13 +139,28 @@ public class Graph {
         return nodes.get(node.id);
     }
 
-    private Node collectRootNode(Dependency dependency) {
+    public Node collectRootNode(Dependency dependency) {
         DependencyNode root = collectDependencies(dependency);
+        return addRootNode(root);
+    }
+
+    /**
+     * @since 2.0.4
+     */
+    public Node addRootNode(DependencyNode root) {
         Node node = new Node(this, root);
         roots.add(node);
         AntClient.getInstance().log("Added root node: " + node, Project.MSG_DEBUG);
         addNode(node);
         return node;
+    }
+
+    /**
+     * @since 2.0.4
+     */
+    public Node collectRootNode(MavenProject pom) {
+        DependencyNode root = collectDependencies(pom);
+        return addRootNode(root);
     }
 
     private Node resolveRootNode(Node root, Filter filter, int depth) {
@@ -161,7 +178,7 @@ public class Graph {
     /**
      * @since 2.0
      */
-    private void addNode(Node node) {
+    public void addNode(Node node) {
         nodes.put(node.getId(), node);
         AntClient.getInstance().log("Added node: " + node, Project.MSG_DEBUG);
         String scope = node.getDependency().getScope();
@@ -222,21 +239,13 @@ public class Graph {
 
     public DependencyNode collectDependencies(Dependency dependency) {
         AntClient.getInstance().log(String.format("Collecting " + dependency), Project.MSG_DEBUG);
-        try {
-            // ArtifactDescriptorRequest descriptorRequest = new
-            // ArtifactDescriptorRequest(
-            // dependency.getArtifact(), mojo.getRemoteRepositories(),
-            // null);
-            // ArtifactDescriptorResult descriptorResult =
-            // mojo.getSystem().readArtifactDescriptor(
-            // mojo.getSession(), descriptorRequest);
-            // CollectRequest collectRequest = new CollectRequest();
-            // collectRequest.setRootArtifact(descriptorResult.getArtifact());
-            // collectRequest.setDependencies(descriptorResult.getDependencies());
-            // collectRequest.setManagedDependencies(descriptorResult.getManagedDependencies());
-            // collectRequest.setRepositories(mojo.getRemoteRepositories());
+        CollectRequest collectRequest = new CollectRequest(dependency, mojo.getRemoteRepositories());
+        collectRequest.setRequestContext("AAMP graph");
+        return collect(collectRequest);
+    }
 
-            CollectRequest collectRequest = new CollectRequest(dependency, mojo.getRemoteRepositories());
+    protected DependencyNode collect(CollectRequest collectRequest) {
+        try {
             CollectResult result = mojo.getSystem().collectDependencies(mojo.getSession(), collectRequest);
             DependencyNode node = result.getRoot();
             AntClient.getInstance().log("Collect result: " + result, Project.MSG_DEBUG);
@@ -245,8 +254,72 @@ public class Graph {
                      .log("Direct dependencies: " + String.valueOf(node.getChildren()), Project.MSG_DEBUG);
             return node;
         } catch (DependencyCollectionException e) {
-            throw new BuildException("Cannot collect dependency tree for " + dependency, e);
+            throw new BuildException("Cannot collect dependency tree for " + collectRequest, e);
         }
+    }
+
+    /**
+     * @since 2.0.4
+     */
+    public DependencyNode collectDependencies(MavenProject project) {
+        AntClient.getInstance().log(String.format("Collecting " + project), Project.MSG_DEBUG);
+        CollectRequest collectRequest = new CollectRequest();
+        Artifact rootArtifact = project.getArtifact();
+        rootArtifact.setFile(project.getFile());
+        collectRequest.setRootArtifact(RepositoryUtils.toArtifact(rootArtifact));
+        collectRequest.setRoot(RepositoryUtils.toDependency(rootArtifact, null));
+        collectRequest.setRequestContext("AAMP graph");
+        collectRequest.setRepositories(project.getRemoteProjectRepositories());
+
+        ArtifactTypeRegistry stereotypes = mojo.getSession().getArtifactTypeRegistry();
+        // BEGIN Code copy from
+        // org.apache.maven.project.DefaultProjectDependenciesResolver.resolve(DependencyResolutionRequest)
+        if (project.getDependencyArtifacts() == null) {
+            for (org.apache.maven.model.Dependency dependency : project.getDependencies()) {
+                if (StringUtils.isEmpty(dependency.getGroupId()) || StringUtils.isEmpty(dependency.getArtifactId())
+                        || StringUtils.isEmpty(dependency.getVersion())) {
+                    // guard against case where best-effort resolution for invalid models is requested
+                    continue;
+                }
+                collectRequest.addDependency(RepositoryUtils.toDependency(dependency, stereotypes));
+            }
+        } else {
+            Map<String, org.apache.maven.model.Dependency> dependencies = new HashMap<>();
+            for (org.apache.maven.model.Dependency dependency : project.getDependencies()) {
+                String classifier = dependency.getClassifier();
+                if (classifier == null) {
+                    ArtifactType type = stereotypes.get(dependency.getType());
+                    if (type != null) {
+                        classifier = type.getClassifier();
+                    }
+                }
+                String key = ArtifactIdUtils.toVersionlessId(dependency.getGroupId(), dependency.getArtifactId(),
+                        dependency.getType(), classifier);
+                dependencies.put(key, dependency);
+            }
+            for (Artifact artifact : project.getDependencyArtifacts()) {
+                String key = artifact.getDependencyConflictId();
+                org.apache.maven.model.Dependency dependency = dependencies.get(key);
+                Collection<Exclusion> exclusions = dependency != null ? dependency.getExclusions() : null;
+                org.eclipse.aether.graph.Dependency dep = RepositoryUtils.toDependency(artifact, exclusions);
+                if (!JavaScopes.SYSTEM.equals(dep.getScope()) && dep.getArtifact().getFile() != null) {
+                    // enable re-resolution
+                    org.eclipse.aether.artifact.Artifact art = dep.getArtifact();
+                    art = art.setFile(null).setVersion(art.getBaseVersion());
+                    dep = dep.setArtifact(art);
+                }
+                collectRequest.addDependency(dep);
+            }
+        }
+
+        DependencyManagement depMngt = project.getDependencyManagement();
+        if (depMngt != null) {
+            for (org.apache.maven.model.Dependency dependency : depMngt.getDependencies()) {
+                collectRequest.addManagedDependency(RepositoryUtils.toDependency(dependency, stereotypes));
+            }
+        }
+        // END
+        return collect(collectRequest);
     }
 
     /**

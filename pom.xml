@@ -44,8 +44,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <debugITs>false</debugITs>
-    <mavenVersion>3.1.1</mavenVersion>
-    <aetherVersion>0.9.0.M4</aetherVersion>
+    <mavenVersion>3.3.3</mavenVersion>
+    <aetherVersion>1.0.2.v20150114</aetherVersion>
     <sonar.host.url>https://sonar.nuxeo.org/</sonar.host.url>
     <sonar.java.source>1.7</sonar.java.source>
     <license.useMissingFile>true</license.useMissingFile>
@@ -156,7 +156,7 @@
       <dependency>
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>org.eclipse.sisu.plexus</artifactId>
-        <version>0.0.0.M5</version>
+        <version>0.3.1</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.aether</groupId>
@@ -201,7 +201,7 @@
       <dependency>
         <groupId>org.codehaus.plexus</groupId>
         <artifactId>plexus-utils</artifactId>
-        <version>3.0.16</version>
+        <version>3.0.20</version>
       </dependency>
       <dependency>
         <groupId>org.apache.httpcomponents</groupId>
