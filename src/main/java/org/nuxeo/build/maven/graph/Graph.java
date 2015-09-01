@@ -224,6 +224,10 @@ public class Graph {
             if (ad.getType() != null && !ad.getType().equals(artifact.getType())) {
                 continue;
             }
+            if (ad.getClassifier() != null && !ad.getClassifier().equals(artifact.getClassifier())
+                    || ad.getClassifier() == null && artifact.hasClassifier()) {
+                continue;
+            }
             try {
                 if (returnNode != null
                         && artifact.getSelectedVersion().compareTo(returnNode.getMavenArtifact().getSelectedVersion()) < 0) {
