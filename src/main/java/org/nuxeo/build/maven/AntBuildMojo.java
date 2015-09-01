@@ -151,7 +151,7 @@ public class AntBuildMojo extends AbstractMojo {
         return session;
     }
 
-    @Component
+    @Parameter(defaultValue = "${project}", readonly = true)
     protected MavenProject project;
 
     @Component

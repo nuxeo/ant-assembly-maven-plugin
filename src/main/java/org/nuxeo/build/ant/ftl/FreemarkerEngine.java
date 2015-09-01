@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -37,15 +37,14 @@ public class FreemarkerEngine {
     protected Configuration cfg;
 
     public FreemarkerEngine() {
-        this.cfg = getDefaultConfiguration();
+        cfg = getDefaultConfiguration();
     }
 
     public void setBaseDir(File baseDir) throws BuildException {
         try {
             cfg.setTemplateLoader(new FileTemplateLoader(baseDir));
         } catch (Exception e) {
-            throw new BuildException(
-                    "Failed to create FreeMarker configuration", e);
+            throw new BuildException("Failed to create FreeMarker configuration", e);
         }
     }
 
@@ -54,7 +53,7 @@ public class FreemarkerEngine {
     }
 
     protected Configuration getDefaultConfiguration() {
-        Configuration configuration = new Configuration();
+        Configuration configuration = new Configuration(Configuration.getVersion());
         configuration.setWhitespaceStripping(true);
         configuration.setLocalizedLookup(false);
         configuration.setClassicCompatible(true);
