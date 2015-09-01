@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -33,6 +33,8 @@ import org.apache.tools.ant.types.resources.FileResource;
 import org.eclipse.aether.artifact.Artifact;
 import org.eclipse.aether.resolution.ArtifactResult;
 import org.eclipse.aether.resolution.DependencyResult;
+import org.eclipse.aether.util.artifact.JavaScopes;
+
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.filter.AncestorFilter;
@@ -117,8 +119,8 @@ public class ArtifactSet extends DataType implements ResourceCollection {
             throw tooManyAttributes();
         }
         // Exclude test and provided scopes by default
-        scopeTest = "test".equals(scope) || "*".equals(scope);
-        scopeProvided = "provided".equals(scope) || "*".equals(scope);
+        scopeTest = JavaScopes.TEST.equals(scope) || "*".equals(scope);
+        scopeProvided = JavaScopes.PROVIDED.equals(scope) || "*".equals(scope);
         filter.addFilter(new ScopeFilter(scope));
     }
 
@@ -151,7 +153,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
     }
 
     public void setSrc(File importFile) {
-        this.src = importFile;
+        src = importFile;
     }
 
     public void addExpand(@SuppressWarnings("hiding") Expand expand) {
@@ -186,8 +188,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
             throw noChildrenAllowed();
         }
         if (this.includes != null) {
-            throw new BuildException(
-                    "Found an Includes that is defined more than once in an artifactSet");
+            throw new BuildException("Found an Includes that is defined more than once in an artifactSet");
         }
         this.includes = includes;
     }
@@ -197,8 +198,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
             throw noChildrenAllowed();
         }
         if (this.excludes != null) {
-            throw new BuildException(
-                    "Found an Excludes that is defined more than once in an artifactSet");
+            throw new BuildException("Found an Excludes that is defined more than once in an artifactSet");
         }
         this.excludes = excludes;
     }
@@ -216,10 +216,10 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         AndFilter f = new AndFilter();
         if (!filter.isEmpty()) {
             if (!scopeTest) {
-                filter.addFilter(new NotFilter(new ScopeFilter("test")));
+                filter.addFilter(new NotFilter(new ScopeFilter(JavaScopes.TEST)));
             }
             if (!scopeProvided) {
-                filter.addFilter(new NotFilter(new ScopeFilter("provided")));
+                filter.addFilter(new NotFilter(new ScopeFilter(JavaScopes.PROVIDED)));
             }
             f.addFilters(filter.getFilters());
         }
@@ -257,8 +257,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         }
         roots.addAll(AntBuildMojo.getInstance().getGraph().getRoots());
         for (Node node : roots) {
-            DependencyResult result = DependencyUtils.resolveDependencies(node,
-                    finalFilter, depth);
+            DependencyResult result = DependencyUtils.resolveDependencies(node, finalFilter, depth);
             for (ArtifactResult artifactResult : result.getArtifactResults()) {
                 resultArtifacts.add(artifactResult.getArtifact());
             }
@@ -278,8 +277,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         if (artifacts == null) {
             artifacts = computeNodes();
         }
-        AntClient.getInstance().log("ArtifactSet.getArtifacts() " + artifacts,
-                new Error(), Project.MSG_DEBUG);
+        AntClient.getInstance().log("ArtifactSet.getArtifacts() " + artifacts, new Error(), Project.MSG_DEBUG);
         if (id != null) { // avoid caching if artifactSet is referencable
             Collection<Artifact> copy = artifacts;
             artifacts = null;
@@ -293,8 +291,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         return createIterator(getArtifacts());
     }
 
-    public static Iterator<Resource> createIterator(
-            Collection<Artifact> collection) {
+    public static Iterator<Resource> createIterator(Collection<Artifact> collection) {
         List<Resource> files = new ArrayList<>();
         for (Artifact artifact : collection) {
             File file = artifact.getFile();
@@ -322,8 +319,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
             ArtifactSetParser parser = new ArtifactSetParser(getProject());
             parser.parse(src, nodesCollection);
         } catch (IOException e) {
-            throw new BuildException("Failed to import artifacts file: " + src,
-                    e);
+            throw new BuildException("Failed to import artifacts file: " + src, e);
         }
     }
 

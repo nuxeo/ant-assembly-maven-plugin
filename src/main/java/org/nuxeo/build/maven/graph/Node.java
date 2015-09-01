@@ -32,6 +32,7 @@ import org.eclipse.aether.repository.RemoteRepository;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.version.Version;
 import org.eclipse.aether.version.VersionConstraint;
+
 import org.nuxeo.build.ant.AntClient;
 
 /**
@@ -71,8 +72,7 @@ public class Node implements DependencyNode {
         return genNodeId(artifact, scope);
     }
 
-    public static String genNodeId(
-            org.eclipse.aether.artifact.Artifact artifact, String scope) {
+    public static String genNodeId(org.eclipse.aether.artifact.Artifact artifact, String scope) {
         StringBuilder sb = new StringBuilder();
         sb.append(artifact.getGroupId());
         sb.append(':').append(artifact.getArtifactId());
@@ -87,11 +87,11 @@ public class Node implements DependencyNode {
     }
 
     public Node(Node node) {
-        this.dependencyNode = node.dependencyNode;
-        this.id = node.id;
-        this.graph = node.graph;
-        this.acceptedCategories = node.acceptedCategories;
-        this.parents = node.parents;
+        dependencyNode = node.dependencyNode;
+        id = node.id;
+        graph = node.graph;
+        acceptedCategories = node.acceptedCategories;
+        parents = node.parents;
     }
 
     /**
@@ -102,9 +102,9 @@ public class Node implements DependencyNode {
         this.dependencyNode = dependencyNode;
         Dependency dependency = dependencyNode.getDependency();
         if (dependency != null) {
-            this.id = genNodeId(dependency);
+            id = genNodeId(dependency);
         } else {
-            this.id = genNodeId(dependencyNode.getArtifact(), "");
+            id = genNodeId(dependencyNode.getArtifact(), "");
         }
     }
 
@@ -251,7 +251,7 @@ public class Node implements DependencyNode {
 
     @Deprecated
     public List<DependencyNode> getParents() {
-        return this.parents;
+        return parents;
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -17,6 +17,8 @@
 package org.nuxeo.build.ant.artifact;
 
 import org.apache.tools.ant.types.DataType;
+import org.eclipse.aether.util.artifact.JavaScopes;
+
 import org.nuxeo.build.maven.filter.AncestorFilter;
 import org.nuxeo.build.maven.filter.AndFilter;
 import org.nuxeo.build.maven.filter.ArtifactIdFilter;
@@ -68,11 +70,11 @@ public class ArtifactPattern extends DataType {
 
     public AndFilter getFilter() {
         if (!scopeTest) {
-            filter.addFilter(new NotFilter(new ScopeFilter("test")));
+            filter.addFilter(new NotFilter(new ScopeFilter(JavaScopes.TEST)));
             scopeTest = true; // to avoid loop
         }
         if (!scopeProvided) {
-            filter.addFilter(new NotFilter(new ScopeFilter("provided")));
+            filter.addFilter(new NotFilter(new ScopeFilter(JavaScopes.PROVIDED)));
             scopeProvided = true; // to avoid loop
         }
         return filter;
@@ -106,8 +108,8 @@ public class ArtifactPattern extends DataType {
     public void setScope(String scope) {
         this.scope = scope;
         // Exclude test and provided scopes by default
-        scopeTest = "test".equals(scope) || "*".equals(scope);
-        scopeProvided = "provided".equals(scope) || "*".equals(scope);
+        scopeTest = JavaScopes.TEST.equals(scope) || "*".equals(scope);
+        scopeProvided = JavaScopes.PROVIDED.equals(scope) || "*".equals(scope);
         filter.addFilter(ScopeFilter.class, scope);
     }
 
@@ -134,8 +136,7 @@ public class ArtifactPattern extends DataType {
     @Deprecated
     public void setCategory(String category) {
         this.category = category;
-        categoryFilter = new ManifestBundleCategoryFilter(category,
-                isDependsOnCategory);
+        categoryFilter = new ManifestBundleCategoryFilter(category, isDependsOnCategory);
         filter.addFilter(categoryFilter);
     }
 

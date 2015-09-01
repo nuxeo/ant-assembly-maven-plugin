@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.tools.ant.Project;
+import org.eclipse.aether.util.artifact.JavaScopes;
+
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 
@@ -92,13 +94,13 @@ public abstract class CompositeFilter extends AbstractFilter {
         }
 
         // Exclude test and provided scopes by default
-        boolean scopeTest = "test".equals(ad.getScope()) || "*".equals(ad.getScope());
-        boolean scopeProvided = "provided".equals(ad.getScope()) || "*".equals(ad.getScope());
+        boolean scopeTest = JavaScopes.TEST.equals(ad.getScope()) || "*".equals(ad.getScope());
+        boolean scopeProvided = JavaScopes.PROVIDED.equals(ad.getScope()) || "*".equals(ad.getScope());
         if (!scopeTest) {
-            addFilter(new NotFilter(new ScopeFilter("test")));
+            addFilter(new NotFilter(new ScopeFilter(JavaScopes.TEST)));
         }
         if (!scopeProvided) {
-            addFilter(new NotFilter(new ScopeFilter("provided")));
+            addFilter(new NotFilter(new ScopeFilter(JavaScopes.PROVIDED)));
         }
         if (ad.getScope() != null && !ad.getScope().equals("*")) {
             addFilter(ScopeFilter.class, ad.getScope());

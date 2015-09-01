@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -28,6 +28,7 @@ import org.eclipse.aether.resolution.ArtifactDescriptorResult;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
 import org.eclipse.aether.util.StringUtils;
 import org.eclipse.aether.util.artifact.JavaScopes;
+
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
 import org.nuxeo.build.maven.graph.DependencyUtils;
@@ -40,8 +41,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 /**
- * Print the dependency management of a POM
- * TODO NXBT-258
+ * Print the dependency management of a POM TODO NXBT-258
  *
  * @since 2.0.2
  */
@@ -96,8 +96,7 @@ public class PrintDependencyManagementTask extends Task {
             ArtifactDescriptorRequest request = new ArtifactDescriptorRequest();
             request.setArtifact(artifact);
             request.setRepositories(mojo.getRemoteRepositories());
-            ArtifactDescriptorResult result = mojo.getSystem().readArtifactDescriptor(
-                    mojo.getSession(), request);
+            ArtifactDescriptorResult result = mojo.getSystem().readArtifactDescriptor(mojo.getSession(), request);
             Throwable checks = new Throwable();
             for (Dependency dependency : result.getManagedDependencies()) {
                 if (check) {
@@ -109,8 +108,7 @@ public class PrintDependencyManagementTask extends Task {
                         if (checkOutput == null) {
                             msg = "Cannot resolve ";
                         }
-                        err.write((msg + toString(dependency)).getBytes(
-                                AntBuildMojo.getInstance().getEncoding()));
+                        err.write((msg + toString(dependency)).getBytes(AntBuildMojo.getInstance().getEncoding()));
                         continue;
                     }
                 }
@@ -119,8 +117,7 @@ public class PrintDependencyManagementTask extends Task {
                     scope = JavaScopes.COMPILE;
                 }
                 if (scopes == null || scopes.contains(scope)) {
-                    out.write(toString(dependency).getBytes(
-                            AntBuildMojo.getInstance().getEncoding()));
+                    out.write(toString(dependency).getBytes(AntBuildMojo.getInstance().getEncoding()));
                 }
             }
             for (Throwable t : checks.getSuppressed()) {
@@ -142,8 +139,7 @@ public class PrintDependencyManagementTask extends Task {
         case KV_F_GAV:
             String filename;
             if (artifact.getFile() == null) {
-                filename = artifact.getArtifactId() + "-"
-                        + artifact.getBaseVersion();
+                filename = artifact.getArtifactId() + "-" + artifact.getBaseVersion();
                 if (!StringUtils.isEmpty(artifact.getClassifier())) {
                     filename += "-" + artifact.getClassifier();
                 }
@@ -214,7 +210,6 @@ public class PrintDependencyManagementTask extends Task {
      * GAV of artifact to analyze. If null, the current project is used.
      *
      * @param key
-     *
      */
     public void setKey(String key) {
         this.key = key;
@@ -224,7 +219,6 @@ public class PrintDependencyManagementTask extends Task {
      * Whether to check the artifact availability (using resolve).
      *
      * @param check
-     *
      */
     public void setCheck(boolean check) {
         this.check = check;
