@@ -270,6 +270,23 @@
         <version>${mavenVersion}</version>
       </dependency>
 
+      <!-- Dependency convergence -->
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>18.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.maven</groupId>
+        <artifactId>maven-repository-metadata</artifactId>
+        <version>3.3.3</version>
+      </dependency>
+      <dependency>
+        <groupId>org.codehaus.plexus</groupId>
+        <artifactId>plexus-interpolation</artifactId>
+        <version>1.21</version>
+      </dependency>
+
       <!-- scope test -->
       <dependency>
         <groupId>junit</groupId>
@@ -484,6 +501,7 @@
               <requireJavaVersion>
                 <version>[1.7,)</version>
               </requireJavaVersion>
+              <dependencyConvergence />
             </rules>
             <skip>false</skip>
           </configuration>
