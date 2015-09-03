@@ -70,6 +70,14 @@ public class Graph {
         return nodes.values();
     }
 
+    /**
+     * That methods looks for the pattern and returns the first matching node. It is now deprecated since there are no
+     * use case for it. Use instead {@link #findFirst(String, boolean)} which will fail if two artifacts match the
+     * pattern.
+     *
+     * @deprecated Since 2.0.4. This method is not very interesting.
+     */
+    @Deprecated
     public Node findFirst(String pattern) {
         return findFirst(pattern, false);
     }
@@ -85,8 +93,10 @@ public class Graph {
             return null;
         }
         if (stopIfNotUnique && size > 1) {
-            throw new BuildException(String.format(
-                    "Pattern '%s' cannot be resolved to a unique node. Matching nodes are: %s", pattern, map.values()));
+            AntClient.getInstance().log(
+                    String.format("Pattern '%s' cannot be resolved to a unique node. Matching nodes are: %s", pattern,
+                            map.values()), Project.MSG_DEBUG);
+            return null;
         }
         return map.get(map.firstKey());
     }
@@ -209,6 +219,9 @@ public class Graph {
     }
 
     public Node findNode(ArtifactDescriptor ad) {
+        if (ad.isEmpty()) {
+            return null;
+        }
         String key = ad.getNodeKeyPattern();
         Collection<Node> nodesToParse = null;
         if (key == null) {
@@ -379,6 +392,15 @@ public class Graph {
      */
     public Node getNode(Dependency dependency) {
         return nodes.get(Node.genNodeId(dependency));
+    }
+
+    /**
+     * @param key
+     * @throws BuildException
+     * @since 2.0.4
+     */
+    public Node findNode(String key) throws BuildException {
+        return findNode(key, ArtifactDescriptor.parseQuietly(key));
     }
 
     /**
