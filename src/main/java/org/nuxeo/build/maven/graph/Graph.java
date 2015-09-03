@@ -179,26 +179,33 @@ public class Graph {
      * @since 2.0
      */
     public void addNode(Node node) {
+        if (nodes.containsKey(node.getId())) {
+            return;
+        }
         nodes.put(node.getId(), node);
         AntClient.getInstance().log("Added node: " + node, Project.MSG_DEBUG);
-        String scope = node.getDependency().getScope();
-        List<DependencyNode> removes = new ArrayList<>();
+        if (!roots.contains(node)) {
+            // Check resolved children follow Maven rules on transitive dependencies scope
+            // https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Transitive_Dependencies
+            List<DependencyNode> removes = new ArrayList<>();
+            for (DependencyNode child : node.getChildren()) {
+                String childScope = child.getDependency().getScope();
+                if (JavaScopes.PROVIDED.equals(childScope) || JavaScopes.TEST.equals(childScope)) {
+                    AntClient.getInstance().log("Unexpected child node: " + child + " for " + node, Project.MSG_DEBUG);
+                    removes.add(child);
+                }
+            }
+            node.getChildren().removeAll(removes);
+        }
+        // Add children
         for (DependencyNode child : node.getChildren()) {
-            String childScope = child.getDependency().getScope();
-            Node childNode = new Node(this, child);
-            if (!roots.contains(node)
-                    && !nodes.containsKey(childNode.getId())
-                    && (JavaScopes.TEST.equals(scope) && !JavaScopes.COMPILE.equals(childScope)
-                            && !JavaScopes.RUNTIME.equals(childScope) || !JavaScopes.TEST.equals(scope)
-                            && JavaScopes.TEST.equals(childScope))) {
-                AntClient.getInstance().log("Unexpected child node: " + child + " for " + node, Project.MSG_WARN);
-                removes.add(child);
-                continue;
+            Node childNode = nodes.get(Node.genNodeId(child));
+            if (childNode == null) {
+                childNode = new Node(this, child);
+                addNode(childNode);
             }
             childNode.addParent(node);
-            addNode(childNode);
         }
-        node.getChildren().removeAll(removes);
     }
 
     public Node findNode(ArtifactDescriptor ad) {

@@ -433,6 +433,8 @@
             <addTestClassPath>true</addTestClassPath>
             <mavenExecutable>mvn</mavenExecutable>
             <parallelThreads>5</parallelThreads>
+            <showVersion>true</showVersion>
+            <showErrors>true</showErrors>
           </configuration>
         </plugin>
         <plugin>
@@ -518,6 +520,18 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-plugin-versions</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
@@ -525,12 +539,11 @@
             <goals>
               <goal>analyze-only</goal>
             </goals>
-            <configuration>
-            </configuration>
           </execution>
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-invoker-plugin</artifactId>
         <executions>
           <execution>
@@ -546,8 +559,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -616,18 +627,6 @@
                 <id>attach-javadocs</id>
                 <goals>
                   <goal>jar</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-enforcer-plugin</artifactId>
-            <executions>
-              <execution>
-                <id>enforce-plugin-versions</id>
-                <goals>
-                  <goal>enforce</goal>
                 </goals>
               </execution>
             </executions>

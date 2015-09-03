@@ -1,5 +1,5 @@
 /*
- * (C) Copyright 2006-2014 Nuxeo SA (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
@@ -87,6 +87,18 @@ public class Node implements DependencyNode {
         return sb.toString();
     }
 
+    /**
+     * @since 2.0.4
+     */
+    public static String genNodeId(DependencyNode node) {
+        Dependency dependency = node.getDependency();
+        if (dependency != null) {
+            return genNodeId(dependency);
+        } else {
+            return genNodeId(node.getArtifact(), "");
+        }
+    }
+
     public Node(Node node) {
         dependencyNode = node.dependencyNode;
         id = node.id;
@@ -101,12 +113,7 @@ public class Node implements DependencyNode {
     public Node(Graph graph, DependencyNode dependencyNode) {
         this.graph = graph;
         this.dependencyNode = dependencyNode;
-        Dependency dependency = dependencyNode.getDependency();
-        if (dependency != null) {
-            id = genNodeId(dependency);
-        } else {
-            id = genNodeId(dependencyNode.getArtifact(), "");
-        }
+        id = genNodeId(dependencyNode);
     }
 
     public Artifact getMavenArtifact() {

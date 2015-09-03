@@ -211,7 +211,13 @@ Use comma separator. Wildcards are accepted.
 
 ## Integration tests results
 
-Results are in target/it/* sub-folders.
+Results are in `target/it/*` sub-folders.
+
+### Manually replay integration tests
+
+You can manually execute some Maven commands from a result directory (`target/it/*`) providing a specific `settings.xml` file:
+
+    mvn -s ../../../it-settings.xml ...
 
 ## Integration tests debug logs
 

@@ -1,11 +1,7 @@
 <?xml version="1.0"?>
-<project name="test3"
-         default="all-tests"
-         xmlns:nx="urn:nuxeo-build"
-         xmlns:artifact="urn:nuxeo-artifact">
+<project name="test3" default="all-tests" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
-  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
-           uri="urn:nuxeo-artifact" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
   <target name="all-tests" description="Test assembly">
@@ -52,8 +48,7 @@
     <zip destfile="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
          basedir="${outdir}"
          includes="**/*.log" />
-    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip"
-                     type="zip" />
+    <artifact:attach file="${outdir}/${maven.project.artifactId}-${maven.project.version}.zip" type="zip" />
 
     <!-- Checks -->
     <resourcecount property="count.bundles">
@@ -95,13 +90,13 @@
               </or>
             </not>
             <equals arg1="${count.bundles}" arg2="87" />
-            <equals arg1="${count.libs}" arg2="150" />
+            <equals arg1="${count.libs}" arg2="149" />
             <available file="${outdir}/bin/nuxeoctl" />
             <available file="${outdir}/includes" />
             <filesmatch file1="${outdir}/includes" file2="includes.expected" />
             <available file="${outdir}/test/opencsv-2.1.jar" />
             <equals arg1="${count.test}" arg2="5" />
-            <equals arg1="${count.test2}" arg2="275" />
+            <equals arg1="${count.test2}" arg2="239" />
           </and>
         </not>
       </condition>
