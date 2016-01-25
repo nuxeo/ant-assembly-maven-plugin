@@ -380,19 +380,6 @@ public class AntBuildMojo extends AbstractMojo {
             // define a property for each activated profile
             antProject.setProperty(propertyPrefix + "profile." + profileId, "true");
         }
-        // add profile properties (overriding project ones)
-        for (Profile profile : getActiveProfiles()) {
-            for (String key : profile.getProperties().stringPropertyNames()) {
-                String profilePropertyValue = profile.getProperties().getProperty(key);
-                String propertyValue = antProject.getProperty(key);
-                if (!profilePropertyValue.equals(propertyValue)) {
-                    getLog().error(
-                            String.format("%s set property %s = %s (was %s)", profile, key, profilePropertyValue,
-                                    propertyValue));
-                    antProject.setUserProperty(key, profilePropertyValue);
-                }
-            }
-        }
         // Finally add System properties (overriding project and profile ones)
         for (String key : System.getProperties().stringPropertyNames()) {
             antProject.setUserProperty(key, System.getProperty(key));
