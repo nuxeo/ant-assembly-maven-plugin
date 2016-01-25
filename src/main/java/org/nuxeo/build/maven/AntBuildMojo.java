@@ -18,9 +18,11 @@
 package org.nuxeo.build.maven;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
@@ -347,7 +349,7 @@ public class AntBuildMojo extends AbstractMojo {
      */
     protected void setAntPropertiesFromMaven(Project antProject) {
         for (String key : project.getProperties().stringPropertyNames()) {
-            antProject.setUserProperty(key, project.getProperties().getProperty(key));
+            antProject.setInheritedProperty(key, project.getProperties().getProperty(key));
         }
         antProject.setProperty(propertyPrefix + "basedir", project.getBasedir().getPath());
         antProject.setProperty(propertyPrefix + "project.groupId", project.getGroupId());
@@ -373,14 +375,22 @@ public class AntBuildMojo extends AbstractMojo {
 
         // add active Maven profiles to Ant
         antProfileManager = new AntProfileManager();
-        List<Profile> profiles = getActiveProfiles();
-        for (Profile profile : profiles) {
-            antProfileManager.activateProfile(profile.getId(), true);
+        for (String profileId : getInjectedProfileIds()) {
+            antProfileManager.activateProfile(profileId, true);
             // define a property for each activated profile
-            antProject.setProperty(propertyPrefix + "profile." + profile.getId(), "true");
-            // add profile properties (overriding project ones)
+            antProject.setProperty(propertyPrefix + "profile." + profileId, "true");
+        }
+        // add profile properties (overriding project ones)
+        for (Profile profile : getActiveProfiles()) {
             for (String key : profile.getProperties().stringPropertyNames()) {
-                antProject.setUserProperty(key, profile.getProperties().getProperty(key));
+                String profilePropertyValue = profile.getProperties().getProperty(key);
+                String propertyValue = antProject.getProperty(key);
+                if (!profilePropertyValue.equals(propertyValue)) {
+                    getLog().error(
+                            String.format("%s set property %s = %s (was %s)", profile, key, profilePropertyValue,
+                                    propertyValue));
+                    antProject.setUserProperty(key, profilePropertyValue);
+                }
             }
         }
         // Finally add System properties (overriding project and profile ones)
@@ -391,6 +401,25 @@ public class AntBuildMojo extends AbstractMojo {
 
     public List<Profile> getActiveProfiles() {
         return project.getActiveProfiles();
+    }
+
+    public List<String> getInjectedProfileIds() {
+        List<String> profileIds = new ArrayList<>();
+        Map<String, List<String>> injectedProfileIds = project.getInjectedProfileIds();
+        if (injectedProfileIds.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("Active Maven profiles:");
+            for (Map.Entry<String, List<String>> entry : injectedProfileIds.entrySet()) {
+                for (String profileId : entry.getValue()) {
+                    sb.append(String.format("\n%s (source: %s)", profileId, entry.getKey()));
+                    if (!profileIds.contains(profileId)) {
+                        profileIds.add(profileId);
+                    }
+                }
+            }
+            getLog().info(sb.toString());
+        }
+        return profileIds;
     }
 
     public MavenProject getProject() {

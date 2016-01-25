@@ -1,0 +1,116 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.nuxeo.build</groupId>
+  <artifactId>test-profile-parent</artifactId>
+  <version>@pom.version@</version>
+  <packaging>pom</packaging>
+  <name>NXBT-982 use of inherited and local profiles</name>
+  <description>A profile must not need to be defined locally for being activated: it can be inherited.
+Testing scenario:
+profile-1 activated by file,        defined in parent
+profile-2 non activated,            defined in parent
+profile-3 activated by file,        deactivated by user,            defined in parent
+profile-4 activated by user,        defined in parent
+profile-5 non activated in parent,  activated by file in module
+profile-6 activated by user,        defined in module
+
+property.1=test-profile-parent      defined in parent
+property.2=profile-1                defined in parent,              overwritten by profile 1 in parent
+property.3=test-profile-module      defined in parent,              overwritten by module
+property.4=profile-1                defined by profile 1 in parent
+property.5=test-profile-module      defined by profile 1 in parent, defined in module
+property.6=test-profile-module      defined in module
+property.7=profile-4                defined by profile 4 in parent
+property.8=profile-5-module         defined by profile 4 in parent, overwritten by profile 5 in module
+property.9=user                     defined by profile 4 in parent, overwritten by user
+property.10=user                    defined by user
+</description>
+
+  <modules>
+    <module>module</module>
+  </modules>
+
+  <properties>
+    <property.1>test-profile-parent</property.1>
+    <property.2>test-profile-parent</property.2>
+    <property.3>test-profile-parent</property.3>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>profile-1</id>
+      <activation>
+        <file>
+          <exists>pom.xml</exists>
+        </file>
+      </activation>
+      <properties>
+        <property.2>profile-1</property.2>
+        <property.4>profile-1</property.4>
+        <property.5>profile-1</property.5>
+      </properties>
+    </profile>
+    <profile>
+      <id>profile-2</id>
+      <properties>
+        <property.2>profile-2</property.2>
+        <property.4>profile-2</property.4>
+        <property.5>profile-2</property.5>
+      </properties>
+    </profile>
+    <profile>
+      <id>profile-3</id>
+      <activation>
+        <file>
+          <exists>pom.xml</exists>
+        </file>
+      </activation>
+      <properties>
+        <property.2>profile-3</property.2>
+        <property.4>profile-3</property.4>
+        <property.5>profile-3</property.5>
+      </properties>
+    </profile>
+    <profile>
+      <id>profile-4</id>
+      <properties>
+        <property.7>profile-4</property.7>
+        <property.8>profile-4</property.8>
+        <property.9>profile-4</property.9>
+      </properties>
+    </profile>
+    <profile>
+      <id>profile-5</id>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+        <version>2.5.1</version>
+        <inherited>true</inherited>
+        <configuration>
+          <installAtEnd>true</installAtEnd>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>public</id>
+      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+</project>

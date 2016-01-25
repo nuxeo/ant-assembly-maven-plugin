@@ -36,56 +36,46 @@ public class ProfileTask extends Sequential {
 
     public void setName(String name) {
         if (activate != null) {
-            throw new BuildException(
-                    "Name and activate properties are exclusive. You cannot specify both.");
+            throw new BuildException("Name and activate properties are exclusive. You cannot specify both.");
         }
         if (group != null) {
-            throw new BuildException(
-                    "group and name properties are exclusive. You cannot specify both.");
+            throw new BuildException("group and name properties are exclusive. You cannot specify both.");
         }
         if (defaultProfile != null) {
-            throw new BuildException(
-                    "Default and name properties are exclusive. You cannot specify both.");
+            throw new BuildException("Default and name properties are exclusive. You cannot specify both.");
         }
         this.name = name;
     }
 
     public void setActivate(String activate) {
         if (name != null) {
-            throw new BuildException(
-                    "Name and activate properties are exclusive. You cannot specify both.");
+            throw new BuildException("Name and activate properties are exclusive. You cannot specify both.");
         }
         if (group != null) {
-            throw new BuildException(
-                    "group and activate properties are exclusive. You cannot specify both.");
+            throw new BuildException("group and activate properties are exclusive. You cannot specify both.");
         }
         if (defaultProfile != null) {
-            throw new BuildException(
-                    "Default and activate properties are exclusive. You cannot specify both.");
+            throw new BuildException("Default and activate properties are exclusive. You cannot specify both.");
         }
         this.activate = activate;
     }
 
     public void setGroup(String group) {
         if (name != null) {
-            throw new BuildException(
-                    "Group and name properties are exclusive. You cannot specify both.");
+            throw new BuildException("Group and name properties are exclusive. You cannot specify both.");
         }
         if (activate != null) {
-            throw new BuildException(
-                    "Group and activate properties are exclusive. You cannot specify both.");
+            throw new BuildException("Group and activate properties are exclusive. You cannot specify both.");
         }
         this.group = group;
     }
 
     public void setDefault(String defaultProfile) {
         if (name != null) {
-            throw new BuildException(
-                    "default and name properties are exclusive. You cannot specify both.");
+            throw new BuildException("default and name properties are exclusive. You cannot specify both.");
         }
         if (activate != null) {
-            throw new BuildException(
-                    "default and activate properties are exclusive. You cannot specify both.");
+            throw new BuildException("default and activate properties are exclusive. You cannot specify both.");
         }
         this.defaultProfile = defaultProfile;
     }
@@ -93,8 +83,7 @@ public class ProfileTask extends Sequential {
     @Override
     public void addTask(Task nestedTask) {
         if (activate != null) {
-            throw new BuildException(
-                    "Cannot use nested elements when specifying activate attribute.");
+            throw new BuildException("Cannot use nested elements when specifying activate attribute.");
         }
         super.addTask(nestedTask);
     }
@@ -106,8 +95,7 @@ public class ProfileTask extends Sequential {
             super.execute();
         } else if (group != null) {
             String[] profiles = group.split("\\s*,\\s*");
-            AntBuildMojo.getInstance().getAntProfileManager().addGroup(
-                    profiles, activate);
+            mgr.addGroup(profiles, activate);
         } else if (activate != null) {
             mgr.activateProfiles(activate);
         }

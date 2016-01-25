@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<project name="test-profile" default="all-tests" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+  <taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+  <target name="all-tests" description="Test profiles and properties inheritance">
+    <var name="error.msg"
+         value="Error with profiles:${line.separator}
+maven.profile.profile-1=${maven.profile.profile-1};${line.separator}
+maven.profile.profile-4=${maven.profile.profile-4};${line.separator}
+maven.profile.profile-5=${maven.profile.profile-5};${line.separator}
+maven.profile.profile-6=${maven.profile.profile-6}" />
+    <fail message="${error.msg}">
+      <condition>
+        <not>
+          <and>
+            <istrue value="${maven.profile.profile-1}" />
+            <istrue value="${maven.profile.profile-4}" />
+            <istrue value="${maven.profile.profile-5}" />
+            <istrue value="${maven.profile.profile-6}" />
+          </and>
+        </not>
+      </condition>
+    </fail>
+    <nx:profile name="profile-2">
+      <fail />
+    </nx:profile>
+    <nx:profile name="profile-3">
+      <fail />
+    </nx:profile>
+    <fail if="maven.profile.profile-3" />
+    <var name="error.msg"
+         value="Error with properties:${line.separator}
+property.1=${property.1} expected test-profile-parent${line.separator}
+property.2=${property.2} expected profile-1${line.separator}
+property.3=${property.3} expected test-profile-module${line.separator}
+property.4=${property.4} expected profile-1${line.separator}
+property.5=${property.5} expected test-profile-module${line.separator}
+property.6=${property.6} expected test-profile-module${line.separator}
+property.7=${property.7} expected profile-4${line.separator}
+property.8=${property.8} expected profile-5-module${line.separator}
+property.9=${property.9} expected user${line.separator}
+property.10=${property.10} expected user" />
+    <fail message="${error.msg}">
+      <condition>
+        <not>
+          <and>
+            <equals arg1="${property.1}" arg2="test-profile-parent" />
+            <equals arg1="${property.2}" arg2="profile-1" />
+            <equals arg1="${property.3}" arg2="test-profile-module" />
+            <equals arg1="${property.4}" arg2="profile-1" />
+            <equals arg1="${property.5}" arg2="test-profile-module" />
+            <equals arg1="${property.6}" arg2="test-profile-module" />
+            <equals arg1="${property.7}" arg2="profile-4" />
+            <equals arg1="${property.8}" arg2="profile-5-module" />
+            <equals arg1="${property.9}" arg2="user" />
+            <equals arg1="${property.10}" arg2="user" />
+          </and>
+        </not>
+      </condition>
+    </fail>
+  </target>
+
+</project>

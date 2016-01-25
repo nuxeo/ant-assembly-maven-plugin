@@ -1,0 +1,59 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.nuxeo.build</groupId>
+    <artifactId>test-profile-parent</artifactId>
+    <version>@pom.version@</version>
+  </parent>
+
+  <artifactId>test-profile-module</artifactId>
+  <version>@pom.version@</version>
+  <packaging>pom</packaging>
+  <name>TEST local and inherited profiles</name>
+  <description>Check all active profiles are added to Ant</description>
+
+  <properties>
+    <property.3>test-profile-module</property.3>
+    <property.5>test-profile-module</property.5>
+    <property.6>test-profile-module</property.6>
+  </properties>
+
+  <profiles>
+    <profile>
+      <id>profile-5</id>
+      <activation>
+        <file>
+          <exists>pom.xml</exists>
+        </file>
+      </activation>
+      <properties>
+        <property.8>profile-5-module</property.8>
+      </properties>
+    </profile>
+    <profile>
+      <id>profile-6</id>
+    </profile>
+  </profiles>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>ant-assembly-maven-plugin</artifactId>
+        <version>@pom.version@</version>
+        <executions>
+          <execution>
+            <id>packaging</id>
+            <goals>
+              <goal>build</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

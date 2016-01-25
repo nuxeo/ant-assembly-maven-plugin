@@ -21,6 +21,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.tools.ant.Project;
+
+import org.nuxeo.build.ant.AntClient;
+
 /**
  * TODO NXBT-258
  */
@@ -43,8 +47,7 @@ public class AntProfileManager {
         return result;
     }
 
-    public void addGroup(@SuppressWarnings("hiding") String[] profiles,
-            String defaultProfile) {
+    public void addGroup(@SuppressWarnings("hiding") String[] profiles, String defaultProfile) {
         groups.add(new ProfileGroup(this, profiles, defaultProfile));
     }
 
@@ -71,9 +74,9 @@ public class AntProfileManager {
 
     public void activateProfile(String profile, boolean isActive) {
         if (isActive) {
-            System.out.println("Activating profile: " + profile);
+            AntClient.getInstance().log("Activating Ant profile: " + profile, Project.MSG_DEBUG);
         } else {
-            System.out.println("Disabling profile: " + profile);
+            AntClient.getInstance().log("Disabling Ant profile: " + profile, Project.MSG_DEBUG);
         }
         getOrCreateProfile(profile).setActive(isActive);
     }
