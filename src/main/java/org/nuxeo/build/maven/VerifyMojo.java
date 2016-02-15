@@ -34,15 +34,14 @@ import org.apache.maven.surefire.suite.RunResult;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
- * Verify if a summary file exists (created by integration tests). If the file
- * exists and contains errors, then throw a {@link MojoFailureException}.
+ * Verify if a summary file exists (created by integration tests). If the file exists and contains errors, then throw a
+ * {@link MojoFailureException}.
  *
  * @see IntegrationTestMojo
  */
 @Mojo(name = "verify", defaultPhase = LifecyclePhase.VERIFY, threadSafe = true, //
 requiresProject = true, requiresDependencyResolution = ResolutionScope.TEST)
-public class VerifyMojo extends AntBuildMojo implements
-        SurefireReportParameters {
+public class VerifyMojo extends AntBuildMojo implements SurefireReportParameters {
 
     /**
      * The summary file to read integration test results from.
@@ -91,8 +90,8 @@ public class VerifyMojo extends AntBuildMojo implements
     }
 
     /**
-     * Set this to true to ignore a failure during testing. Its use is NOT
-     * RECOMMENDED, but quite convenient on occasion.
+     * Set this to true to ignore a failure during testing. Its use is NOT RECOMMENDED, but quite convenient on
+     * occasion.
      *
      * @since 2.0
      */
@@ -132,10 +131,8 @@ public class VerifyMojo extends AntBuildMojo implements
         SurefireHelper.reportExecution(this, summary, getLog());
     }
 
-    private RunResult readSummary(String sumEncoding, File sumFile)
-            throws IOException {
-        try (InputStream in = new BufferedInputStream(new FileInputStream(
-                sumFile))) {
+    private RunResult readSummary(String sumEncoding, File sumFile) throws IOException {
+        try (InputStream in = new BufferedInputStream(new FileInputStream(sumFile))) {
             return RunResult.fromInputStream(in, sumEncoding);
         }
     }
@@ -165,8 +162,7 @@ public class VerifyMojo extends AntBuildMojo implements
     }
 
     /**
-     * @deprecated Since 2.0.3. Use {@link #isSkipITs()} or
-     *             {@link #isSkipTests()}
+     * @deprecated Since 2.0.3. Use {@link #isSkipITs()} or {@link #isSkipTests()}
      */
     @Override
     @Deprecated
@@ -175,8 +171,7 @@ public class VerifyMojo extends AntBuildMojo implements
     }
 
     /**
-     * @deprecated Since 2.0.3. Use {@link #setSkipITs(boolean)} or
-     *             {@link #setSkipTests(boolean)}
+     * @deprecated Since 2.0.3. Use {@link #setSkipITs(boolean)} or {@link #setSkipTests(boolean)}
      */
     @Override
     @Deprecated
@@ -185,8 +180,7 @@ public class VerifyMojo extends AntBuildMojo implements
     }
 
     /**
-     * @deprecated Since 2.0.3. Use {@link #isSkipITs()} or
-     *             {@link #isSkipTests()}
+     * @deprecated Since 2.0.3. Use {@link #isSkipITs()} or {@link #isSkipTests()}
      */
     @Override
     @Deprecated
@@ -195,8 +189,7 @@ public class VerifyMojo extends AntBuildMojo implements
     }
 
     /**
-     * @deprecated Since 2.0.3. Use {@link #setSkipITs(boolean)} or
-     *             {@link #setSkipTests(boolean)}
+     * @deprecated Since 2.0.3. Use {@link #setSkipITs(boolean)} or {@link #setSkipTests(boolean)}
      */
     @Override
     @Deprecated
@@ -250,7 +243,7 @@ public class VerifyMojo extends AntBuildMojo implements
     }
 
     @Override
-    public void setFailIfNoTests(Boolean failIfNoTests) {
+    public void setFailIfNoTests(boolean failIfNoTests) {
         throw new UnsupportedOperationException();
     }
 

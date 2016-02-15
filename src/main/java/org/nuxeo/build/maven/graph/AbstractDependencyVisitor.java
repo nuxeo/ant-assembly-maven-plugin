@@ -43,7 +43,6 @@ import org.nuxeo.build.ant.AntClient;
  *
  * @since 2.0
  */
-@SuppressWarnings("javadoc")
 public abstract class AbstractDependencyVisitor implements DependencyVisitor {
 
     private final Map<DependencyNode, Object> visitedNodes;
