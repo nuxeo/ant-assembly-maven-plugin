@@ -558,6 +558,7 @@ org.nuxeo.build:test-expand:@pom.version@:pom::
  |--  |--  |-- org.nuxeo.ecm.platform:nuxeo-platform-web-common:5.9.1:jar::compile
  |--  |--  |--  |-- javax.servlet.jsp:jsp-api:2.2:jar::compile
  |--  |--  |--  |-- javax.faces:jsf-api:1.2_12:jar::compile
+ |--  |--  |--  |--  |-- javax.el:el-api:1.0:jar::compile (scope managed from provided)
  |--  |--  |--  |-- net.oauth.core:oauth:20090531:jar::compile
  |--  |--  |--  |-- com.thetransactioncompany:cors-filter:1.7.1:jar::compile
  |--  |--  |--  |--  |-- com.thetransactioncompany:java-property-utils:1.9:jar::compile
