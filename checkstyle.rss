@@ -1,0 +1,978 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+-->
+<rss version="0.91">
+  <channel>
+    <title>Ant Assembly Maven Plugin - Checkstyle report</title>
+    <link>http://www.nuxeo.com/en/products</link>
+    <description>Ant Assembly Maven Plugin - Checkstyle report</description>
+    <language>en-us</language>
+    <copyright>&#169;2016 Nuxeo SA</copyright>
+    <item>
+      <title>File: 66,
+             Errors: 2246,
+             Warnings: 0,
+             Infos: 0
+      </title>
+            <link>http://www.nuxeo.com/en/products/checkstyle.html</link>
+      <description>
+        <p>Click <a href="http://www.nuxeo.com/en/products/checkstyle.html">here</a> for the full Checkstyle report.</p>
+
+        <table summary="Files" boder="1">
+          <thead>
+            <tr>
+              <th>Files</th>
+              <th style="width:30px;"><abbr title="Info">I</abbr></th>
+              <th style="width:30px;"><abbr title="Warning">W</abbr></th>
+              <th style="width:30px;"><abbr title="Error">E</abbr></th>
+            </tr>
+          </thead>
+          <tbody>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.ManifestBundleCategoryFilter.java">org/nuxeo/build/maven/filter/ManifestBundleCategoryFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  53
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.ResolveFile.java">org/nuxeo/build/ant/artifact/ResolveFile.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.CompositeFilter.java">org/nuxeo/build/maven/filter/CompositeFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  49
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.TypeFilter.java">org/nuxeo/build/maven/filter/TypeFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  14
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.AntClient.java">org/nuxeo/build/ant/AntClient.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  55
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.NotFilter.java">org/nuxeo/build/maven/filter/NotFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  15
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.RemoveDuplicateTask.java">org/nuxeo/build/ant/RemoveDuplicateTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  23
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.ArtifactIdFilter.java">org/nuxeo/build/maven/filter/ArtifactIdFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  14
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.ftl.FreemarkerEngine.java">org/nuxeo/build/ant/ftl/FreemarkerEngine.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  30
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.graph.Node.java">org/nuxeo/build/maven/graph/Node.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  85
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.ClassifierFilter.java">org/nuxeo/build/maven/filter/ClassifierFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  16
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.OldVersion.java">org/nuxeo/build/ant/OldVersion.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  71
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.TrueFilter.java">org/nuxeo/build/maven/filter/TrueFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.NuxeoExpandTask.java">org/nuxeo/build/ant/artifact/NuxeoExpandTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  41
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.PrintDependencyManagementTask.java">org/nuxeo/build/ant/artifact/PrintDependencyManagementTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  50
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.ArtifactDependencies.java">org/nuxeo/build/ant/artifact/ArtifactDependencies.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  55
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.RenameTask.java">org/nuxeo/build/ant/RenameTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  14
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.ExitTask.java">org/nuxeo/build/ant/ExitTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  7
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.graph.ScopeDependencySelector.java">org/nuxeo/build/maven/graph/ScopeDependencySelector.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  34
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.VersionFilter.java">org/nuxeo/build/maven/filter/VersionFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  15
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.ArtifactDescriptor.java">org/nuxeo/build/maven/ArtifactDescriptor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  84
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.ExpandTask.java">org/nuxeo/build/ant/artifact/ExpandTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  30
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.PrintGraphTask.java">org/nuxeo/build/ant/artifact/PrintGraphTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  42
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.MiddleMatch.java">org/nuxeo/build/maven/filter/MiddleMatch.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  14
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.AndFilter.java">org/nuxeo/build/maven/filter/AndFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  10
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.ResolveFiles.java">org/nuxeo/build/ant/artifact/ResolveFiles.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.IsOptionalFilter.java">org/nuxeo/build/maven/filter/IsOptionalFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  11
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.VerifyMojo.java">org/nuxeo/build/maven/VerifyMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  57
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.AncestorFilter.java">org/nuxeo/build/maven/filter/AncestorFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  22
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.PrefixMatch.java">org/nuxeo/build/maven/filter/PrefixMatch.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  9
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.Expand.java">org/nuxeo/build/ant/artifact/Expand.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.graph.TreePrinterDependencyVisitor.java">org/nuxeo/build/maven/graph/TreePrinterDependencyVisitor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  56
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.SuffixMatch.java">org/nuxeo/build/maven/filter/SuffixMatch.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  9
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.graph.AbstractDependencyVisitor.java">org/nuxeo/build/maven/graph/AbstractDependencyVisitor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  48
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.profile.ProfileTask.java">org/nuxeo/build/ant/profile/ProfileTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  40
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.ZipDiffTask.java">org/nuxeo/build/ant/ZipDiffTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  56
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.profile.ProfileGroup.java">org/nuxeo/build/ant/profile/ProfileGroup.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  17
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.Excludes.java">org/nuxeo/build/ant/artifact/Excludes.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  8
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.profile.AntProfileManager.java">org/nuxeo/build/ant/profile/AntProfileManager.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  36
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.ArtifactFile.java">org/nuxeo/build/ant/artifact/ArtifactFile.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  34
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.GroupIdFilter.java">org/nuxeo/build/maven/filter/GroupIdFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  15
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.ArtifactFilter.java">org/nuxeo/build/maven/filter/ArtifactFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  2
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.ArtifactForeach.java">org/nuxeo/build/ant/artifact/ArtifactForeach.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  19
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.OrFilter.java">org/nuxeo/build/maven/filter/OrFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  10
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.ArtifactSet.java">org/nuxeo/build/ant/artifact/ArtifactSet.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  101
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.Version.java">org/nuxeo/build/ant/Version.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  20
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.ExactMatch.java">org/nuxeo/build/maven/filter/ExactMatch.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  9
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.ftl.ProcessTemplateTask.java">org/nuxeo/build/ant/ftl/ProcessTemplateTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  47
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.IntegrationTestMojo.java">org/nuxeo/build/maven/IntegrationTestMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  14
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.AttachArtifactTask.java">org/nuxeo/build/ant/artifact/AttachArtifactTask.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  25
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.ScopeFilter.java">org/nuxeo/build/maven/filter/ScopeFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  16
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.profile.Profile.java">org/nuxeo/build/ant/profile/Profile.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  26
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.graph.DependencyUtils.java">org/nuxeo/build/maven/graph/DependencyUtils.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  93
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.connect.update.Version.java">org/nuxeo/connect/update/Version.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  91
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.AnyFilter.java">org/nuxeo/build/maven/filter/AnyFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.ArtifactPattern.java">org/nuxeo/build/ant/artifact/ArtifactPattern.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  75
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.AntBuildMojo.java">org/nuxeo/build/maven/AntBuildMojo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  133
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.FiltersCollection.java">org/nuxeo/build/ant/artifact/FiltersCollection.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  9
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.Includes.java">org/nuxeo/build/ant/artifact/Includes.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  7
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.graph.FlatPrinterDependencyVisitor.java">org/nuxeo/build/maven/graph/FlatPrinterDependencyVisitor.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  27
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.SegmentMatch.java">org/nuxeo/build/maven/filter/SegmentMatch.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  6
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.PropertyRegexp.java">org/nuxeo/build/ant/PropertyRegexp.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  29
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.ant.artifact.ArtifactSetParser.java">org/nuxeo/build/ant/artifact/ArtifactSetParser.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  24
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.graph.Graph.java">org/nuxeo/build/maven/graph/Graph.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  148
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.AbstractFilter.java">org/nuxeo/build/maven/filter/AbstractFilter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  7
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="http://www.nuxeo.com/en/products/checkstyle.html#org.nuxeo.build.maven.filter.Filter.java">org/nuxeo/build/maven/filter/Filter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  5
+                </td>
+              </tr>
+                      </tbody>
+        </table>
+        
+      </description>
+    </item>
+  </channel>
+</rss>
+

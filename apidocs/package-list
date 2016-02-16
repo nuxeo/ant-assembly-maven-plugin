@@ -1,0 +1,8 @@
+org.nuxeo.build.ant
+org.nuxeo.build.ant.artifact
+org.nuxeo.build.ant.ftl
+org.nuxeo.build.ant.profile
+org.nuxeo.build.maven
+org.nuxeo.build.maven.filter
+org.nuxeo.build.maven.graph
+org.nuxeo.connect.update
