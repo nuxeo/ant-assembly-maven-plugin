@@ -157,7 +157,7 @@
       <dependency>
         <groupId>org.eclipse.sisu</groupId>
         <artifactId>org.eclipse.sisu.plexus</artifactId>
-        <version>0.3.2</version>
+        <version>0.3.3</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.aether</groupId>
@@ -432,7 +432,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>2.4</version>
+          <version>3.0.0</version>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -493,7 +493,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-site-plugin</artifactId>
-          <version>3.4</version>
+          <version>3.5</version>
           <configuration>
             <skipDeploy>true</skipDeploy>
           </configuration>
@@ -553,7 +553,7 @@
         <plugin>
           <groupId>org.jacoco</groupId>
           <artifactId>jacoco-maven-plugin</artifactId>
-          <version>0.7.5.201505241946</version>
+          <version>0.7.6.201602180812</version>
           <configuration>
             <propertyName>it.failsafe.argLine</propertyName>
             <destFile>${it.jacoco.destFile}</destFile>
@@ -652,6 +652,19 @@
           </execution>
         </executions>
       </plugin>
+      <!-- TODO NXBT-982: nuxeo-qa-tools 1.0 seems not compliant with maven-checkstyle-plugin 2.17 -->
+      <!-- <plugin> -->
+      <!-- <groupId>org.apache.maven.plugins</groupId> -->
+      <!-- <artifactId>maven-checkstyle-plugin</artifactId> -->
+      <!-- <version>2.17</version> -->
+      <!-- <dependencies> -->
+      <!-- <dependency> -->
+      <!-- <groupId>org.nuxeo</groupId> -->
+      <!-- <artifactId>nuxeo-qa-tools</artifactId> -->
+      <!-- <version>1.0</version> -->
+      <!-- </dependency> -->
+      <!-- </dependencies> -->
+      <!-- </plugin> -->
     </plugins>
   </build>
 
@@ -814,7 +827,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>2.16</version>
+        <version>2.17</version>
         <reportSets>
           <reportSet>
             <reports>
@@ -822,6 +835,12 @@
             </reports>
           </reportSet>
         </reportSets>
+        <configuration>
+          <!-- <configLocation>config/sun_checks.xml</configLocation> -->
+          <!-- <configLocation>config/maven_checks.xml</configLocation> -->
+          <!-- <configLocation>checkstyle/checkstyle.xml</configLocation> -->
+          <!-- <headerLocation>checkstyle/java.header</headerLocation> -->
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -896,6 +915,23 @@
       <plugin>
         <artifactId>maven-changelog-plugin</artifactId>
         <version>2.3</version>
+        <reportSets>
+          <reportSet>
+            <id>report</id>
+            <configuration>
+              <issueLinkUrl>https://jira.nuxeo.com/browse/%ISSUE%</issueLinkUrl>
+              <type>tag</type>
+              <tags>
+                <tag>release-2.0.4</tag>
+                <tag>HEAD</tag>
+              </tags>
+            </configuration>
+            <reports>
+              <report>changelog</report>
+              <report>file-activity</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
