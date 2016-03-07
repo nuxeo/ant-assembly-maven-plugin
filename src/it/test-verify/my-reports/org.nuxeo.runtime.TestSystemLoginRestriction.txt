@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: org.nuxeo.runtime.TestSystemLoginRestriction
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.235 sec - in org.nuxeo.runtime.TestSystemLoginRestriction

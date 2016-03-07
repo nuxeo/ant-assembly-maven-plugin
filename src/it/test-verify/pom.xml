@@ -1,0 +1,39 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.nuxeo.build</groupId>
+  <artifactId>test-verify-create-summary</artifactId>
+  <version>@pom.version@</version>
+  <packaging>pom</packaging>
+  <name>TEST verify create summary: verify phase be able to generate a summary from JUnit test suite reports</name>
+  <description>See https://jira.nuxeo.com/browse/NXBT</description>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>ant-assembly-maven-plugin</artifactId>
+        <version>@pom.version@</version>
+        <executions>
+          <execution>
+            <id>integration-test</id>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+            <phase>post-integration-test</phase>
+            <configuration>
+              <createSummary>true</createSummary>
+              <reportsDirectory>my-reports</reportsDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

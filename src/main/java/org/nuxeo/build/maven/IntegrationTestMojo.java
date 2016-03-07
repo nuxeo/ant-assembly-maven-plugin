@@ -34,8 +34,7 @@ import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
- * Store a summary file in case of issue during execution and testFailureIgnore
- * is false.
+ * Store a summary file in case of issue during execution and testFailureIgnore is false.
  *
  * @see VerifyMojo
  */
@@ -48,8 +47,7 @@ public class IntegrationTestMojo extends AntBuildMojo {
     /**
      * That property is ignored.
      *
-     * @deprecated Since 2.0. Now never fail during integration-test and rely
-     *             on verify for exception raise.
+     * @deprecated Since 2.0. Now never fail during integration-test and rely on verify for exception raise.
      */
     @Deprecated
     @Parameter(defaultValue = "true", property = "maven.test.failure.ignore")
@@ -70,8 +68,7 @@ public class IntegrationTestMojo extends AntBuildMojo {
     protected boolean skipITs;
 
     /**
-     * The character encoding scheme to be applied. Defaults to
-     * {@link AntBuildMojo#getEncoding()} if not defined.
+     * The character encoding scheme to be applied. Defaults to {@link AntBuildMojo#getEncoding()} if not defined.
      *
      * @since 2.0
      * @see AntBuildMojo#encoding
@@ -116,8 +113,7 @@ public class IntegrationTestMojo extends AntBuildMojo {
                         cause = e;
                     }
                     getLog().error(cause.getMessage(), cause);
-                    result = result.aggregate(new RunResult(1, 0, 1, 0,
-                            cause.getMessage(),
+                    result = result.aggregate(new RunResult(1, 0, 1, 0, cause.getMessage(),
                             cause instanceof BuildTimeoutException));
                 }
                 if (failFast) {
@@ -128,15 +124,17 @@ public class IntegrationTestMojo extends AntBuildMojo {
         writeSummary(result);
     }
 
-    private void writeSummary(RunResult summary) throws MojoExecutionException {
+    /**
+     * @since 2.0.5
+     */
+    protected void writeSummary(RunResult summary) throws MojoExecutionException {
         if (!summaryFile.getParentFile().isDirectory()) {
             summaryFile.getParentFile().mkdirs();
         }
         FileOutputStream fout = null;
         FileInputStream fin = null;
         try {
-            Object token = getPluginContext().get(
-                    FAILSAFE_IN_PROGRESS_CONTEXT_KEY);
+            Object token = getPluginContext().get(FAILSAFE_IN_PROGRESS_CONTEXT_KEY);
             summary.writeSummary(summaryFile, token != null, getEncoding());
         } catch (IOException e) {
             throw new MojoExecutionException(e.getMessage(), e);
@@ -144,8 +142,7 @@ public class IntegrationTestMojo extends AntBuildMojo {
             IOUtil.close(fin);
             IOUtil.close(fout);
         }
-        getPluginContext().put(FAILSAFE_IN_PROGRESS_CONTEXT_KEY,
-                FAILSAFE_IN_PROGRESS_CONTEXT_KEY);
+        getPluginContext().put(FAILSAFE_IN_PROGRESS_CONTEXT_KEY, FAILSAFE_IN_PROGRESS_CONTEXT_KEY);
     }
 
 }

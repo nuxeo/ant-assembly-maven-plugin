@@ -21,6 +21,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -30,6 +33,9 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.plugins.surefire.report.ReportTestSuite;
+import org.apache.maven.plugins.surefire.report.SurefireReportParser;
+import org.apache.maven.reporting.MavenReportException;
 import org.apache.maven.surefire.suite.RunResult;
 import org.codehaus.plexus.util.StringUtils;
 
@@ -41,13 +47,7 @@ import org.codehaus.plexus.util.StringUtils;
  */
 @Mojo(name = "verify", defaultPhase = LifecyclePhase.VERIFY, threadSafe = true, //
 requiresProject = true, requiresDependencyResolution = ResolutionScope.TEST)
-public class VerifyMojo extends AntBuildMojo implements SurefireReportParameters {
-
-    /**
-     * The summary file to read integration test results from.
-     */
-    @Parameter(defaultValue = "${project.build.directory}/nxtools-reports/nxtools-summary.xml", required = true)
-    protected File summaryFile;
+public class VerifyMojo extends IntegrationTestMojo implements SurefireReportParameters {
 
     /**
      * Additional summary files to read integration test results from.
@@ -58,12 +58,19 @@ public class VerifyMojo extends AntBuildMojo implements SurefireReportParameters
     protected File[] summaryFiles;
 
     /**
-     * Set this to {@code true} to skip running integration tests.
+     * Option to create summary of test suites. If {@code summaryFile} already exists, the results are aggregated to the
+     * existing summary. It is also aggregating results from the {@code summaryFiles} if set.
      *
-     * @since 2.0
+     * @see IntegrationTestMojo#summaryFile
      */
-    @Parameter(property = "skipITs")
-    protected boolean skipITs;
+    @Parameter(property = "createSummary", defaultValue = "false")
+    private boolean createSummary;
+
+    /**
+     * Base directory where all reports are read from.
+     */
+    @Parameter(defaultValue = "${project.build.directory}/nxtools-reports")
+    private File reportsDirectory;
 
     /**
      * Set this to {@code true} to skip running tests.
@@ -72,14 +79,6 @@ public class VerifyMojo extends AntBuildMojo implements SurefireReportParameters
      */
     @Parameter(property = "skipTests")
     protected boolean skipTests;
-
-    /**
-     * The character encoding scheme to be applied.
-     *
-     * @since 2.0
-     */
-    @Parameter(defaultValue = "${project.reporting.outputEncoding}")
-    protected String reportingEncoding;
 
     @Override
     public String getEncoding() {
@@ -95,6 +94,7 @@ public class VerifyMojo extends AntBuildMojo implements SurefireReportParameters
      *
      * @since 2.0
      */
+    @SuppressWarnings("hiding")
     @Parameter(property = "maven.test.failure.ignore", defaultValue = "false")
     protected boolean testFailureIgnore;
 
@@ -113,17 +113,41 @@ public class VerifyMojo extends AntBuildMojo implements SurefireReportParameters
             return;
         }
 
-        RunResult summary;
+        RunResult summary = RunResult.noTestsRun();
+        if (createSummary) {
+            List<File> reportsDirectories = Collections.singletonList(reportsDirectory);
+            SurefireReportParser parser = new SurefireReportParser(reportsDirectories, Locale.getDefault());
+            try {
+                List<ReportTestSuite> reports = parser.parseXMLReportFiles();
+                if (reports.isEmpty()) {
+                    getLog().info("No report found in " + reportsDirectory);
+                }
+                int total = 0, errors = 0, failures = 0, skipped = 0, flakes = 0;
+                for (ReportTestSuite report : reports) {
+                    total += report.getNumberOfTests();
+                    errors += report.getNumberOfErrors();
+                    failures += report.getNumberOfFailures();
+                    skipped += report.getNumberOfSkipped();
+                    flakes += report.getNumberOfFlakes();
+                }
+                summary = new RunResult(total, errors, failures, skipped, flakes);
+            } catch (MavenReportException e) {
+                getLog().error("Could not parse reports from " + reportsDirectory, e);
+                throw new MojoExecutionException(e.getMessage(), e);
+            }
+        }
+
         try {
-            if (!summaryFile.isFile() && summaryFiles != null) {
-                summary = RunResult.noTestsRun();
-            } else {
-                summary = readSummary(getEncoding(), summaryFile);
+            if (summaryFile.isFile()) {
+                summary = summary.aggregate(readSummary(getEncoding(), summaryFile));
             }
             if (summaryFiles != null) {
                 for (File file : summaryFiles) {
                     summary = summary.aggregate(readSummary(getEncoding(), file));
                 }
+            }
+            if (createSummary) {
+                writeSummary(summary);
             }
         } catch (IOException e) {
             throw new MojoExecutionException(e.getMessage(), e);
