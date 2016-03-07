@@ -6,8 +6,10 @@
   <artifactId>test-verify-create-summary</artifactId>
   <version>@pom.version@</version>
   <packaging>pom</packaging>
-  <name>TEST verify create summary: verify phase be able to generate a summary from JUnit test suite reports</name>
-  <description>See https://jira.nuxeo.com/browse/NXBT</description>
+  <name>TEST verify createSummary: generate summary file from JUnit test suite results</name>
+  <description>See https://jira.nuxeo.com/browse/NXBT-1005
+  The verify mojo must be able to generate a summary from JUnit test suite reports, aggregate that summary with the
+  existing one(s) and report status to Maven</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

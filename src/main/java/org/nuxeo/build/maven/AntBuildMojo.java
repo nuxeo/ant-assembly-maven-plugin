@@ -65,7 +65,9 @@ import org.nuxeo.build.maven.filter.TrueFilter;
 import org.nuxeo.build.maven.graph.Graph;
 
 /**
- * TODO NXBT-258
+ * Execute an Ant build manipulating Maven objects (artifacts, dependencies, properties, profiles, repositories,
+ * graph...). Typical usage is the build of a distribution. It is also commonly used to setup and teardown the
+ * integration test environment.
  */
 @Mojo(name = "build", threadSafe = true, defaultPhase = LifecyclePhase.PACKAGE, //
 requiresDependencyCollection = ResolutionScope.TEST, //

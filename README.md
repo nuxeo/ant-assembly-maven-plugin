@@ -1,15 +1,106 @@
 # Introduction
 
-This plugins provides an advanced Ant integration within Maven, in the manner of
-[nuxeo-distribution-tools](https://github.com/nuxeo/nuxeo-distribution-tools) itself inspired from
-[maven-antrun-extended-plugin](https://java.net/projects/maven-antrun-extended-plugin).
-It extends [maven-antrun-plugin](http://maven.apache.org/plugins/maven-antrun-plugin) with Maven related tasks for managing artifacts.
+This plugins provides an advanced Ant integration within Maven, in the manner of [nuxeo-distribution-tools](https://github.com/nuxeo/nuxeo-distribution-tools) itself inspired from [maven-antrun-extended-plugin](https://java.net/projects/maven-antrun-extended-plugin).
 
-The main functionality is the management of Maven artifacts graph.
+The `AntBuildMojo` provides advanced Ant tasks for manipulating the Maven artifacts graph. It comes with various Ant tasks dedicated to building "distribution": filtering libraries, resolving artifacts, attaching the result to the Maven reactor for use with `install` or `deploy`...
 
-[http://www.eclipse.org/aether](http://www.eclipse.org/aether)
+The `IntegrationTestMojo` and `VerifyMojo` help to integrate an arbitrary build or test execution with the Maven build. A common case is executing some tasks during the `integration-test` phase, including environment setup and teardown during `pre-integration-test` and `post-integration-test` phases then raising some status during the `verify` phase, all this in respect with the common usage and convention of Maven, Ant, SureFire and FailSafe.
 
-## Available Ant tasks
+## Goals Overview
+
+The available plugin goals are:
+
+- `ant-assembly:build`: execute an Ant build manipulating Maven objects (artifacts, dependencies, properties, profiles, repositories, graph...). Typical usage is the build of a distribution. It is also commonly used to setup and teardown the integration test environment.
+- `ant-assembly:integration-test`: wrap the Ant executions to catch their build result and store a Surefire/Failsafe compliant summary file. Typical usage is the execution of Ant commands performing some tests.
+- `ant-assembly:verify`: read Surefire/Failsafe summary files to verify the result of integration tests. It can also read JUnit test reports, write and aggregate the results in a summary file. Typical usage is to fail the build at a different phase than the one which ran the tests, allowing environment cleanup.
+
+## Comparison with [maven-antrun-plugin](http://maven.apache.org/plugins/maven-antrun-plugin)
+
+This `ant-assembly-maven-plugin` does much more than only running Ant: it fully integrates Ant build with Maven making together available the best of the two worlds in both directions.
+
+The Ant build is not simply sand-boxed as an external execution which results to success or fail. The build can use the Maven objects as well as "talking" to Maven: attach artifacts, setup properties and profiles, edit the dependency graph...
+
+Thanks to the [Eclipse aether library](http://www.eclipse.org/aether), the Ant tasks have access to the whole Maven API like any Maven plugin does.
+
+## Comparison with [maven-assembly-plugin](http://maven.apache.org/plugins/maven-assembly-plugin)
+
+Both plugins allow to "assemble an application bundle or distribution from an assembly descriptor" but the `ant-assembly-maven-plugin` has been written in order to provide easy to read, write and maintain assemblies, taking benefit from the power of Ant, inspired by [maven-antrun-extended-plugin](https://java.net/projects/maven-antrun-extended-plugin).
+
+While the `maven-assembly-plugin` has a lot of drawbacks:
+
+- the assembly uses a custom XLM syntax, verbose, not easy to read and absolutely not maintainable over time,
+- it is quickly limited by the pre-defined descriptors and customization is not obvious,
+- it has assumptions making it mandatory to follow some assembly conventions.
+
+At the opposite, the `ant-assembly-maven-plugin` circumvent those issues:
+
+- the assembly syntax is the well-known Ant syntax, less verbose, easy to ready and maintain,
+- it has no limitations since it provides all the Ant and Maven basic tasks, including the [Ant Contrib tasks](http://ant-contrib.sourceforge.net/), and can be extended with any Ant contribution,
+- there is no constraint on the assembly content.
+
+# Usage
+
+Online documentation:
+
+- [ant-assembly-maven-plugin](http://nuxeo.github.io/ant-assembly-maven-plugin/plugin-info.html)
+- [maven-invoker-plugin](http://maven.apache.org/plugins/maven-invoker-plugin/)
+- [maven-surefire-plugin](http://maven.apache.org/surefire/maven-surefire-plugin/)
+
+## Examples
+
+The whole [nuxeo-distribution](https://github.com/nuxeo/nuxeo-distribution/)
+project is using nuxeo-distribution-tools for building Nuxeo distributions, running tests, ...
+
+Look at `nuxeo-distribution/*/pom.xml` and
+`nuxeo-distribution/*/src/main/assemble/assembly.xml` files for concrete usage samples.
+
+## Basics
+
+The following Maven properties are exposed in the Ant build file with a `maven.` prefix:
+
+  - basedir -> maven.basedir
+  - project.name -> maven.project.name
+  - project.artifactId -> maven.project.artifactId
+  - project.groupId -> maven.project.groupId
+  - project.version -> maven.project.version
+  - project.packaging -> maven.project.packaging
+  - project.id -> maven.project.id
+  - project.build.directory -> maven.project.build.directory
+  - project.build.outputDirectory -> maven.project.build.outputDirectory
+  - project.build.finalName -> maven.project.build.finalName
+
+Any user defined Maven property will be available as an Ant property.
+
+For every active Maven profile, a property of the following form is created:
+
+    maven.profile.X = true
+
+where X is the profile name.
+
+This can be used in conditional Ant constructs like:
+
+    <target if="maven.profile.X">
+
+or
+
+    <target unless="maven.profile.X">
+
+to make task execution depending on whether a profile is active or not.
+
+Maven profiles are also exported as Ant profiles so you can use the custom
+nx:profile tasks to conditionally execute code. Example:
+
+    <nx:profile name="X">
+      ... that statement will be executed only if profile X is active ...
+    </nx:profile>
+
+The current Maven POM (project) is put as a root into the artifact graph.
+
+If expand > 0, then the project node will be expanded using a depth equals to the
+expand property. Example: if you use expand=1, then the direct dependencies of
+the project are added to the graph.
+
+## Ant tasks
 
 [All standard Ant tasks](http://ant.apache.org/manual/tasklist.html) are available.
 
@@ -112,61 +203,6 @@ Example:
     </copy>
 
 
-# Usage
-
-## Examples
-
-The whole [nuxeo-distribution](https://github.com/nuxeo/nuxeo-distribution/)
-project is using nuxeo-distribution-tools for building Nuxeo distributions, running tests, ...
-
-Look at `nuxeo-distribution/*/pom.xml` and
-`nuxeo-distribution/*/src/main/assemble/assembly.xml` files for concrete usage samples.
-
-## Basics
-
-The following Maven properties are exposed in the Ant build file with a `maven.` prefix:
-
-  - basedir -> maven.basedir
-  - project.name -> maven.project.name
-  - project.artifactId -> maven.project.artifactId
-  - project.groupId -> maven.project.groupId
-  - project.version -> maven.project.version
-  - project.packaging -> maven.project.packaging
-  - project.id -> maven.project.id
-  - project.build.directory -> maven.project.build.directory
-  - project.build.outputDirectory -> maven.project.build.outputDirectory
-  - project.build.finalName -> maven.project.build.finalName
-
-Any user defined Maven property will be available as an Ant property.
-
-For every active Maven profile, a property of the following form is created:
-
-    maven.profile.X = true
-
-where X is the profile name.
-
-This can be used in conditional Ant constructs like:
-
-    <target if="maven.profile.X">
-
-or
-
-    <target unless="maven.profile.X">
-
-to make task execution depending on whether a profile is active or not.
-
-Maven profiles are also exported as Ant profiles so you can use the custom
-nx:profile tasks to conditionally execute code. Example:
-
-    <nx:profile name="X">
-      ... that statement will be executed only if profile X is active ...
-    </nx:profile>
-
-The current Maven POM (project) is put as a root into the artifact graph.
-
-If expand > 0, then the project node will be expanded using a depth equals to the
-expand property. Example: if you use expand=1, then the direct dependencies of
-the project are added to the graph.
 
 ## Thread safety
 
@@ -174,69 +210,6 @@ Different Mojo instances can be used in different threads, each of them will
 have its own graph. (The Mojo is bound to a thread variable so that Ant will
 use the Mojo bound to the current thread).
 
-
-# Build and tests
-
-    mvn clean package [-o] [-DskipTests] [-DskipITs] [-DdebugITs=true] [-Dinvoker.test=...] [-Pdebug]
-
-See:
-- [maven-invoker-plugin](http://maven.apache.org/plugins/maven-invoker-plugin/)
-- [maven-surefire-plugin](http://maven.apache.org/surefire/maven-surefire-plugin/)
-
-## Build and run all Unit and integration tests
-
-    mvn clean integration-test [-o] [-DdebugITs=true]
-
-## Build with no test
-
-    mvn clean package -DskipTests -DskipITs
-
-## Build and run Unit tests only (default)
-
-    mvn clean package -DskipITs
-
-## Build and run integration tests only
-
-    mvn clean integration-test -DskipTests
-
-## Run only some integration tests
-
-    mvn invoker:run -Dinvoker.test=test1
-
-or (if you want the code being compiled again):
-
-    mvn clean integration-test -Dinvoker.test=test1
-
-Use comma separator. Wildcards are accepted.
-
-## Integration tests results
-
-Results are in `target/it/*` sub-folders.
-
-### Manually replay integration tests
-
-You can manually execute some Maven commands from a result directory (`target/it/*`) providing a specific `settings.xml` file:
-
-    mvn -s ../../../it-settings.xml ...
-
-## Integration tests debug logs
-
-Add `-DdebugITs=true` on the command line to get debug logs in the build.log file.
-
-## Integration tests debug code (mvnDebug)
-
-Use `-Pdebug` profile which will make the invoker call mvnDebug (starting the JVM in debug attach mode).
-
-Default listening for transport dt_socket at address: 8000
-
-## QA results
-
-[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=tools_ant-assembly-maven-plugin-master)](https://qa.nuxeo.org/jenkins/job/tools_ant-assembly-maven-plugin-master/)
-
-# Release
-
-When releasing with [release.py](https://github.com/nuxeo/nuxeo/blob/master/scripts/release.py),
-it is required to pass parameter `OTHER_VERSION_TO_REPLACE=.*\.expected::`
 
 # How to contribute
 
@@ -246,6 +219,64 @@ See this page for practical information:
 This presentation will give you more insight about "the Nuxeo way":
 <http://www.slideshare.net/nuxeo/nuxeo-world-session-becoming-a-contributor-how-to-get-started>
 
+## QA results
+
+[![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=tools_ant-assembly-maven-plugin-master)](https://qa.nuxeo.org/jenkins/job/tools_ant-assembly-maven-plugin-master/)
+
+## Build and tests
+
+    mvn clean package [-o] [-DskipTests] [-DskipITs] [-DdebugITs=true] [-Dinvoker.test=...] [-Pdebug]
+
+### Build and run all Unit and integration tests
+
+    mvn clean integration-test [-o] [-DdebugITs=true]
+
+### Build with no test
+
+    mvn clean package -DskipTests -DskipITs
+
+### Build and run Unit tests only (default)
+
+    mvn clean package -DskipITs
+
+### Build and run integration tests only
+
+    mvn clean integration-test -DskipTests
+
+### Run only some integration tests
+
+    mvn invoker:run -Dinvoker.test=test1
+
+or (if you want the code being compiled again):
+
+    mvn clean integration-test -Dinvoker.test=test1
+
+Use comma separator. Wildcards are accepted.
+
+### Integration tests results
+
+Results are in `target/it/*` sub-folders.
+
+### Manually replay integration tests
+
+You can manually execute some Maven commands from a result directory (`target/it/*`) providing a specific `settings.xml` file:
+
+    mvn -s ../../../it-settings.xml ...
+
+### Integration tests debug logs
+
+Add `-DdebugITs=true` on the command line to get debug logs in the build.log file.
+
+### Integration tests debug code (mvnDebug)
+
+Use `-Pdebug` profile which will make the invoker call mvnDebug (starting the JVM in debug attach mode).
+
+Default listening for transport dt_socket at address: 8000
+
+## Release
+
+When releasing with [release.py](https://github.com/nuxeo/nuxeo/blob/master/scripts/release.py),
+it is required to pass parameter `OTHER_VERSION_TO_REPLACE=.*\.expected::`
 
 # About Nuxeo
 

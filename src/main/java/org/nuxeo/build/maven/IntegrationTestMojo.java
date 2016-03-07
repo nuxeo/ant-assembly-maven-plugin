@@ -34,7 +34,8 @@ import org.codehaus.plexus.util.IOUtil;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
- * Store a summary file in case of issue during execution and testFailureIgnore is false.
+ * Wrap the Ant executions to catch their build result and store a Surefire/Failsafe compliant summary file. Typical
+ * usage is the execution of Ant commands performing some tests.
  *
  * @see VerifyMojo
  */

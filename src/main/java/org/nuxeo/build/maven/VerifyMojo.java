@@ -40,8 +40,9 @@ import org.apache.maven.surefire.suite.RunResult;
 import org.codehaus.plexus.util.StringUtils;
 
 /**
- * Verify if a summary file exists (created by integration tests). If the file exists and contains errors, then throw a
- * {@link MojoFailureException}.
+ * Read Surefire/Failsafe summary files to verify the result of integration tests. It can also read JUnit test reports,
+ * write and aggregate the results in a summary file. Typical usage is to fail the build at a different phase than the
+ * one which ran the tests, allowing environment cleanup.
  *
  * @see IntegrationTestMojo
  */
@@ -62,12 +63,17 @@ public class VerifyMojo extends IntegrationTestMojo implements SurefireReportPar
      * existing summary. It is also aggregating results from the {@code summaryFiles} if set.
      *
      * @see IntegrationTestMojo#summaryFile
+     * @see #reportsDirectory
+     * @since 2.0.5
      */
     @Parameter(property = "createSummary", defaultValue = "false")
     private boolean createSummary;
 
     /**
-     * Base directory where all reports are read from.
+     * Base directory where the JUnit reports are read from. Only used if {@code createSummary} is true.
+     *
+     * @see #createSummary
+     * @since 2.0.5
      */
     @Parameter(defaultValue = "${project.build.directory}/nxtools-reports")
     private File reportsDirectory;
