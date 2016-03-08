@@ -14,6 +14,7 @@
 
   <properties>
     <test1.property>success</test1.property>
+    <test2.property>fail</test2.property>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 

@@ -1,15 +1,11 @@
 <?xml version="1.0"?>
-<project name="test1"
-         default="test"
-         xmlns:nx="urn:nuxeo-build"
-         xmlns:artifact="urn:nuxeo-artifact">
+<project name="test1" default="test" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
-  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
-           uri="urn:nuxeo-artifact" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
   <target name="test">
-    <fail message="Unexpected property 'test2.property'" if="test2.property" />
+    <fail message="Unexpected property 'test999.property'" if="test999.property" />
     <for list="test1.property,basedir,maven.basedir,maven.project.name,
 maven.project.groupId,maven.project.artifactId,maven.project.version,
 maven.project.packaging,maven.project.id,maven.project.build.directory,
@@ -19,8 +15,7 @@ maven.project.build.outputDirectory,maven.project.build.finalName,maven.offline"
          param="property">
       <sequential>
         <fail message="Missing property '@{property}'" unless="@{property}" />
-        <echo message="Checked property '@{property}': ${@{property}}"
-              level="verbose" />
+        <echo message="Checked property '@{property}': ${@{property}}" level="verbose" />
       </sequential>
     </for>
 
@@ -36,5 +31,14 @@ maven.project.build.outputDirectory,maven.project.build.finalName,maven.offline"
         </not>
       </condition>
     </fail>
+
+    <fail message="test2.property (=${test2.property}) default value (fail) must be overriden by the system value (success)">
+      <condition>
+        <not>
+          <equals arg1="${test2.property}" arg2="success" />
+        </not>
+      </condition>
+    </fail>
+
   </target>
 </project>
