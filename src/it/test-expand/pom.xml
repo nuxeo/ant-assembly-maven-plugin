@@ -3,7 +3,7 @@
 
   <groupId>org.nuxeo.build</groupId>
   <artifactId>test-expand</artifactId>
-  <version>@pom.version@</version>
+  <version>@project.version@</version>
   <packaging>pom</packaging>
   <name>TEST AntBuildMojo expand parameter</name>
   <description>AntBuildMojo expand parameter is a shortcut to artifact:expand with default values.</description>
@@ -60,7 +60,7 @@
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>ant-assembly-maven-plugin</artifactId>
-        <version>@pom.version@</version>
+        <version>@project.version@</version>
         <executions>
           <execution>
             <id>packaging</id>

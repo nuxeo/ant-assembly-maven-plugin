@@ -4,11 +4,11 @@
   <parent>
     <groupId>org.nuxeo.build</groupId>
     <artifactId>test-attach2-parent</artifactId>
-    <version>@pom.version@</version>
+    <version>@project.version@</version>
   </parent>
 
   <artifactId>test-attach2-resolve</artifactId>
-  <version>@pom.version@</version>
+  <version>@project.version@</version>
   <packaging>pom</packaging>
   <name>TEST resolve test artifact</name>
   <description>Resolve the attached test artifact</description>
@@ -18,7 +18,7 @@
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>ant-assembly-maven-plugin</artifactId>
-        <version>@pom.version@</version>
+        <version>@project.version@</version>
         <executions>
           <execution>
             <id>packaging</id>

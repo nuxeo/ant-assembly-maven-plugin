@@ -3,7 +3,7 @@
 
   <groupId>org.nuxeo.build</groupId>
   <artifactId>relocated-ndt</artifactId>
-  <version>@pom.version@</version>
+  <version>@project.version@</version>
   <packaging>pom</packaging>
   <name>Utility installer of relocation POM for Nuxeo Distribution Build</name>
   <description></description>

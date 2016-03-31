@@ -4,7 +4,7 @@
 
   <groupId>org.nuxeo.build</groupId>
   <artifactId>test-verify-create-summary</artifactId>
-  <version>@pom.version@</version>
+  <version>@project.version@</version>
   <packaging>pom</packaging>
   <name>TEST verify createSummary: generate summary file from JUnit test suite results</name>
   <description>See https://jira.nuxeo.com/browse/NXBT-1005
@@ -20,7 +20,7 @@
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>ant-assembly-maven-plugin</artifactId>
-        <version>@pom.version@</version>
+        <version>@project.version@</version>
         <executions>
           <execution>
             <id>integration-test</id>

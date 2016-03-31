@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.nuxeo.build</groupId>
     <artifactId>test-profile-parent</artifactId>
-    <version>@pom.version@</version>
+    <version>@project.version@</version>
   </parent>
 
   <artifactId>test-profile-module</artifactId>
-  <version>@pom.version@</version>
+  <version>@project.version@</version>
   <packaging>pom</packaging>
   <name>TEST local and inherited profiles</name>
   <description>Check all active profiles are added to Ant</description>
@@ -42,7 +42,7 @@
       <plugin>
         <groupId>org.nuxeo.build</groupId>
         <artifactId>ant-assembly-maven-plugin</artifactId>
-        <version>@pom.version@</version>
+        <version>@project.version@</version>
         <executions>
           <execution>
             <id>packaging</id>

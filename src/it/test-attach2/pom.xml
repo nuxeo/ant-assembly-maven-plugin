@@ -3,7 +3,7 @@
 
   <groupId>org.nuxeo.build</groupId>
   <artifactId>test-attach2-parent</artifactId>
-  <version>@pom.version@</version>
+  <version>@project.version@</version>
   <packaging>pom</packaging>
   <name>TEST 2 use of artifacts attached into the reactor</name>
   <description>When an artifact is attached by a module, next modules must be 

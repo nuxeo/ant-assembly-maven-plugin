@@ -21,7 +21,7 @@
                     scopes="test" />
     <copy file="dependency-tree1.template" tofile="dependency-tree1.expected">
       <filterset>
-        <filter token="pom.version" value="${maven.project.version}" />
+        <filter token="project.version" value="${maven.project.version}" />
       </filterset>
     </copy>
     <fail>
@@ -55,7 +55,7 @@
                     scopes="test" />
     <copy file="dependency-tree2.template" tofile="dependency-tree2.expected">
       <filterset>
-        <filter token="pom.version" value="${maven.project.version}" />
+        <filter token="project.version" value="${maven.project.version}" />
       </filterset>
     </copy>
     <fail>

@@ -4,7 +4,7 @@
 
   <groupId>org.nuxeo.build</groupId>
   <artifactId>test-profile-parent</artifactId>
-  <version>@pom.version@</version>
+  <version>@project.version@</version>
   <packaging>pom</packaging>
   <name>NXBT-982 use of inherited and local profiles</name>
   <description>A profile must not need to be defined locally for being activated: it can be inherited.

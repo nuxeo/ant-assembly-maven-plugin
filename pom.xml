@@ -497,6 +497,9 @@
             <parallelThreads>5</parallelThreads>
             <showVersion>true</showVersion>
             <showErrors>true</showErrors>
+            <scriptVariables>
+              <projectVersion>${project.version}</projectVersion>
+            </scriptVariables>
           </configuration>
         </plugin>
         <plugin>
