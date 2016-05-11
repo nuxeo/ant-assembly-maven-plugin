@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<project name="test-properties-nested" default="test" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+	<taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+	<taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+	<taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+	<target name="test">
+		<fail message="external.property (=${external.property}) should value 'success'">
+			<condition>
+				<not>
+					<equals arg1="${external.property}" arg2="success" />
+				</not>
+			</condition>
+		</fail>
+		<fail message="external2.property (=${external2.property}) should value 'nested'">
+			<condition>
+				<not>
+					<equals arg1="${external2.property}" arg2="nested" />
+				</not>
+			</condition>
+		</fail>
+	</target>
+</project>

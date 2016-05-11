@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<project name="test-properties-main" default="test" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
+	<taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
+	<taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
+	<taskdef resource="net/sf/antcontrib/antlib.xml" />
+
+	<condition property="osfamily-unix">
+		<os family="unix" />
+	</condition>
+	<condition property="osfamily-windows">
+		<os family="windows" />
+	</condition>
+
+	<target name="test">
+		<antcall target="check-properties" />
+
+		<antcall target="verify-unix" />
+		<antcall target="verify-windows" />
+	</target>
+
+	<target name="check-properties">
+		<fail message="external.property (=${external.property}) should value 'success'">
+			<condition>
+				<not>
+					<equals arg1="${external.property}" arg2="success" />
+				</not>
+			</condition>
+		</fail>
+		<fail message="external2.property (=${external2.property}) should value 'main'">
+			<condition>
+				<not>
+					<equals arg1="${external2.property}" arg2="main" />
+				</not>
+			</condition>
+		</fail>
+		<echo level="info" message="Properties OK" />
+	</target>
+
+	<target name="verify-unix" if="osfamily-unix" depends="check-properties">
+		<antcall target="check-properties" />
+		<echo message="$ mvn verify -Pnested-profile -Dexternal.property=${external.property} -Dexternal2.property=nested"
+		      level="info" />
+		<exec executable="mvn" failonerror="true">
+			<arg value="verify" />
+			<arg value="-Pnested-profile" />
+			<arg value="-Dexternal.property=${external.property}" />
+			<arg value="-Dexternal2.property=nested" />
+			<arg value="-Dmaven.repo.local=${maven.repo.local}" />
+		</exec>
+	</target>
+	<target name="verify-windows" if="osfamily-windows" depends="check-properties">
+		<antcall target="check-properties" />
+		<echo message="$ mvn verify -Pnested-profile -Dexternal.property=${external.property} -Dexternal2.property=nested"
+		      level="info" />
+		<exec executable="cmd" failonerror="true">
+			<arg value="/c" />
+			<arg value="mvn.bat" />
+			<arg value="verify" />
+			<arg value="-Pnested-profile" />
+			<arg value="-Dexternal.property=${external.property}" />
+			<arg value="-Dexternal2.property=nested" />
+			<arg value="-Dmaven.repo.local=${maven.repo.local}" />
+		</exec>
+	</target>
+
+</project>
