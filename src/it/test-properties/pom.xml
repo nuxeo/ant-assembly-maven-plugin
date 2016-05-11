@@ -1,0 +1,84 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>org.nuxeo.build</groupId>
+  <artifactId>test-properties</artifactId>
+  <version>@project.version@</version>
+  <packaging>pom</packaging>
+  <name>TEST properties: properties inheritance and overriding between System, JVM, Maven, Ant...</name>
+  <description>NXBT-1062
+POM is executed with parameters: -Dexternal.property=success -Dexternal2.property=main -Pmain-profile
+That executes main.xml
+Which itself calls the POM with: -Dexternal.property=${external.property} -Dexternal2.property=nested -Pnested-profile
+That executes nested.xml
+  </description>
+
+  <properties>
+    <external.property>fail</external.property>
+    <external2.property>fail</external2.property>
+  </properties>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.nuxeo.build</groupId>
+          <artifactId>ant-assembly-maven-plugin</artifactId>
+          <version>@project.version@</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>main-profile</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.nuxeo.build</groupId>
+            <artifactId>ant-assembly-maven-plugin</artifactId>
+            <configuration>
+              <buildFile>main.xml</buildFile>
+            </configuration>
+            <executions>
+              <execution>
+                <id>run-nested-profile</id>
+                <goals>
+                  <goal>build</goal>
+                </goals>
+                <phase>package</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <!-- That profile is called by main-profile -->
+      <id>nested-profile</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.nuxeo.build</groupId>
+            <artifactId>ant-assembly-maven-plugin</artifactId>
+            <configuration>
+              <buildFile>nested.xml</buildFile>
+            </configuration>
+            <executions>
+              <execution>
+                <id>test-properties</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>build</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+</project>
