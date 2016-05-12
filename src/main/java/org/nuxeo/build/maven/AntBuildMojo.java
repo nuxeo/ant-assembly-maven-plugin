@@ -351,7 +351,7 @@ public class AntBuildMojo extends AbstractMojo {
      */
     protected void setAntPropertiesFromMaven(Project antProject) {
         for (String key : project.getProperties().stringPropertyNames()) {
-            antProject.setInheritedProperty(key, project.getProperties().getProperty(key));
+            antProject.setProperty(key, project.getProperties().getProperty(key));
         }
         antProject.setProperty(propertyPrefix + "basedir", project.getBasedir().getPath());
         antProject.setProperty(propertyPrefix + "project.groupId", project.getGroupId());
@@ -382,9 +382,9 @@ public class AntBuildMojo extends AbstractMojo {
             // define a property for each activated profile
             antProject.setProperty(propertyPrefix + "profile." + profileId, "true");
         }
-        // Finally add System properties (overriding project and profile ones)
+        // Finally add System properties (overriding project and profile ones but not the "user" properties)
         for (String key : System.getProperties().stringPropertyNames()) {
-            antProject.setUserProperty(key, System.getProperty(key));
+            antProject.setProperty(key, System.getProperty(key));
         }
     }
 
