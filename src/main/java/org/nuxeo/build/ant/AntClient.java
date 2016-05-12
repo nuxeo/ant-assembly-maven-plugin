@@ -30,6 +30,7 @@ import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.BuildLogger;
 import org.apache.tools.ant.DemuxInputStream;
 import org.apache.tools.ant.DemuxOutputStream;
+import org.apache.tools.ant.MagicNames;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.ProjectHelper;
 import org.apache.tools.ant.input.DefaultInputHandler;
@@ -153,7 +154,7 @@ public class AntClient {
             if (!buildFile.isAbsolute()) {
                 buildFile = new File(project.getBaseDir(), buildFile.getPath());
             }
-            project.setUserProperty("ant.file", buildFile.getPath());
+            project.setUserProperty(MagicNames.ANT_FILE, buildFile.getPath());
             ProjectHelper.configureProject(project, buildFile);
 
             project.fireBuildStarted();
