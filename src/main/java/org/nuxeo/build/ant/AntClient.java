@@ -77,7 +77,7 @@ public class AntClient {
             }
         }
         this.loader = loader;
-        this.mavenLog = logger;
+        mavenLog = logger;
         project = new Project();
         project.setCoreLoader(loader);
         project.setKeepGoingMode(false);
@@ -95,8 +95,7 @@ public class AntClient {
     }
 
     /**
-     * xmlns:nx="urn:nuxeo-build"
-     * xmlns:artifact="urn:nuxeo-artifact"
+     * xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact"
      *
      * @since 2.0
      */
@@ -159,11 +158,9 @@ public class AntClient {
 
             project.fireBuildStarted();
             if (targets != null) {
-                project.getExecutor().executeTargets(project,
-                        targets.toArray(new String[targets.size()]));
+                project.getExecutor().executeTargets(project, targets.toArray(new String[targets.size()]));
             } else {
-                project.getExecutor().executeTargets(project,
-                        new String[] { project.getDefaultTarget() });
+                project.getExecutor().executeTargets(project, new String[] { project.getDefaultTarget() });
             }
             project.fireBuildFinished(null);
         } catch (BuildException e) {
@@ -183,8 +180,7 @@ public class AntClient {
         BuildLogger logger = new BigProjectLogger() {
 
             @Override
-            protected void printMessage(String message, PrintStream stream,
-                    int priority) {
+            protected void printMessage(String message, PrintStream stream, int priority) {
                 if (priority > msgOutputLevel) {
                     return;
                 }
