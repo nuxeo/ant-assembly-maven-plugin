@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.nuxeo.build</groupId>
@@ -693,6 +694,21 @@
         </property>
       </activation>
       <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-enforcer-plugin</artifactId>
+              <configuration>
+                <rules>
+                  <requireReleaseVersion>
+                    <message>No Snapshots Allowed!</message>
+                  </requireReleaseVersion>
+                </rules>
+              </configuration>
+            </plugin>
+          </plugins>
+        </pluginManagement>
         <plugins>
           <plugin>
             <inherited>true</inherited>
@@ -717,6 +733,10 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
+            <configuration>
+              <show>protected</show>
+              <linksource>true</linksource>
+            </configuration>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -728,6 +748,44 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <profile>
+      <id>nightly</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+      <repositories>
+        <repository>
+          <id>nightly-staging</id>
+          <url>http://mavenin.nuxeo.com/nexus/content/repositories/nightly-staging</url>
+          <releases>
+            <enabled>true</enabled>
+          </releases>
+          <snapshots>
+            <enabled>false</enabled>
+          </snapshots>
+        </repository>
+      </repositories>
+      <distributionManagement>
+        <repository>
+          <id>nightly-staging</id>
+          <url>http://mavenin.nuxeo.com/nexus/content/repositories/nightly-staging</url>
+          <uniqueVersion>true</uniqueVersion>
+        </repository>
+      </distributionManagement>
     </profile>
     <!-- For use by Nuxeo internal QA -->
     <profile>
