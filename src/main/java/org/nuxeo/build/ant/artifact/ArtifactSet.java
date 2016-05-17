@@ -166,6 +166,30 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         src = importFile;
     }
 
+    /**
+     * If {@code true}, root nodes are excluded from the result. When the unique root node is the current POM, then
+     * {@code <artifact:set excludeRoots=true>} is equivalent to the following snippet:
+     *
+     * <pre>
+     * {@code
+     * <artifact:set>
+     *   (...)
+     *   <excludes>
+     *     <artifact}<code> groupId="${maven.project.groupId}" artifactId="${maven.project.artifactId}"
+     *               version="${maven.project.version}" type="${maven.project.packaging}"</code>{@code />
+     *   </excludes>
+     * </artifact:set>}
+     * </pre>
+     *
+     * @param excludeRoots whether to exclude the root nodes; default is {@code false}
+     * @since 2.0.6
+     */
+    public void setExcludeRoots(boolean excludeRoots) {
+        if (excludeRoots) {
+            filter.addFilter(new DependencyNodeFilter(roots));
+        }
+    }
+
     public void addExpand(@SuppressWarnings("hiding") Expand expand) {
         if (isReference()) {
             throw noChildrenAllowed();
