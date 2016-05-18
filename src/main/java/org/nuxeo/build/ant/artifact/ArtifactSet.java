@@ -81,6 +81,7 @@ public class ArtifactSet extends DataType implements ResourceCollection {
 
     private Collection<Node> roots = new HashSet<>();
 
+    public List<ResolveFile> resolveFiles;
 
     public void setGroupId(String groupId) {
         if (isReference()) {
@@ -182,6 +183,16 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         artifactFiles.add(artifact);
     }
 
+    public void addResolveFile(ResolveFile artifact) {
+        if (isReference()) {
+            throw noChildrenAllowed();
+        }
+        if (resolveFiles == null) {
+            resolveFiles = new ArrayList<>();
+        }
+        resolveFiles.add(artifact);
+    }
+
     public void addArtifactSet(ArtifactSet set) {
         if (isReference()) {
             throw noChildrenAllowed();
@@ -242,6 +253,12 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         if (artifactFiles != null) {
             for (ArtifactFile arti : artifactFiles) {
                 roots.add(arti.getNode());
+            }
+        }
+        if (resolveFiles != null) {
+            Graph graph = new Graph();
+            for (ResolveFile file : resolveFiles) {
+                roots.add(graph.addRootNode(file.getArtifactDescriptor().getDependency()));
             }
         }
         if (artifactSets != null) {
