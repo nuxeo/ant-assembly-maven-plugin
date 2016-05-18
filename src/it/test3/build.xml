@@ -12,8 +12,12 @@
     <copy todir="${outdir}/bundles" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="org.nuxeo*" scope="!test" type="!pom" />
+          <artifact groupId="org.nuxeo*" type="!pom" />
         </includes>
+        <excludes>
+          <artifact scope="test" />
+          <artifact scope="provided" />
+        </excludes>
       </artifact:set>
       <artifact:file key="org.nuxeo.ecm.platform:nuxeo-platform-test" />
     </copy>
@@ -22,6 +26,10 @@
         <includes>
           <artifact groupId="!org.nuxeo*" type="!pom" />
         </includes>
+        <excludes>
+          <artifact scope="test" />
+          <artifact scope="provided" />
+        </excludes>
       </artifact:set>
       <artifact:resolveFile key="log4j:log4j:1.2.16" />
     </copy>
@@ -71,7 +79,12 @@
         <include name="*.jar" />
       </fileset>
     </resourcecount>
-    <fail>
+    <var name="error.msg"
+         value="count.bundles=${count.bundles} (expected 87)${line.separator}
+count.libs=${count.libs} (expected 149)${line.separator}
+count.test=${count.test} (expected 5)${line.separator}
+count.test2=${count.test2} (expected 239)" />
+    <fail message="${error.msg}">
       <condition>
         <not>
           <and>

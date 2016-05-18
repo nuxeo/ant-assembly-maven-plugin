@@ -193,13 +193,13 @@ Note: using 'key' may generate faster lookups. (it's a prefix search on a tree m
 Example:
 
     <copy todir="${maven.project.build.directory}">
-    <artifact:file artifactId="nuxeo-runtime"/>
-    <artifact:dependencies artifactId="nuxeo-runtime">
-      <excludes>
-        <artifact scope="test"/>
-        <artifact scope="provided"/>
-      </excludes>
-    </artifact:dependencies>
+      <artifact:file artifactId="nuxeo-runtime"/>
+      <artifact:dependencies artifactId="nuxeo-runtime">
+        <excludes>
+          <artifact scope="test"/>
+          <artifact scope="provided"/>
+        </excludes>
+      </artifact:dependencies>
     </copy>
 
 

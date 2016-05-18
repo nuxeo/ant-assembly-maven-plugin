@@ -61,7 +61,7 @@ import org.eclipse.aether.util.graph.transformer.ConflictResolver;
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.ant.artifact.Expand;
 import org.nuxeo.build.ant.profile.AntProfileManager;
-import org.nuxeo.build.maven.filter.TrueFilter;
+import org.nuxeo.build.maven.filter.Filter;
 import org.nuxeo.build.maven.graph.Graph;
 
 /**
@@ -299,7 +299,7 @@ public class AntBuildMojo extends AbstractMojo {
     protected void expandGraph(Graph newGraph) {
         int depth = Expand.readExpand(expand);
         if (depth > 0) {
-            newGraph.resolveDependencies(new TrueFilter(), depth);
+            newGraph.resolveDependencies(Filter.ANY, depth);
         }
     }
 

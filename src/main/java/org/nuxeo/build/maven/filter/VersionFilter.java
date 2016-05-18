@@ -24,31 +24,25 @@ import org.eclipse.aether.graph.DependencyNode;
 /**
  * TODO NXBT-258
  */
-public class VersionFilter extends AbstractFilter {
-
-    @Override
-    public String toString() {
-        return super.toString() + " [" + matcher + "]";
-    }
-
-    protected SegmentMatch matcher;
+public class VersionFilter extends SegmentMatchFilter {
 
     public VersionFilter(String pattern) {
-        this(SegmentMatch.parse(pattern));
+        super(pattern);
     }
 
     public VersionFilter(SegmentMatch matcher) {
-        this.matcher = matcher;
+        super(matcher);
     }
 
     @Override
     public boolean accept(Artifact artifact) {
+        beforeAccept(artifact);
         return result(matcher.match(artifact.getVersion()), artifact.toString());
     }
 
     @Override
     public boolean accept(DependencyNode node, List<DependencyNode> parents) {
-        return result(matcher.match(node.getVersion().toString()),
-                node.toString());
+        beforeAccept(node);
+        return result(matcher.match(node.getVersion().toString()), node.toString());
     }
 }

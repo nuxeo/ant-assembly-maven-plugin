@@ -54,8 +54,6 @@ public class AntClient {
 
     protected boolean allowInput = false;
 
-    protected Log mavenLog;
-
     private static final FileCleaningTracker FILE_CLEANING_TRACKER = new FileCleaningTracker();
 
     public boolean isAllowInput() {
@@ -70,7 +68,7 @@ public class AntClient {
         this(null, logger);
     }
 
-    public AntClient(ClassLoader loader, Log logger) {
+    public AntClient(ClassLoader loader, Log mavenLog) {
         if (loader == null) {
             loader = Thread.currentThread().getContextClassLoader();
             if (loader == null) {
@@ -78,11 +76,10 @@ public class AntClient {
             }
         }
         this.loader = loader;
-        mavenLog = logger;
         project = new Project();
         project.setCoreLoader(loader);
         project.setKeepGoingMode(false);
-        project.addBuildListener(createLogger());
+        project.addBuildListener(createLogger(mavenLog));
         project.init();
         initTasks();
         instance.set(project);
@@ -177,9 +174,8 @@ public class AntClient {
         }
     }
 
-    protected BuildLogger createLogger() {
+    protected BuildLogger createLogger(Log mavenLog) {
         BuildLogger logger = new BigProjectLogger() {
-
             @Override
             protected void printMessage(String message, PrintStream stream, int priority) {
                 if (priority > msgOutputLevel) {
@@ -205,9 +201,9 @@ public class AntClient {
                     prefix = "[DEBUG] ";
                     break;
                 }
+
                 super.printMessage(prefix + message, stream, priority);
             }
-
         };
         logger.setOutputPrintStream(System.out);
         logger.setErrorPrintStream(System.err);

@@ -63,16 +63,25 @@ public class Node implements DependencyNode {
         return acceptedCategories;
     }
 
+    /**
+     * @return ID of the form: "groupId:artifactId:version:extension:[classifier]:scope"
+     */
     public static String genNodeId(Artifact artifact) {
         return genNodeId(RepositoryUtils.toDependency(artifact, null));
     }
 
+    /**
+     * @return ID of the form: "groupId:artifactId:version:extension:[classifier]:scope"
+     */
     public static String genNodeId(Dependency dependency) {
         org.eclipse.aether.artifact.Artifact artifact = dependency.getArtifact();
         String scope = dependency.getScope();
         return genNodeId(artifact, scope);
     }
 
+    /**
+     * @return ID of the form: "groupId:artifactId:version:extension:[classifier]:scope"
+     */
     public static String genNodeId(org.eclipse.aether.artifact.Artifact artifact, String scope) {
         StringBuilder sb = new StringBuilder();
         sb.append(artifact.getGroupId());
@@ -88,6 +97,7 @@ public class Node implements DependencyNode {
     }
 
     /**
+     * @return ID of the form: "groupId:artifactId:version:extension:[classifier]:scope"
      * @since 2.0.4
      */
     public static String genNodeId(DependencyNode node) {
@@ -143,10 +153,10 @@ public class Node implements DependencyNode {
             return true;
         }
         if (obj instanceof Node) {
-            return ((Node) obj).id.equals(this);
+            return id.equals(((Node) obj).id);
         }
         if (obj instanceof DependencyNode) {
-            return ((DependencyNode) obj).equals(dependencyNode);
+            return dependencyNode.equals(obj) || id.equals(genNodeId((DependencyNode) obj));
         }
         return false;
     }
@@ -159,7 +169,6 @@ public class Node implements DependencyNode {
     @Override
     public String toString() {
         return dependencyNode.toString();
-        // return getArtifact().toString();
     }
 
     /**
@@ -299,5 +308,12 @@ public class Node implements DependencyNode {
      */
     public void setManagedBits(int managedBits) {
         ((DefaultDependencyNode) dependencyNode).setManagedBits(managedBits);
+    }
+
+    /**
+     * @since 2.0.6
+     */
+    public DependencyNode getDependencyNode() {
+        return dependencyNode;
     }
 }

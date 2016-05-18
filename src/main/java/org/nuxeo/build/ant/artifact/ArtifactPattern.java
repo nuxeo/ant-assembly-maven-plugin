@@ -16,6 +16,7 @@
  */
 package org.nuxeo.build.ant.artifact;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tools.ant.types.DataType;
 import org.eclipse.aether.util.artifact.JavaScopes;
 
@@ -23,6 +24,7 @@ import org.nuxeo.build.maven.filter.AncestorFilter;
 import org.nuxeo.build.maven.filter.AndFilter;
 import org.nuxeo.build.maven.filter.ArtifactIdFilter;
 import org.nuxeo.build.maven.filter.ClassifierFilter;
+import org.nuxeo.build.maven.filter.Filter;
 import org.nuxeo.build.maven.filter.GroupIdFilter;
 import org.nuxeo.build.maven.filter.IsOptionalFilter;
 import org.nuxeo.build.maven.filter.ManifestBundleCategoryFilter;
@@ -64,19 +66,7 @@ public class ArtifactPattern extends DataType {
     @Deprecated
     private ManifestBundleCategoryFilter categoryFilter = null;
 
-    private boolean scopeTest = false;
-
-    private boolean scopeProvided = false;
-
-    public AndFilter getFilter() {
-        if (!scopeTest) {
-            filter.addFilter(new NotFilter(new ScopeFilter(JavaScopes.TEST)));
-            scopeTest = true; // to avoid loop
-        }
-        if (!scopeProvided) {
-            filter.addFilter(new NotFilter(new ScopeFilter(JavaScopes.PROVIDED)));
-            scopeProvided = true; // to avoid loop
-        }
+    public Filter getFilter() {
         return filter;
     }
 
@@ -107,10 +97,12 @@ public class ArtifactPattern extends DataType {
 
     public void setScope(String scope) {
         this.scope = scope;
-        // Exclude test and provided scopes by default
-        scopeTest = JavaScopes.TEST.equals(scope) || "*".equals(scope);
-        scopeProvided = JavaScopes.PROVIDED.equals(scope) || "*".equals(scope);
-        filter.addFilter(ScopeFilter.class, scope);
+        if (StringUtils.isBlank(scope)) { // Exclude test and provided scopes by default
+            filter.addFilter(new NotFilter(new ScopeFilter(JavaScopes.TEST)));
+            filter.addFilter(new NotFilter(new ScopeFilter(JavaScopes.PROVIDED)));
+        } else if (!"*".equals(scope)) {
+            filter.addFilter(ScopeFilter.class, scope);
+        }
     }
 
     public void setOptional(boolean isOptional) {

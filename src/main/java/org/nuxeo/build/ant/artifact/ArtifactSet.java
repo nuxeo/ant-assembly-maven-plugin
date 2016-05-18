@@ -20,9 +20,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.types.DataType;
@@ -45,11 +47,13 @@ import org.nuxeo.build.maven.filter.CompositeFilter;
 import org.nuxeo.build.maven.filter.Filter;
 import org.nuxeo.build.maven.filter.GroupIdFilter;
 import org.nuxeo.build.maven.filter.IsOptionalFilter;
+import org.nuxeo.build.maven.filter.DependencyNodeFilter;
 import org.nuxeo.build.maven.filter.NotFilter;
 import org.nuxeo.build.maven.filter.ScopeFilter;
 import org.nuxeo.build.maven.filter.TypeFilter;
 import org.nuxeo.build.maven.filter.VersionFilter;
 import org.nuxeo.build.maven.graph.DependencyUtils;
+import org.nuxeo.build.maven.graph.Graph;
 import org.nuxeo.build.maven.graph.Node;
 
 /**
@@ -75,9 +79,8 @@ public class ArtifactSet extends DataType implements ResourceCollection {
 
     protected Collection<Artifact> artifacts;
 
-    private boolean scopeTest = false;
+    private Collection<Node> roots = new HashSet<>();
 
-    private boolean scopeProvided = false;
 
     public void setGroupId(String groupId) {
         if (isReference()) {
@@ -118,10 +121,12 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         if (isReference()) {
             throw tooManyAttributes();
         }
-        // Exclude test and provided scopes by default
-        scopeTest = JavaScopes.TEST.equals(scope) || "*".equals(scope);
-        scopeProvided = JavaScopes.PROVIDED.equals(scope) || "*".equals(scope);
-        filter.addFilter(new ScopeFilter(scope));
+        if (StringUtils.isBlank(scope)) { // Exclude test and provided scopes by default
+            filter.addFilter(new NotFilter(new ScopeFilter(JavaScopes.TEST)));
+            filter.addFilter(new NotFilter(new ScopeFilter(JavaScopes.PROVIDED)));
+        } else if (!"*".equals(scope)) {
+            filter.addFilter(new ScopeFilter(scope));
+        }
     }
 
     public void setOptional(boolean isOptional) {
@@ -138,6 +143,10 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         filter.addFiltersFromPattern(pattern);
     }
 
+    /**
+     * @param ancestor artifact filter pattern applying to the parents of the artifact to filter
+     * @see org.nuxeo.build.maven.ArtifactDescriptor
+     */
     public void setAncestor(String ancestor) {
         if (isReference()) {
             throw tooManyAttributes();
@@ -215,12 +224,6 @@ public class ArtifactSet extends DataType implements ResourceCollection {
     protected Filter buildFilter() {
         AndFilter f = new AndFilter();
         if (!filter.isEmpty()) {
-            if (!scopeTest) {
-                filter.addFilter(new NotFilter(new ScopeFilter(JavaScopes.TEST)));
-            }
-            if (!scopeProvided) {
-                filter.addFilter(new NotFilter(new ScopeFilter(JavaScopes.PROVIDED)));
-            }
             f.addFilters(filter.getFilters());
         }
         if (includes != null) {
@@ -233,11 +236,9 @@ public class ArtifactSet extends DataType implements ResourceCollection {
     }
 
     protected Collection<Artifact> computeNodes() {
+        AntClient.getInstance().log("Computing nodes...", Project.MSG_DEBUG);
         Collection<Artifact> resultArtifacts = new ArrayList<>();
-        Collection<Node> roots = new ArrayList<>();
-        if (src != null) {
-            collectImportedNodes(roots);
-        }
+        collectImportedNodes(roots);
         if (artifactFiles != null) {
             for (ArtifactFile arti : artifactFiles) {
                 roots.add(arti.getNode());
@@ -277,8 +278,10 @@ public class ArtifactSet extends DataType implements ResourceCollection {
         if (artifacts == null) {
             artifacts = computeNodes();
         }
-        AntClient.getInstance().log("ArtifactSet.getArtifacts() " + artifacts, new Error(), Project.MSG_DEBUG);
-        if (id != null) { // avoid caching if artifactSet is referencable
+        if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
+            AntClient.getInstance().log("ArtifactSet.getArtifacts() " + artifacts, new Error(), Project.MSG_DEBUG);
+        }
+        if (id != null) { // avoid caching if artifactSet is referenceable
             Collection<Artifact> copy = artifacts;
             artifacts = null;
             return copy;
@@ -315,6 +318,9 @@ public class ArtifactSet extends DataType implements ResourceCollection {
     }
 
     public void collectImportedNodes(Collection<Node> nodesCollection) {
+        if (src == null) {
+            return;
+        }
         try {
             ArtifactSetParser parser = new ArtifactSetParser(getProject());
             parser.parse(src, nodesCollection);

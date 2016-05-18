@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.tools.ant.Project;
 import org.eclipse.aether.util.artifact.JavaScopes;
 
@@ -71,38 +72,21 @@ public abstract class CompositeFilter extends AbstractFilter {
     }
 
     public void addFiltersFromPattern(String pattern) {
-        if (pattern != null) {
+        if (StringUtils.isNotBlank(pattern)) {
             addFiltersFromDescriptor(new ArtifactDescriptor(pattern));
         }
     }
 
     public void addFiltersFromDescriptor(ArtifactDescriptor ad) {
-        if (ad.getGroupId() != null && !ad.getGroupId().equals("*")) {
-            addFilter(GroupIdFilter.class, ad.getGroupId());
-        }
-        if (ad.getArtifactId() != null && !ad.getArtifactId().equals("*")) {
-            addFilter(ArtifactIdFilter.class, ad.getArtifactId());
-        }
-        if (ad.getVersion() != null && !ad.getVersion().equals("*")) {
-            addFilter(VersionFilter.class, ad.getVersion());
-        }
-        if (ad.getType() != null && !ad.getType().equals("*")) {
-            addFilter(TypeFilter.class, ad.getType());
-        }
-        if (ad.getClassifier() != null && !ad.getClassifier().equals("*")) {
-            addFilter(ClassifierFilter.class, ad.getClassifier());
-        }
-
-        // Exclude test and provided scopes by default
-        boolean scopeTest = JavaScopes.TEST.equals(ad.getScope()) || "*".equals(ad.getScope());
-        boolean scopeProvided = JavaScopes.PROVIDED.equals(ad.getScope()) || "*".equals(ad.getScope());
-        if (!scopeTest) {
+        addFilter(GroupIdFilter.class, ad.getGroupId());
+        addFilter(ArtifactIdFilter.class, ad.getArtifactId());
+        addFilter(VersionFilter.class, ad.getVersion());
+        addFilter(TypeFilter.class, ad.getType());
+        addFilter(ClassifierFilter.class, ad.getClassifier());
+        if (StringUtils.isBlank(ad.getScope())) { // Exclude test and provided scopes by default
             addFilter(new NotFilter(new ScopeFilter(JavaScopes.TEST)));
-        }
-        if (!scopeProvided) {
             addFilter(new NotFilter(new ScopeFilter(JavaScopes.PROVIDED)));
-        }
-        if (ad.getScope() != null && !ad.getScope().equals("*")) {
+        } else if (!"*".equals(ad.getScope())) {
             addFilter(ScopeFilter.class, ad.getScope());
         }
     }
@@ -126,7 +110,7 @@ public abstract class CompositeFilter extends AbstractFilter {
      * @param pattern Pattern given to Filter implementation
      */
     public void addFilter(Class<? extends Filter> filterClass, String pattern) {
-        if (pattern == null) {
+        if (StringUtils.isBlank(pattern) || "*".equals(pattern)) {
             return;
         }
         Constructor<? extends Filter> filterConstructor = null;

@@ -58,13 +58,7 @@ public class ResolveFile extends FileResource {
     }
 
     protected File resolveFile() {
-        ArtifactDescriptor ad = new ArtifactDescriptor(key);
-        // Sync classifier set from key or from setClassifier()
-        if (ad.getClassifier() != null) {
-            classifier = ad.getClassifier();
-        } else if (classifier != null) {
-            ad.setClassifier(classifier);
-        }
+        ArtifactDescriptor ad = getArtifactDescriptor();
         try {
             if (file != null) {
                 return file;
@@ -86,6 +80,20 @@ public class ResolveFile extends FileResource {
         } catch (ArtifactResolutionException e) {
             throw new BuildException(String.format("Cannot resolve file with key '%s'", ad), e);
         }
+    }
+
+    /**
+     * @since 2.0.6
+     */
+    public ArtifactDescriptor getArtifactDescriptor() {
+        ArtifactDescriptor ad = new ArtifactDescriptor(key);
+        // Sync classifier set from key or from setClassifier()
+        if (ad.getClassifier() != null) {
+            classifier = ad.getClassifier();
+        } else if (classifier != null) {
+            ad.setClassifier(classifier);
+        }
+        return ad;
     }
 
     @Override

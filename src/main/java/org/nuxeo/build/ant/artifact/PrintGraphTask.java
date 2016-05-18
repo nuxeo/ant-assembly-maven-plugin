@@ -30,8 +30,9 @@ import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
 import org.eclipse.aether.util.artifact.JavaScopes;
 import org.eclipse.aether.util.graph.visitor.CloningDependencyVisitor;
+
 import org.nuxeo.build.maven.AntBuildMojo;
-import org.nuxeo.build.maven.filter.TrueFilter;
+import org.nuxeo.build.maven.filter.Filter;
 import org.nuxeo.build.maven.graph.FlatPrinterDependencyVisitor;
 import org.nuxeo.build.maven.graph.Graph;
 import org.nuxeo.build.maven.graph.Node;
@@ -89,12 +90,10 @@ public class PrintGraphTask extends Task {
         if (scopes == null) {
             // In tree mode, we usually want all scopes
             if (MODE_TREE.equals(mode)) {
-                scopes = Arrays.asList(new String[] { JavaScopes.COMPILE,
-                        JavaScopes.PROVIDED, JavaScopes.RUNTIME,
+                scopes = Arrays.asList(new String[] { JavaScopes.COMPILE, JavaScopes.PROVIDED, JavaScopes.RUNTIME,
                         JavaScopes.SYSTEM, JavaScopes.TEST });
             } else {
-                scopes = Arrays.asList(new String[] { JavaScopes.COMPILE,
-                        JavaScopes.RUNTIME, JavaScopes.SYSTEM });
+                scopes = Arrays.asList(new String[] { JavaScopes.COMPILE, JavaScopes.RUNTIME, JavaScopes.SYSTEM });
             }
         }
         List<Node> roots;
@@ -107,7 +106,7 @@ public class PrintGraphTask extends Task {
             roots = new ArrayList<>();
             Graph graph = new Graph();
             roots.add(graph.addRootNode(source));
-            graph.resolveDependencies(new TrueFilter(), 0);
+            graph.resolveDependencies(Filter.ANY, 0);
         } else {
             roots = AntBuildMojo.getInstance().getGraph().getRoots();
         }
@@ -121,8 +120,7 @@ public class PrintGraphTask extends Task {
             // system.resolveDependencies( session, dependencyRequest
             // ).getArtifactResults();
             if (MODE_TREE.equals(mode)) {
-                TreePrinterDependencyVisitor pdv = new TreePrinterDependencyVisitor(
-                        out, format, scopes, roots);
+                TreePrinterDependencyVisitor pdv = new TreePrinterDependencyVisitor(out, format, scopes, roots);
                 for (Node node : roots) {
                     log("Visiting " + node, Project.MSG_DEBUG);
                     // Work on a clone to avoid graph being altered
@@ -131,8 +129,7 @@ public class PrintGraphTask extends Task {
                     cdv.getRootNode().accept(pdv);
                 }
             } else {
-                FlatPrinterDependencyVisitor pdv = new FlatPrinterDependencyVisitor(
-                        out, format, scopes);
+                FlatPrinterDependencyVisitor pdv = new FlatPrinterDependencyVisitor(out, format, scopes);
                 // Ignore roots in flat mode
                 pdv.addIgnores(roots);
                 for (Node node : roots) {
@@ -157,7 +154,7 @@ public class PrintGraphTask extends Task {
      */
     public void setMode(String mode) {
         if (MODE_SDK.equals(mode)) {
-            this.format = FORMAT_KV_F_GAV;
+            format = FORMAT_KV_F_GAV;
         }
         this.mode = mode;
     }
@@ -194,8 +191,7 @@ public class PrintGraphTask extends Task {
 
     /**
      * @since 1.10.2
-     * @param scopes Comma separated list of scopes to include. Defaults to
-     *            "compile,runtime,system".
+     * @param scopes Comma separated list of scopes to include. Defaults to "compile,runtime,system".
      */
     public void setScopes(String scopes) {
         StringTokenizer st = new StringTokenizer(scopes, ",");

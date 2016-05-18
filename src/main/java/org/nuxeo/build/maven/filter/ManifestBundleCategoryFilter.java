@@ -49,19 +49,17 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
 
     protected List<char[]> patterns = new ArrayList<>();
 
-    protected boolean isDependOnCategory;
+    protected boolean isDependsOnCategory;
 
     private String patternsStr;
 
-    public ManifestBundleCategoryFilter(String patterns,
-            boolean isDependsOnCategory) {
-        this.isDependOnCategory = isDependsOnCategory;
-        StringTokenizer st = new StringTokenizer(patterns,
-                MANIFEST_BUNDLE_CATEGORY_TOKEN);
+    public ManifestBundleCategoryFilter(String patterns, boolean isDependsOnCategory) {
+        this.isDependsOnCategory = isDependsOnCategory;
+        StringTokenizer st = new StringTokenizer(patterns, MANIFEST_BUNDLE_CATEGORY_TOKEN);
         while (st.hasMoreTokens()) {
             this.patterns.add(st.nextToken().toCharArray());
         }
-        this.patternsStr = patterns;
+        patternsStr = patterns;
     }
 
     protected List<String> getValuesToMatch(Artifact artifact) {
@@ -69,15 +67,11 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
         File file = artifact.getFile();
         if (file == null) {
             if (artifact.isResolved()) {
-                AntClient.getInstance().log(
-                        "Artifact " + artifact + " doesn't contain a file",
-                        Project.MSG_WARN);
+                AntClient.getInstance().log("Artifact " + artifact + " doesn't contain a file", Project.MSG_WARN);
             } else if (!Artifact.SCOPE_PROVIDED.equals(artifact.getScope())
                     && !"pom".equalsIgnoreCase(artifact.getType())) {
                 // ignore provided artifacts; raise a warning for non provided
-                AntClient.getInstance().log(
-                        "Artifact " + artifact + " unresolved",
-                        Project.MSG_WARN);
+                AntClient.getInstance().log("Artifact " + artifact + " unresolved", Project.MSG_WARN);
             }
             return valuesToMatch;
         }
@@ -94,30 +88,24 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
                 if (attributes != null) {
                     String bundleCategories = attributes.getValue(MANIFEST_BUNDLE_CATEGORY);
                     if (bundleCategories != null) {
-                        StringTokenizer st = new StringTokenizer(
-                                bundleCategories,
-                                MANIFEST_BUNDLE_CATEGORY_TOKEN);
+                        StringTokenizer st = new StringTokenizer(bundleCategories, MANIFEST_BUNDLE_CATEGORY_TOKEN);
                         while (st.hasMoreTokens()) {
                             valuesToMatch.add(st.nextToken());
                         }
                     }
                 }
             } else {
-                AntClient.getInstance().log(
-                        "Artifact " + artifact + " doesn't contain a manifest",
-                        Project.MSG_WARN);
+                AntClient.getInstance().log("Artifact " + artifact + " doesn't contain a manifest", Project.MSG_WARN);
             }
         } catch (IOException e) {
-            AntClient.getInstance().log(
-                    "error while inspecting this jar manifest: "
-                            + artifact.getFile(), e, Project.MSG_ERR);
+            AntClient.getInstance().log("error while inspecting this jar manifest: " + artifact.getFile(), e,
+                    Project.MSG_ERR);
         } finally {
             if (jarFile != null) {
                 try {
                     jarFile.close();
                 } catch (IOException e) {
-                    AntClient.getInstance().log(e.getMessage(), e,
-                            Project.MSG_ERR);
+                    AntClient.getInstance().log(e.getMessage(), e, Project.MSG_ERR);
                 }
             }
         }
@@ -128,16 +116,15 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
      * @deprecated 2.0
      */
     @Deprecated
-    protected boolean accept(Node node, boolean browseChildren,
-            boolean browseParents) {
+    protected boolean accept(Node node, boolean browseChildren, boolean browseParents) {
+        beforeAccept(node);
         // Exclude non Nuxeo artifacts
         if (!node.getArtifact().getGroupId().startsWith("org.nuxeo")) {
             return false;
         }
         if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-            AntClient.getInstance().log(
-                    "Filtering - " + getClass() + " looking at "
-                            + node.getArtifact(), Project.MSG_DEBUG);
+            AntClient.getInstance().log("Filtering - " + getClass() + " looking at " + node.getArtifact(),
+                    Project.MSG_DEBUG);
         }
         // quick check of already accepted nodes
         boolean accept = node.isAcceptedCategory(patterns);
@@ -147,12 +134,10 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
             accept = checkCategoryFromManifest(node);
         }
 
-        if (!accept && isDependOnCategory && browseChildren) {
+        if (!accept && isDependsOnCategory && browseChildren) {
             // check if there's an acceptable/accepted child
             if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                AntClient.getInstance().log(
-                        "Filtering - check children of " + node,
-                        Project.MSG_DEBUG);
+                AntClient.getInstance().log("Filtering - check children of " + node, Project.MSG_DEBUG);
             }
             Collection<DependencyNode> children = node.getChildren();
             // if (children!=null) {
@@ -167,9 +152,7 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
         if (!accept && browseParents) {
             // check if there's an acceptable/accepted parent
             if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                AntClient.getInstance().log(
-                        "Filtering - check parents of " + node,
-                        Project.MSG_DEBUG);
+                AntClient.getInstance().log("Filtering - check parents of " + node, Project.MSG_DEBUG);
             }
             Collection<DependencyNode> parents = node.getParents();
             // if (parents!=null) {
@@ -182,9 +165,8 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
             // }
         }
         if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-            AntClient.getInstance().log(
-                    "Filtering - result for " + node.getArtifact() + " : "
-                            + accept, Project.MSG_DEBUG);
+            AntClient.getInstance().log("Filtering - result for " + node.getArtifact() + " : " + accept,
+                    Project.MSG_DEBUG);
         }
         return accept;
     }
@@ -195,9 +177,7 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
             for (char[] pattern : patterns) {
                 if (matchPattern(valueToMatch, pattern)) {
                     if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                        AntClient.getInstance().log(
-                                "Filtering - match on "
-                                        + String.valueOf(pattern),
+                        AntClient.getInstance().log("Filtering - match on " + String.valueOf(pattern),
                                 Project.MSG_DEBUG);
                     }
                     accept = true;
@@ -210,17 +190,15 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
     }
 
     /**
-     * @deprecated prefer use of {@link #accept(Node, boolean, boolean)} as it
-     *             remembers already parsed artifacts
+     * @deprecated prefer use of {@link #accept(Node, boolean, boolean)} as it remembers already parsed artifacts
      */
     @Deprecated
     @Override
     public boolean accept(Artifact artifact) {
+        beforeAccept(artifact);
         boolean accept = matchPattern(getValuesToMatch(artifact));
         if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-            AntClient.getInstance().log(
-                    (accept ? "Accepts " : "Rejects ") + artifact,
-                    Project.MSG_DEBUG);
+            AntClient.getInstance().log((accept ? "Accepts " : "Rejects ") + artifact, Project.MSG_DEBUG);
         }
         return accept;
     }
@@ -230,9 +208,7 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
             for (char[] pattern : patterns) {
                 if (matchPattern(valueToMatch, pattern)) {
                     if (AntBuildMojo.getInstance().getLog().isDebugEnabled()) {
-                        AntClient.getInstance().log(
-                                "Filtering - match on "
-                                        + String.valueOf(pattern),
+                        AntClient.getInstance().log("Filtering - match on " + String.valueOf(pattern),
                                 Project.MSG_DEBUG);
                     }
                     return true;
@@ -289,7 +265,7 @@ public class ManifestBundleCategoryFilter extends AbstractFilter {
     }
 
     public void setDependsOnCategory(boolean isDependsOnCategory) {
-        this.isDependOnCategory = isDependsOnCategory;
+        this.isDependsOnCategory = isDependsOnCategory;
     }
 
     @Override

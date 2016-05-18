@@ -34,6 +34,7 @@ public class NotFilter extends AbstractFilter {
 
     @Override
     public boolean accept(Artifact artifact) {
+        beforeAccept(artifact);
         return result(!filter.accept(artifact), artifact.toString());
     }
 
@@ -43,11 +44,8 @@ public class NotFilter extends AbstractFilter {
 
     @Override
     public boolean accept(DependencyNode node, List<DependencyNode> parents) {
+        beforeAccept(node);
         return result(!filter.accept(node, parents), node.toString());
     }
 
-    @Override
-    public String toString() {
-        return super.toString() + " => ";
-    }
 }

@@ -22,8 +22,10 @@ import org.apache.maven.artifact.Artifact;
 import org.eclipse.aether.graph.DependencyNode;
 
 /**
- * TODO NXBT-258
+ * @deprecated Since 2.0.6. Duplicates {@link AnyFilter}.
+ * @see Filter#ANY
  */
+@Deprecated
 public class TrueFilter extends AbstractFilter {
 
     @Override

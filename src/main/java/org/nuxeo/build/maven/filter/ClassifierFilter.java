@@ -24,30 +24,25 @@ import org.eclipse.aether.graph.DependencyNode;
 /**
  * TODO NXBT-258
  */
-public class ClassifierFilter extends AbstractFilter {
-
-    @Override
-    public String toString() {
-        return super.toString() + " [" + matcher + "]";
-    }
-
-    protected SegmentMatch matcher;
+public class ClassifierFilter extends SegmentMatchFilter {
 
     public ClassifierFilter(String pattern) {
-        this(SegmentMatch.parse(pattern));
+        super(pattern);
     }
 
     public ClassifierFilter(SegmentMatch matcher) {
-        this.matcher = matcher;
+        super(matcher);
     }
 
     @Override
     public boolean accept(Artifact artifact) {
+        beforeAccept(artifact);
         return result(match(artifact.getClassifier()), artifact.toString());
     }
 
     @Override
     public boolean accept(DependencyNode node, List<DependencyNode> parents) {
+        beforeAccept(node);
         org.eclipse.aether.artifact.Artifact artifact = node.getArtifact();
         if (artifact == null) {
             return result(matcher == SegmentMatch.ANY, node.toString());

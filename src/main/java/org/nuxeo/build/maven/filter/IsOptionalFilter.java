@@ -34,13 +34,14 @@ public class IsOptionalFilter extends AbstractFilter {
 
     @Override
     public boolean accept(Artifact artifact) {
+        beforeAccept(artifact);
         return result(isOptional == artifact.isOptional(), artifact.toString());
     }
 
     @Override
     public boolean accept(DependencyNode node, List<DependencyNode> parents) {
+        beforeAccept(node);
         org.eclipse.aether.graph.Dependency dependency = node.getDependency();
-        return result(dependency != null && dependency.isOptional(),
-                node.toString());
+        return result(dependency != null && dependency.isOptional(), node.toString());
     }
 }

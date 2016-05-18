@@ -46,6 +46,7 @@ import org.eclipse.aether.graph.DependencyNode;
 import org.eclipse.aether.resolution.DependencyResult;
 import org.eclipse.aether.util.artifact.ArtifactIdUtils;
 import org.eclipse.aether.util.artifact.JavaScopes;
+
 import org.nuxeo.build.ant.AntClient;
 import org.nuxeo.build.maven.AntBuildMojo;
 import org.nuxeo.build.maven.ArtifactDescriptor;
@@ -285,6 +286,7 @@ public class Graph {
     /**
      * @since 2.0.4
      */
+    @SuppressWarnings("deprecation")
     public DependencyNode collectDependencies(MavenProject project) {
         AntClient.getInstance().log(String.format("Collecting " + project), Project.MSG_DEBUG);
         CollectRequest collectRequest = new CollectRequest();
