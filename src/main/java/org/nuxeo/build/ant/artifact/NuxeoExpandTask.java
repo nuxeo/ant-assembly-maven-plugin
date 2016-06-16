@@ -82,14 +82,12 @@ public class NuxeoExpandTask extends ExpandTask {
             }
 
             @Override
-            public boolean accept(DependencyNode node,
-                    List<DependencyNode> parents) {
+            public boolean accept(DependencyNode node, List<DependencyNode> parents) {
                 if (node.getDependency().isOptional()) {
                     return false;
                 }
                 if ("".equals(node.getDependency().getScope())) {
-                    log("Node with no scope accepted (root node?): " + node,
-                            Project.MSG_DEBUG);
+                    log("Node with no scope accepted (root node?): " + node, Project.MSG_DEBUG);
                     return true;
                 }
                 return getIncludedScopes().get(node.getDependency().getScope());
@@ -116,6 +114,8 @@ public class NuxeoExpandTask extends ExpandTask {
     }
 
     /**
+     * Include the compile scope. Default: {@code true}
+     *
      * @since 1.10.2
      */
     public void setIncludeCompileScope(boolean includeCompileScope) {
@@ -123,6 +123,8 @@ public class NuxeoExpandTask extends ExpandTask {
     }
 
     /**
+     * Include the provided scope. Default: {@code false}
+     *
      * @since 1.10.2
      */
     public void setIncludeProvidedScope(boolean includeProvidedScope) {
@@ -130,6 +132,8 @@ public class NuxeoExpandTask extends ExpandTask {
     }
 
     /**
+     * Include the runtime scope. Default: {@code true}
+     *
      * @since 1.10.2
      */
     public void setIncludeRuntimeScope(boolean includeRuntimeScope) {
@@ -137,6 +141,8 @@ public class NuxeoExpandTask extends ExpandTask {
     }
 
     /**
+     * Include the test scope. Default: {@code false}
+     *
      * @since 1.10.2
      */
     public void setIncludeTestScope(boolean includeTestScope) {
@@ -144,6 +150,8 @@ public class NuxeoExpandTask extends ExpandTask {
     }
 
     /**
+     * Include the system scope. Default: {@code true}
+     *
      * @since 1.10.2
      */
     public void setIncludeSystemScope(boolean includeSystemScope) {
