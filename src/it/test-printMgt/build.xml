@@ -1,32 +1,32 @@
 <?xml version="1.0"?>
-<project name="test-printMgt"
-         default="all-tests"
-         xmlns:nx="urn:nuxeo-build"
-         xmlns:artifact="urn:nuxeo-artifact">
+<project name="test-printMgt" default="all-tests" xmlns:nx="urn:nuxeo-build" xmlns:artifact="urn:nuxeo-artifact">
   <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build" />
-  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
-           uri="urn:nuxeo-artifact" />
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml" uri="urn:nuxeo-artifact" />
   <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
+  <property name="outdir" value="${maven.project.build.directory}" />
+  <mkdir dir="${outdir}" />
+
   <target name="all-tests" description="Test printMgt">
-    <property name="outdir" value="${maven.project.build.directory}" />
-    <mkdir dir="${outdir}" />
+    <antcall target="test-check" />
+    <antcall target="test-output" />
+    <antcall target="test-output-scope-test" />
+  </target>
+
+  <target name="test-check" description="Check the artifact availability (using resolve)">
     <artifact:printMgt output="${outdir}/current.properties.tmp"
                        format="GAV"
                        check="true"
                        checkOutput="${outdir}/current-errors.log.tmp" />
-
     <!-- Filter out specific case of com.oracle artifacts -->
-    <copy file="${outdir}/current.properties.tmp"
-          tofile="${outdir}/current.properties">
+    <copy file="${outdir}/current.properties.tmp" tofile="${outdir}/current.properties">
       <filterchain>
         <linecontains negate="true">
           <contains value="com.oracle" />
         </linecontains>
       </filterchain>
     </copy>
-    <copy file="${outdir}/current-errors.log.tmp"
-          tofile="${outdir}/current-errors.log">
+    <copy file="${outdir}/current-errors.log.tmp" tofile="${outdir}/current-errors.log">
       <filterchain>
         <linecontains negate="true">
           <contains value="com.oracle" />
@@ -40,18 +40,17 @@
           <and>
             <available file="${outdir}/current.properties" />
             <available file="${outdir}/current-errors.log" />
-            <filesmatch file1="${outdir}/current.properties"
-                        file2="current.expected" />
-            <filesmatch file1="${outdir}/current-errors.log"
-                        file2="current-errors.expected" />
+            <filesmatch file1="${outdir}/current.properties" file2="current.expected" />
+            <filesmatch file1="${outdir}/current-errors.log" file2="current-errors.expected" />
           </and>
         </not>
       </condition>
     </fail>
-    <artifact:printMgt output="${outdir}/artifacts.properties.tmp"
-                       key="org.nuxeo:nuxeo-addons-parent:5.9.4:pom" />
-    <copy file="${outdir}/artifacts.properties.tmp"
-          tofile="${outdir}/artifacts.properties">
+  </target>
+
+  <target name="test-output" description="Print dependency management">
+    <artifact:printMgt output="${outdir}/artifacts.properties.tmp" key="org.nuxeo:nuxeo-addons-parent:5.9.4:pom" />
+    <copy file="${outdir}/artifacts.properties.tmp" tofile="${outdir}/artifacts.properties">
       <filterchain>
         <linecontains negate="true">
           <contains value="com.oracle" />
@@ -63,12 +62,14 @@
         <not>
           <and>
             <available file="${outdir}/artifacts.properties" />
-            <filesmatch file1="${outdir}/artifacts.properties"
-                        file2="artifacts.expected" />
+            <filesmatch file1="${outdir}/artifacts.properties" file2="artifacts.expected" />
           </and>
         </not>
       </condition>
     </fail>
+  </target>
+
+  <target name="test-output-scope-test" description="Print dependency management (scope test)">
     <artifact:printMgt output="${outdir}/test-artifacts.properties"
                        key="org.nuxeo:nuxeo-addons-parent:5.9.4:pom"
                        scopes="test" />
@@ -77,12 +78,12 @@
         <not>
           <and>
             <available file="${outdir}/test-artifacts.properties" />
-            <filesmatch file1="${outdir}/test-artifacts.properties"
-                        file2="test-artifacts.expected" />
+            <filesmatch file1="${outdir}/test-artifacts.properties" file2="test-artifacts.expected" />
           </and>
         </not>
       </condition>
     </fail>
   </target>
+
 
 </project>

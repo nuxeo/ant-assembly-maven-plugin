@@ -35,6 +35,7 @@
             <phase>package</phase>
             <configuration>
               <expand>all</expand>
+              <target>test-output-scope-test</target>
             </configuration>
           </execution>
         </executions>

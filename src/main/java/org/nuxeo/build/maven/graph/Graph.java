@@ -17,7 +17,6 @@
 package org.nuxeo.build.maven.graph;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -195,19 +194,6 @@ public class Graph {
         }
         nodes.put(node.getId(), node);
         AntClient.getInstance().log("Added node: " + node, Project.MSG_DEBUG);
-        if (!roots.contains(node)) {
-            // Check resolved children follow Maven rules on transitive dependencies scope
-            // https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Transitive_Dependencies
-            List<DependencyNode> removes = new ArrayList<>();
-            for (DependencyNode child : node.getChildren()) {
-                String childScope = child.getDependency().getScope();
-                if (JavaScopes.PROVIDED.equals(childScope) || JavaScopes.TEST.equals(childScope)) {
-                    AntClient.getInstance().log("Unexpected child node: " + child + " for " + node, Project.MSG_DEBUG);
-                    removes.add(child);
-                }
-            }
-            node.getChildren().removeAll(removes);
-        }
         // Add children
         for (DependencyNode child : node.getChildren()) {
             Node childNode = nodes.get(Node.genNodeId(child));
