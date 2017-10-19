@@ -118,6 +118,7 @@ All the Nuxeo Ant tasks are listed in [src/main/resources/org/nuxeo/build/antlib
 - nx:rename (org.nuxeo.build.ant.RenameTask)
 - nx:rmdups (org.nuxeo.build.ant.RemoveDuplicateTask)
 - nx:zipdiff (org.nuxeo.build.ant.ZipDiffTask)
+- nx:studioExtraction (org.nuxeo.build.ant.StudioExtraction)
 
 - artifact:settings (org.nuxeo.build.ant.artifact.SettingsTask)
 - artifact:set (org.nuxeo.build.ant.artifact.ArtifactSet)

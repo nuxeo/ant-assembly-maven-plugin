@@ -2,6 +2,7 @@
   <taskdef name="templates" classname="org.nuxeo.build.ant.ftl.ProcessTemplateTask" />
   <taskdef name="profile" classname="org.nuxeo.build.ant.profile.ProfileTask" />
   <taskdef name="regexp" classname="org.nuxeo.build.ant.PropertyRegexp" />
+  <taskdef name="studioExtraction" classname="org.nuxeo.build.ant.StudioExtraction" />
   <typedef name="rename" classname="org.nuxeo.build.ant.RenameTask" />
   <typedef name="rmdups" classname="org.nuxeo.build.ant.RemoveDuplicateTask" />
   <typedef name="zipdiff" classname="org.nuxeo.build.ant.ZipDiffTask" />

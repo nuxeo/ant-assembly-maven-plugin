@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project name="test-studio"
+         default="all-tests"
+         xmlns:nx="urn:nuxeo-build"
+         xmlns:artifact="urn:nuxeo-artifact">
+  <taskdef resource="org/nuxeo/build/antlib.xml" uri="urn:nuxeo-build"/>
+  <taskdef resource="org/nuxeo/build/artifact/antlib.xml"
+           uri="urn:nuxeo-artifact"/>
+  <taskdef resource="net/sf/antcontrib/antlib.xml"/>
+
+  <target name="all-tests" description="Test Studio Extraction">
+    <property name="outdir" value="${maven.project.build.directory}"/>
+    <mkdir dir="${outdir}"/>
+
+    <nx:studioExtraction todir="${outdir}">
+      <artifact:file artifactId="nuxeo-automation-core"/>
+    </nx:studioExtraction>
+  </target>
+
+</project>

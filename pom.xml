@@ -50,6 +50,7 @@
     <license.useMissingFile>true</license.useMissingFile>
     <github.global.server>github</github.global.server>
     <surefire.version>2.19.1</surefire.version>
+    <studio.components.commons.version>0.1-SNAPSHOT</studio.components.commons.version>
   </properties>
 
   <repositories>
@@ -307,6 +308,11 @@
         <artifactId>commons-lang3</artifactId>
         <version>3.4</version>
       </dependency>
+      <dependency>
+        <groupId>org.nuxeo.studio</groupId>
+        <artifactId>nuxeo-studio-components-common</artifactId>
+        <version>${studio.components.commons.version}</version>
+      </dependency>
 
       <!-- scope test -->
       <dependency>
@@ -391,6 +397,10 @@
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-settings</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.nuxeo.studio</groupId>
+      <artifactId>nuxeo-studio-components-common</artifactId>
     </dependency>
 
     <!-- scope test -->
