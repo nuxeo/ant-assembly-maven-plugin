@@ -37,7 +37,7 @@ import java.util.Vector;
 /**
  * Converts contributions from Nuxeo's Bundles to the Studio Registry format.
  *
- * @since 2.0.7
+ * @since 2.1.0
  */
 public class StudioExtraction extends Task {
     protected String extract = "*";
