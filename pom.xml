@@ -50,7 +50,7 @@
     <license.useMissingFile>true</license.useMissingFile>
     <github.global.server>github</github.global.server>
     <surefire.version>2.19.1</surefire.version>
-    <studio.components.commons.version>0.1.1-SNAPSHOT</studio.components.commons.version>
+    <nuxeo.studio.components.version>0.1.1-SNAPSHOT</nuxeo.studio.components.version>
   </properties>
 
   <repositories>
@@ -311,7 +311,7 @@
       <dependency>
         <groupId>org.nuxeo.studio</groupId>
         <artifactId>nuxeo-studio-components-common</artifactId>
-        <version>${studio.components.commons.version}</version>
+        <version>${nuxeo.studio.components.version}</version>
       </dependency>
 
       <!-- scope test -->
