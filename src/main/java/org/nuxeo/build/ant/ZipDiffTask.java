@@ -128,11 +128,12 @@ public class ZipDiffTask extends Task {
                 }
 
                 // includes (files from file1 not present or differ in file2)
+                log("Working on files in " + file1.getName() + " not present or differ in file2", Project.MSG_INFO);
                 for (Iterator<String> i = set1.iterator(); i.hasNext();) {
                     String filename = i.next();
                     if (!set2.contains(filename)) {
                         log("Only in " + file1.getName() + ": " + filename,
-                                Project.MSG_INFO);
+                                Project.MSG_DEBUG);
                         include(filename, fileWriter);
                         continue;
                     }
@@ -164,10 +165,11 @@ public class ZipDiffTask extends Task {
                     excludesfile.createNewFile();
                     fileWriter = new FileWriter(excludesfile);
                 }
+                log("Working on files in " + file2.getName() + " not present or differ in file1", Project.MSG_INFO);
                 for (Iterator<String> i = set2.iterator(); i.hasNext();) {
                     String filename = i.next();
                     log("Only in " + file2.getName() + ": " + filename,
-                            Project.MSG_INFO);
+                            Project.MSG_DEBUG);
                     exclude(filename, fileWriter);
                 }
             } catch (IOException e) {
