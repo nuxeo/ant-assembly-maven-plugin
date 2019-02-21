@@ -31,7 +31,7 @@
           <artifact scope="provided" />
         </excludes>
       </artifact:set>
-      <artifact:resolveFile key="log4j:log4j:1.2.16" />
+      <artifact:resolveFile key="org.apache.logging.log4j:log4j-jul:2.11.1" />
     </copy>
     <copy todir="${outdir}/test" overwrite="true">
       <artifact:dependencies artifactId="nuxeo-platform-test" />
@@ -42,8 +42,8 @@
       </artifact:set>
     </copy>
 
-    <nx:zipdiff file1="${outdir}/lib/log4j-1.2.17.jar"
-                file2="${outdir}/lib/log4j-1.2.16.jar"
+    <nx:zipdiff file1="${outdir}/lib/log4j-jul-2.11.1.jar"
+                file2="${outdir}/lib/log4j-core-2.11.1.jar"
                 includesfile="${outdir}/includes"
                 excludesfile="${outdir}/excludesfile"
                 ignoreContent="true" />
@@ -80,36 +80,35 @@
       </fileset>
     </resourcecount>
     <var name="error.msg"
-         value="count.bundles=${count.bundles} (expected 87)${line.separator}
-count.libs=${count.libs} (expected 149)${line.separator}
-count.test=${count.test} (expected 5)${line.separator}
-count.test2=${count.test2} (expected 239)" />
+         value="count.bundles=${count.bundles} (expected 176)${line.separator}
+count.libs=${count.libs} (expected 257)${line.separator}
+count.test=${count.test} (expected 7)${line.separator}
+count.test2=${count.test2} (expected 433)" />
     <fail message="${error.msg}">
       <condition>
         <not>
           <and>
-            <available file="${outdir}/bundles/nuxeo-common-5.9.1.jar" />
-            <available file="${outdir}/bundles/nuxeo-platform-filemanager-core-5.9.1.jar" />
-            <available file="${outdir}/bundles/nuxeo-platform-test-5.9.1.jar" />
-            <available file="${outdir}/lib/chemistry-opencmis-commons-impl-0.10.0.jar" />
-            <available file="${outdir}/lib/log4j-1.2.17.jar" />
+            <available file="${outdir}/bundles/nuxeo-common-10.10.jar" />
+            <available file="${outdir}/bundles/nuxeo-platform-filemanager-core-10.10.jar" />
+            <available file="${outdir}/bundles/nuxeo-platform-test-10.10.jar" />
+            <available file="${outdir}/lib/chemistry-opencmis-commons-impl-1.1.0.jar" />
+            <available file="${outdir}/lib/log4j-jul-2.11.1.jar" />
             <not>
               <or>
-                <available file="${outdir}/bundles/nuxeo-runtime-test-5.9.1.jar" />
-                <available file="${outdir}/lib/javax.inject-1.jar" />
-                <available file="${outdir}/lib/log4j-1.2.16.jar" />
+                <available file="${outdir}/bundles/nuxeo-runtime-test-10.10.jar" />
+                <available file="${outdir}/lib/commons-lang3-3.8:jar" />
                 <available file="${outdir}/lib/junit-4.8.1.jar" />
                 <available file="${outdir}/lib/relaxngDatatype-1.0.jar" />
               </or>
             </not>
-            <equals arg1="${count.bundles}" arg2="87" />
-            <equals arg1="${count.libs}" arg2="149" />
+            <equals arg1="${count.bundles}" arg2="176" />
+            <equals arg1="${count.libs}" arg2="257" />
             <available file="${outdir}/bin/nuxeoctl" />
             <available file="${outdir}/includes" />
             <filesmatch file1="${outdir}/includes" file2="includes.expected" />
-            <available file="${outdir}/test/opencsv-2.1.jar" />
-            <equals arg1="${count.test}" arg2="5" />
-            <equals arg1="${count.test2}" arg2="239" />
+            <available file="${outdir}/test/commons-csv-1.5.jar" />
+            <equals arg1="${count.test}" arg2="7" />
+            <equals arg1="${count.test2}" arg2="433" />
           </and>
         </not>
       </condition>
