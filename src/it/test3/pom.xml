@@ -23,7 +23,7 @@
       <dependency>
         <groupId>org.nuxeo.ecm.distribution</groupId>
         <artifactId>nuxeo-distribution</artifactId>
-        <version>5.9.1</version>
+        <version>10.10</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -45,7 +45,7 @@
   <dependencies>
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-coreserver</artifactId>
+      <artifactId>nuxeo-nxr-server</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>
@@ -55,11 +55,6 @@
     <dependency>
       <groupId>org.eclipse.sisu</groupId>
       <artifactId>org.eclipse.sisu.plexus</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.nuxeo.ecm.opensocial</groupId>
-      <artifactId>nuxeo-opensocial-server</artifactId>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 
