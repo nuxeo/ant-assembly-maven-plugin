@@ -3,7 +3,7 @@
 
   <groupId>org.nuxeo.build</groupId>
   <artifactId>ant-assembly-maven-plugin</artifactId>
-  <version>2.1.6-SNAPSHOT</version>
+  <version>2.1.6</version>
   <packaging>maven-plugin</packaging>
   <name>Ant Assembly Maven Plugin</name>
   <description>Advanced Ant integration within Maven</description>
