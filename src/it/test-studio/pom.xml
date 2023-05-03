@@ -56,8 +56,8 @@
 
   <repositories>
     <repository>
-      <id>public</id>
-      <url>http://maven.nuxeo.org/nexus/content/groups/public</url>
+      <id>public-packages</id>
+      <url>https://packages.nuxeo.com/repository/maven-public</url>
       <releases>
         <enabled>true</enabled>
       </releases>
