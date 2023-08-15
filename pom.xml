@@ -43,7 +43,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <debugITs>false</debugITs>
-    <mavenVersion>3.3.9</mavenVersion>
+    <mavenVersion>3.8.1</mavenVersion>
     <aetherVersion>1.1.0</aetherVersion>
     <sonar.host.url>https://sonar.nuxeo.org/</sonar.host.url>
     <sonar.java.source>1.8</sonar.java.source>
