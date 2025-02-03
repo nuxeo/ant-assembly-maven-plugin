@@ -274,10 +274,55 @@ Use `-Pdebug` profile which will make the invoker call mvnDebug (starting the JV
 
 Default listening for transport dt_socket at address: 8000
 
-## Release
+## Release the project
 
-When releasing with [release.py](https://github.com/nuxeo/nuxeo/blob/master/scripts/release.py),
-it is required to pass parameter `OTHER_VERSION_TO_REPLACE=.*\.expected::`
+Make sure the project builds and its tests pass.
+
+Then create a temporary branch to perform the release:
+
+```bash
+git checkout -b tmp-release
+```
+
+Then update the project version to final, for instance `2.1.7`:
+
+```bash
+mvn versions:set -DnewVersion=2.1.7 -DgenerateBackupPoms=false
+```
+
+Then commit and tag the release:
+
+```bash
+git commit -a -m "Release 2.1.7"
+git tag -a -m "Release 2.1.7" release-2.1.7
+```
+
+Then deploy the maven artifacts:
+
+```bash
+mvn clean deploy -DskipTests -DskipIts -DaltDeploymentRepository=maven-public-releases::default::PUBLIC_URL
+```
+
+> [!IMPORTANT]
+> You should replace the `PUBLIC_URL`.
+> Your Maven `settings.xml` file should contain appropriate authentication (if any) for the `maven-public-releases` repository.
+
+Then push the tag:
+
+```bash
+git push --tags
+```
+
+Then cleanup your branch and prepare the next development iteration:
+
+```bash
+git checkout main
+git branch -D tmp-release
+mvn versions:set -DnewVersion=2.1.8-SNAPSHOT -DgenerateBackupPoms=false
+git commit -a -m "Post release 2.1.7"
+git push
+```
+
 
 # About Nuxeo
 
