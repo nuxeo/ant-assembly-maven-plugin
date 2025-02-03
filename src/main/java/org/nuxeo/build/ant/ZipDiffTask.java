@@ -137,7 +137,11 @@ public class ZipDiffTask extends Task {
                         include(filename, fileWriter);
                         continue;
                     }
-                    set2.remove(filename);
+                    // in case there's nothing to include we still want to exclude files present in files1 and files2
+                    // but directories shouldn't be excluded
+                    if (filename.endsWith("/")) {
+                        set2.remove(filename);
+                    }
                     if (!ignoreContent
                             && !filename.matches(ignoreContentPattern)) {
                         try {
