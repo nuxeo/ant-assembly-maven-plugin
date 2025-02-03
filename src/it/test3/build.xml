@@ -81,9 +81,9 @@
     </resourcecount>
     <var name="error.msg"
          value="count.bundles=${count.bundles} (expected 176)${line.separator}
-count.libs=${count.libs} (expected 257)${line.separator}
+count.libs=${count.libs} (expected 266)${line.separator}
 count.test=${count.test} (expected 7)${line.separator}
-count.test2=${count.test2} (expected 433)" />
+count.test2=${count.test2} (expected 442)" />
     <fail message="${error.msg}">
       <condition>
         <not>
@@ -102,13 +102,13 @@ count.test2=${count.test2} (expected 433)" />
               </or>
             </not>
             <equals arg1="${count.bundles}" arg2="176" />
-            <equals arg1="${count.libs}" arg2="257" />
+            <equals arg1="${count.libs}" arg2="266" />
             <available file="${outdir}/bin/nuxeoctl" />
             <available file="${outdir}/includes" />
             <filesmatch file1="${outdir}/includes" file2="includes.expected" />
             <available file="${outdir}/test/commons-csv-1.5.jar" />
             <equals arg1="${count.test}" arg2="7" />
-            <equals arg1="${count.test2}" arg2="433" />
+            <equals arg1="${count.test2}" arg2="442" />
           </and>
         </not>
       </condition>
